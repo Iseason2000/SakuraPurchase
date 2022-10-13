@@ -17,10 +17,13 @@ import top.iseason.sakurapurchase.service.RecordService;
 import javax.annotation.Resource;
 import java.util.Date;
 
+/**
+ * 支付相关api
+ */
 @Controller
 @Slf4j
-@RequestMapping("/api")
-public class PayController {
+@RequestMapping("/api/pay")
+public class PaymentController {
     private final Sequence sequence = new Sequence(null);
     @Resource
     private BestPayService bestPayService;
@@ -34,9 +37,9 @@ public class PayController {
     }
 
     /**
-     * 发起二维码支付 /api/pay?payType=ALIPAY_QRCODE&orderName=测试商品&amount=0.01
+     * 发起二维码支付 /api/pay/buy?payType=ALIPAY_QRCODE&orderName=测试商品&amount=0.01
      */
-    @PostMapping(value = "/pay")
+    @PostMapping(value = "/buy")
     @ResponseBody
     public PayResponse pay(
             @RequestParam("type") BestPayTypeEnum payType,
@@ -56,7 +59,7 @@ public class PayController {
         request.setOpenid(openid);
         request.setAttach(attach);
 
-        log.info("[尝试发起支付] request={}", JsonUtil.toJson(request));
+        log.debug("[尝试发起支付] request={}", JsonUtil.toJson(request));
 
         PayResponse payResponse = bestPayService.pay(request);
         log.info("[发起支付成功] response={}", JsonUtil.toJson(payResponse));
@@ -66,6 +69,7 @@ public class PayController {
                 .orderId(orderId)
                 .platform(payType == BestPayTypeEnum.ALIPAY_QRCODE ? 0 : 1)
                 .status(OrderStatusEnum.NOTPAY.name())
+                .orderName(orderName)
                 .orderAmount(amount)
                 .outTradeNo(openid)
                 .createTime(new Date())
@@ -80,9 +84,9 @@ public class PayController {
      * @param orderId
      * @return
      */
-    @GetMapping("/query")
+    @GetMapping("/query/{orderId}")
     @ResponseBody
-    public OrderQueryResponse query(@RequestParam String orderId) {
+    public OrderQueryResponse query(@PathVariable("orderId") String orderId) {
         //没有缓存则在线查询
         Record byId = recordService.getById(orderId);
         if (byId == null) return null;
@@ -131,7 +135,7 @@ public class PayController {
         request.setPayPlatformEnum(byId.getPlatformEnum());
         request.setRefundAmount(byId.getOrderAmount());
         request.setOrderAmount(byId.getOrderAmount());
-        log.info("[尝试退款] request={}", JsonUtil.toJson(request));
+        log.debug("[尝试退款] request={}", JsonUtil.toJson(request));
         RefundResponse response;
         try {
             response = bestPayService.refund(request);
@@ -151,7 +155,7 @@ public class PayController {
     @PostMapping(value = "/notify")
     @ResponseBody
     public String notify(@RequestBody String notifyData) {
-        log.info("[异步通知] 支付平台的数据request={}", notifyData);
+        log.debug("[异步通知] 支付平台的数据request={}", notifyData);
         PayResponse response = bestPayService.asyncNotify(notifyData);
         log.info("[异步通知] 处理后的数据data={}", JsonUtil.toJson(response));
         //返回成功信息给支付平台，否则会不停的异步通知

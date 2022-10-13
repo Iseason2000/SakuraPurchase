@@ -28,6 +28,10 @@ public class Record {
      */
     private String status;
     /**
+     * 订单商品名称
+     */
+    private String orderName;
+    /**
      * 订单金额
      */
     private Double orderAmount;

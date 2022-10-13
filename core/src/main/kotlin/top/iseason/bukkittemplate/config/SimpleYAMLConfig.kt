@@ -326,6 +326,6 @@ open class SimpleYAMLConfig(
         val configs = mutableMapOf<String, SimpleYAMLConfig>()
 
         //重载提示信息
-        var notifyMessage: String = "Config %s was reloaded!"
+        var notifyMessage: String = "&a配置 %s 已重载!"
     }
 }

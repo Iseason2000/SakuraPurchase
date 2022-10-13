@@ -20,7 +20,7 @@ dependencies {
 
     compileOnly("com.squareup.okhttp3:okhttp:4.10.0")
     compileOnly("com.google.zxing:core:3.5.0")
-    compileOnly("com.github.johnnyjayjay:spigot-maps:2.1.1")
+    implementation("com.github.johnnyjayjay:spigot-maps:2.1.1")
     implementation("org.bstats:bstats-bukkit:3.0.0")
     compileOnly("org.spigotmc:spigot-api:1.19.2-R0.1-SNAPSHOT")
 }
@@ -52,6 +52,7 @@ tasks {
         }
         relocate("top.iseason.bukkittemplate", "$groupS.libs.core")
         relocate("org.bstats", "$groupS.libs.bstats")
+        relocate("com.github.johnnyjayjay", "$groupS.libs.maps")
         relocate("io.github.bananapuncher714.nbteditor", "$groupS.libs.nbteditor")
     }
     build {

@@ -1,9 +1,14 @@
 package top.iseason.bukkit.sakurapurchaseplugin
 
+import top.iseason.bukkit.sakurapurchaseplugin.command.mainCommand
 import top.iseason.bukkit.sakurapurchaseplugin.config.Config
+import top.iseason.bukkit.sakurapurchaseplugin.config.Lang
+import top.iseason.bukkit.sakurapurchaseplugin.listener.PlayerListener
+import top.iseason.bukkit.sakurapurchaseplugin.service.PurchaseService
 import top.iseason.bukkittemplate.KotlinPlugin
 import top.iseason.bukkittemplate.command.CommandHandler
 import top.iseason.bukkittemplate.debug.info
+import top.iseason.bukkittemplate.utils.bukkit.EventUtils.register
 
 @Suppress("UNUSED")
 object SakuraPurchasePlugin : KotlinPlugin() {
@@ -16,35 +21,17 @@ object SakuraPurchasePlugin : KotlinPlugin() {
     }
 
     override fun onAsyncEnable() {
+        Lang.load(false)
         Config.load(false)
         mainCommand()
         CommandHandler.updateCommands()
-//        Config.load()
-//        openUICommand()
-//        UIListener.register()
-        //命令
-//        openUICommand()
-//        command1()
-//
-//        //如果使用命令模块，取消注释
-//        CommandHandler.updateCommands()
-        //如果使用UI模块,取消注释
-//        registerListeners(UIListener)\
-        //使用数据库请取消注释以下2行
-//        DatabaseConfig.load(false)
-//        DatabaseConfig.initTables()
-//        CommandHandler.updateCommands()
-//        SimpleYAMLConfig.notifyMessage = "&7配置文件 &6%s &7已重载!"
-//        Config.load(false)
-//        LagCatcher.performanceCheck("test", 0) {
-//            DependencyDownloader().addRepositories("https://maven.aliyun.com/repository/public")
-//                .downloadDependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-//        }
+        PlayerListener.register()
 
         info("&a插件已启用!")
     }
 
     override fun onDisable() {
+        PurchaseService.purchaseMap.values.forEach { it.cancel() }
         info("&6插件已卸载!")
     }
 

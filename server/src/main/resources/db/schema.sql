@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS `record`
     `order_id`     BIGINT                                                        NOT NULL,
     `platform`     int                                                           NOT NULL,
     `status`       varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+    `order_name`   varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
     `order_amount` double UNSIGNED                                               NOT NULL,
     `out_trade_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
     `attach`       text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci         NULL,

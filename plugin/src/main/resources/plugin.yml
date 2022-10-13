@@ -16,7 +16,6 @@ runtime-libraries:
     - org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}
     - com.squareup.okhttp3:okhttp:4.10.0
     - com.google.zxing:core:3.5.0
-    - com.github.johnnyjayjay:spigot-maps:2.1.1
 #    - org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}
 #    - org.jetbrains.exposed:exposed-core:${exposedVersion}
 #    - org.jetbrains.exposed:exposed-dao:${exposedVersion}

@@ -1,6 +1,8 @@
 package top.iseason.bukkit.sakurapurchaseplugin
 
+import top.iseason.bukkit.sakurapurchaseplugin.config.Config
 import top.iseason.bukkittemplate.KotlinPlugin
+import top.iseason.bukkittemplate.command.CommandHandler
 import top.iseason.bukkittemplate.debug.info
 
 @Suppress("UNUSED")
@@ -15,7 +17,8 @@ object SakuraPurchasePlugin : KotlinPlugin() {
 
     override fun onAsyncEnable() {
         Config.load(false)
-
+        mainCommand()
+        CommandHandler.updateCommands()
 //        Config.load()
 //        openUICommand()
 //        UIListener.register()

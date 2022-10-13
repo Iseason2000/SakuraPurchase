@@ -1,6 +1,7 @@
 package top.iseason.bukkit.sakurapurchaseplugin
 
 import org.bukkit.entity.Player
+import top.iseason.bukkit.sakurapurchaseplugin.service.PurchaseService
 import top.iseason.bukkittemplate.command.*
 
 fun mainCommand() {
@@ -13,18 +14,18 @@ fun mainCommand() {
             description = "支付完执行命令"
             param("<player>", suggestRuntime = ParamSuggestCache.playerParam)
             param("<amount>")
-            param("<platform>", suggest = PurchaseServer.PayType.values().map { it.name })
+            param("<platform>", suggest = PurchaseService.PayType.values().map { it.name })
             param("<name>")
             param("[attach]")
             async = true
             executor {
                 val player = next<Player>()
                 val amount = next<Double>()
-                val type = next<PurchaseServer.PayType>()
+                val type = next<PurchaseService.PayType>()
                 val name = next<String>()
                 val attach = nextOrNull<String>() ?: ""
-                if (!PurchaseServer.isConnected) throw ParmaException("&e支付服务未启用!")
-                PurchaseServer.purchaseCommand(player, amount, type, name, attach)
+                if (!PurchaseService.isConnected) throw ParmaException("&e支付服务未启用!")
+                PurchaseService.purchase(player, amount, type, name, attach)
 
             }
         }

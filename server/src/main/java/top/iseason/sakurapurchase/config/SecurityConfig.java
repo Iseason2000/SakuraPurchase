@@ -17,7 +17,7 @@ public class SecurityConfig {
                 .antMatchers("/static/**")
                 .permitAll()
                 .anyRequest()
-                .hasRole("ADMIN")
+                .authenticated()
                 .and()
                 .formLogin()
 //                .loginProcessingUrl("/doLogin")

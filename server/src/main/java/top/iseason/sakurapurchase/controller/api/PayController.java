@@ -39,11 +39,11 @@ public class PayController {
     @PostMapping(value = "/pay")
     @ResponseBody
     public PayResponse pay(
-            @RequestParam BestPayTypeEnum payType,
-            @RequestParam String orderName,
-            @RequestParam Double amount,
+            @RequestParam("type") BestPayTypeEnum payType,
+            @RequestParam("name") String orderName,
+            @RequestParam("amount") Double amount,
             @RequestParam(value = "openid", required = false) String openid,
-            @RequestParam(required = false) String attach) {
+            @RequestParam(value = "attach", required = false) String attach) {
         if (payType != BestPayTypeEnum.ALIPAY_QRCODE && payType != BestPayTypeEnum.WXPAY_NATIVE)
             return new PayResponse();
         //支付请求参数

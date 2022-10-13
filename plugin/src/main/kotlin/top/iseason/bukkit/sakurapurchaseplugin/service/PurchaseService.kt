@@ -1,24 +1,39 @@
-package top.iseason.bukkit.sakurapurchaseplugin
+package top.iseason.bukkit.sakurapurchaseplugin.service
 
+import com.google.gson.Gson
 import okhttp3.*
 import org.bukkit.entity.Player
+import top.iseason.bukkit.sakurapurchaseplugin.config.Config
+import top.iseason.bukkit.sakurapurchaseplugin.service.PurchaseService.MyCookieJar.lastToken
+import top.iseason.bukkit.sakurapurchaseplugin.util.MapUtil
 import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.debug.warn
+import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.giveItems
 
-object PurchaseServer {
+object PurchaseService {
 
     private object MyCookieJar : CookieJar {
+        var lastToken: String = ""
+            private set
         private val cookieStore: HashMap<String, List<Cookie>> = HashMap()
         override fun loadForRequest(url: HttpUrl): List<Cookie> {
             return cookieStore[url.host] ?: ArrayList()
         }
 
         override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
+
             val computeIfAbsent = cookieStore.computeIfAbsent(url.host) { listOf() }.toMutableList()
             //保留新cookie
-            computeIfAbsent.addAll(cookies)
-            computeIfAbsent.reverse()
-            computeIfAbsent.distinctBy { it.name }
+            for (cookie in cookies) {
+                computeIfAbsent.removeIf { it.name == cookie.name }
+                computeIfAbsent.add(cookie)
+            }
+            val tokenCookie = computeIfAbsent.find {
+                it.name == "XSRF-TOKEN"
+            }
+            if (tokenCookie != null) {
+                lastToken = tokenCookie.value
+            }
             cookieStore[url.host] = computeIfAbsent
         }
 
@@ -37,7 +52,6 @@ object PurchaseServer {
             .url(Config.loginUrl)
             .get().build()
         info("&6尝试登录: &7&n${Config.loginUrl}")
-        var token: String? = null
         getHttpClient().newCall(request)
             .execute()
             .use { response ->
@@ -45,20 +59,18 @@ object PurchaseServer {
                     warn("服务器链接失败: ${Config.loginUrl} code: ${response.code}")
                     return@use
                 }
-                token = response.headers("Set-Cookie").find { it.startsWith("XSRF-TOKEN=") }?.substring(11, 47)
-                if (token == null) {
+                if (lastToken == "") {
                     warn("获取token失败!")
                     return@use
                 }
-                info("&a获取token: &6$token")
+                info("&a获取token: &6$lastToken")
             }
-        if (token == null) return
         info("&6尝试登录...")
         kotlin.runCatching {
             val formBody = FormBody.Builder()
                 .add("username", Config.username)
                 .add("password", Config.password)
-                .add("_csrf", token!!)
+                .add("_csrf", lastToken)
                 .build()
             val loginRequest = Request.Builder()
                 .url(Config.loginUrl)
@@ -81,7 +93,7 @@ object PurchaseServer {
         info("&6测试连接...")
         kotlin.runCatching {
             getHttpClient().newCall(
-                Request.Builder().url("http://localhost/api/test").get()
+                Request.Builder().url("${Config.apiUrl}/test").get()
                     .build()
             ).execute().use {
                 if ("Success".equals(it.body?.string(), true)) {
@@ -104,25 +116,30 @@ object PurchaseServer {
     fun getHttpClient() = OkHttpClient.Builder().cookieJar(MyCookieJar).build()
 
     /**
-     * 支付完运行命令
+     * 为玩家发起支付支付 TODO:校验支付
      */
-    fun purchaseCommand(player: Player, amount: Double, payType: PayType, orderName: String, attach: String = "") {
+    fun purchase(player: Player, amount: Double, payType: PayType, orderName: String, attach: String = "") {
+
         val body = FormBody.Builder()
-            .add("payType", payType.type)
-            .add("orderName", orderName)
+            .add("type", payType.type)
+            .add("name", orderName)
             .add("amount", amount.toString())
             .add("attach", attach)
+            .add("_csrf", lastToken) //防止跨域攻击
             .build()
         val request = Request.Builder().url(Config.purchaseUrl).post(body).build()
         getHttpClient().newCall(request).execute().use {
             if (it.isSuccessful) {
-                println(it.body!!.string())
-                info("&7用户 &6${player.name} &7发起 &a${payType.translation} &7支付,金额: &6$amount 订单")
+                val json = Gson().fromJson(it.body!!.string(), Map::class.java)
+                val qrCode = json["codeUrl"] as String
+                val orderID = json["orderId"] as String
+                info("&7用户 &6${player.name} &7发起 &a${payType.translation} &7支付,金额: &6$amount &7订单号: &6$orderID")
+                val generateQRMap = MapUtil.generateQRMap(qrCode) ?: return@use
+                player.giveItems(generateQRMap)
             } else {
-                warn("发起支付失败")
+                warn("发起支付失败: ${it.code}")
             }
         }
-
     }
 
     enum class PayType(

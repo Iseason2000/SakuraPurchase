@@ -1,4 +1,4 @@
-package top.iseason.bukkit.sakurapurchaseplugin
+package top.iseason.bukkit.sakurapurchaseplugin.config
 
 import org.bukkit.configuration.ConfigurationSection
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig

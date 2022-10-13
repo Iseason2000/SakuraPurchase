@@ -50,6 +50,14 @@ object ItemUtils {
         return this
     }
 
+    @JvmName("applyMetaType")
+    inline fun <reified T : ItemMeta> ItemStack.applyMeta(block: T.() -> Unit): ItemStack {
+        val itemMeta = itemMeta as? T ?: return this
+        block(itemMeta)
+        this.itemMeta = itemMeta
+        return this
+    }
+
     /**
      * 减少物品数量，如果小于0则物品变为空气
      */

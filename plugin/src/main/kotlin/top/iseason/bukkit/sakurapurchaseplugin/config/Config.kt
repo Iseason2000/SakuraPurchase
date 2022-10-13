@@ -1,7 +1,8 @@
-package top.iseason.bukkit.sakurapurchaseplugin
+package top.iseason.bukkit.sakurapurchaseplugin.config
 
 import okhttp3.*
 import org.bukkit.configuration.ConfigurationSection
+import top.iseason.bukkit.sakurapurchaseplugin.service.PurchaseService
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
 import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
@@ -32,15 +33,16 @@ object Config : SimpleYAMLConfig() {
     var purchaseCommand: List<String> = listOf("")
 
     val loginUrl
-        get() = "${serverHost}/login"
-
+        get() = "$serverHost/login"
+    val apiUrl
+        get() = "$serverHost/api"
     val purchaseUrl
-        get() = "${serverHost}/api/pay"
+        get() = "$serverHost/api/pay"
 
     override fun onLoaded(section: ConfigurationSection) {
         serverHost = serverHost.removeSuffix("/")
-        PurchaseServer.connectToServer()
-        PurchaseServer.testConnection()
+        PurchaseService.connectToServer()
+        PurchaseService.testConnection()
     }
 
     override fun onSaved(section: ConfigurationSection) {

@@ -20,7 +20,6 @@ public class SecurityConfig {
                 .authenticated()
                 .and()
                 .formLogin()
-//                .loginProcessingUrl("/doLogin")
                 .permitAll()
                 .and()
                 .csrf()

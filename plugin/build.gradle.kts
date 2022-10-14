@@ -4,6 +4,9 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven {
+        url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    }
 }
 
 dependencies {
@@ -23,6 +26,7 @@ dependencies {
     implementation("com.github.johnnyjayjay:spigot-maps:2.1.1")
     implementation("org.bstats:bstats-bukkit:3.0.0")
     compileOnly("org.spigotmc:spigot-api:1.19.2-R0.1-SNAPSHOT")
+    compileOnly("me.clip:placeholderapi:2.11.2")
 }
 
 // 插件名称，请在gradle.properties 修改

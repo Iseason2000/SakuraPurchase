@@ -1,4 +1,4 @@
-package top.iseason.bukkit.sakurapurchaseplugin.service
+package top.iseason.bukkit.sakurapurchaseplugin.manager
 
 
 import org.bukkit.entity.Player
@@ -7,8 +7,9 @@ import org.bukkit.scheduler.BukkitRunnable
 import top.iseason.bukkit.sakurapurchaseplugin.config.Config
 import top.iseason.bukkit.sakurapurchaseplugin.config.Config.formatByOrder
 import top.iseason.bukkit.sakurapurchaseplugin.config.Lang
-import top.iseason.bukkit.sakurapurchaseplugin.data.Order
+import top.iseason.bukkit.sakurapurchaseplugin.entity.Order
 import top.iseason.bukkittemplate.debug.info
+import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.other.submit
@@ -16,17 +17,17 @@ import java.util.function.Consumer
 
 class PurchaseChecker(
 
-    val player: Player,
-    val order: Order,
+    private val player: Player,
+    private val order: Order,
     val map: ItemStack,
-    val onSuccess: Consumer<Order>
+    private val onSuccess: Consumer<Order>
 ) : BukkitRunnable() {
-    val timeStamp = System.currentTimeMillis()
+    private val timeStamp = System.currentTimeMillis()
     val oldItemStack: ItemStack? = player.getHeldItem()
 
     init {
         player.inventory.setItem(player.inventory.heldItemSlot, map)
-        PurchaseService.purchaseMap[player] = this
+        PurchaseManager.purchaseMap[player] = this
         submit {
             player.teleport(player.location.apply { pitch = 90F })
         }
@@ -44,13 +45,21 @@ class PurchaseChecker(
             cancelSilently()
             return
         }
-        val query = PurchaseService.query(order.orderId)
+        val query = PurchaseManager.query(order.orderId)
         if (query == "SUCCESS") {
             player.sendColorMessage(
                 Lang.pay__sucess.formatByOrder(order)
             )
             info("&7玩家 &6${player.name} &7订单 &6${order.orderId} &a已完成支付(${order.payType.translation}), &7金额 &6${order.amount} &7商品信息: &f${order.orderName} ${order.attach}")
             cancelSilently()
+            if (!PurchaseManager.saveOrder(order)) {
+                warn("保存订单异常，请检查链接!")
+            }
+            //加入缓存
+            val playerInfo = PlayerInfoCacheManager.getPlayerInfo(player.uniqueId)
+            playerInfo.orders.add(order)
+            playerInfo.lastOrder = order
+            PlayerInfoCacheManager.modifyCache += order.amount
             onSuccess.accept(order)
             return
         }
@@ -75,6 +84,6 @@ class PurchaseChecker(
     private fun cancelSilently() {
         super.cancel()
         player.inventory.setItem(player.inventory.heldItemSlot, oldItemStack)
-        PurchaseService.purchaseMap.remove(this.player)
+        PurchaseManager.purchaseMap.remove(this.player)
     }
 }

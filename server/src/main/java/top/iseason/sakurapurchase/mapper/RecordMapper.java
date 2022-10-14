@@ -6,4 +6,5 @@ import top.iseason.sakurapurchase.entity.Record;
 
 @Mapper
 public interface RecordMapper extends BaseMapper<Record> {
+
 }

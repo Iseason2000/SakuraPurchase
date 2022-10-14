@@ -4,8 +4,8 @@ import okhttp3.*
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
-import top.iseason.bukkit.sakurapurchaseplugin.data.Order
-import top.iseason.bukkit.sakurapurchaseplugin.service.PurchaseService
+import top.iseason.bukkit.sakurapurchaseplugin.entity.Order
+import top.iseason.bukkit.sakurapurchaseplugin.manager.ConnectionManager
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
 import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
@@ -51,6 +51,7 @@ object Config : SimpleYAMLConfig() {
     )
     var purchaseCommand: List<String> = listOf("")
     val pattern = Pattern.compile("(%.*?_?amount%)")
+
     val loginUrl
         get() = "$serverHost/login"
     val apiUrl
@@ -62,14 +63,18 @@ object Config : SimpleYAMLConfig() {
     val testUrl
         get() = "$apiUrl/pay/test"
 
+    val userTotalUrl
+        get() = "$apiUrl/record/user-total"
+    val userAllUrl
+        get() = "$apiUrl/record/user-all"
+    val saveUrl get() = "$apiUrl/record/save"
+
+    val totalAmountUrl get() = "$apiUrl/record/all-total"
+
     override fun onLoaded(section: ConfigurationSection) {
         serverHost = serverHost.removeSuffix("/")
-        PurchaseService.connectToServer()
-        PurchaseService.testConnection()
-    }
-
-    override fun onSaved(section: ConfigurationSection) {
-        println("saved")
+        ConnectionManager.connectToServer()
+        ConnectionManager.testConnection()
     }
 
     /**
@@ -80,7 +85,8 @@ object Config : SimpleYAMLConfig() {
         order.orderName,
         order.payType.translation,
         order.amount,
-        order.attach
+        order.attach,
+        order.getStringTime()
     )
 
     fun performCommands(player: Player, amount: Double) {

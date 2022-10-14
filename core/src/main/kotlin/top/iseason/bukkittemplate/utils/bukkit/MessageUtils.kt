@@ -72,7 +72,9 @@ object MessageUtils {
      */
     fun CommandSender.sendColorMessage(message: Any?, prefix: String = defaultPrefix) {
         if (message == null || message.toString().isEmpty()) return
-        sendMessage("$prefix$message".toColor())
+        message.toString().split("\\n").forEach {
+            sendMessage("$prefix$it".toColor())
+        }
     }
 
     /**

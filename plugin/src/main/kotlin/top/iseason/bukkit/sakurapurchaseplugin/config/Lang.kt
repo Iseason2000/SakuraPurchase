@@ -16,7 +16,7 @@ object Lang : SimpleYAMLConfig(updateNotify = false) {
     @Comment("所有消息的前缀")
     var prefix = "&a[&6${BukkitTemplate.getPlugin().description.name}&a] &f"
 
-    @Comment("", "参数以{index}声明,index的范围=[0,4]: orderId, orderName, payType, amount, attach")
+    @Comment("", "参数以{index}声明,index的范围=[0,5]: orderId, orderName, payType, amount, attach, createTIme")
     var pay = ""
     var pay__start = "&a请使用 &6{2} &a支付.."
     var pay__sucess = "&a支付成功! 金额: &6{3} 元"
@@ -27,7 +27,17 @@ object Lang : SimpleYAMLConfig(updateNotify = false) {
     var pay__connection_error = "&6支付服务异常，请联系管理员!"
 
     @Comment("只有一个参数{0}为冷却剩余秒数")
-    var pay_coolDown = "&6请等待 &a{0} &6秒后再次发起订单!"
+    var pay__coolDown = "&6请等待 &a{0} &6秒后再次发起订单!"
+
+    var command__no_record = "&e没有记录!"
+
+    @Comment(
+        "玩家订单格式化",
+        "参数以{index}声明,index的范围=[0,5]: orderId, orderName, payType, amount, attach, createTIme"
+    )
+    var command__order_format =
+        "&7订单: &6 {0} &7名称:&f {1} \\n&7支付方式: &e{2} &7金额: &a{3} &7创建时间:&b {5} \\n&7其他:&f{4}\\n "
+
     override fun onLoaded(section: ConfigurationSection) {
         SimpleLogger.prefix = prefix
         MessageUtils.defaultPrefix = prefix

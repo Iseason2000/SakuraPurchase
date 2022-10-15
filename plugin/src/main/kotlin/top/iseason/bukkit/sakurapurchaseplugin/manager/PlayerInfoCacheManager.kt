@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonArray
 import okhttp3.Request
 import top.iseason.bukkit.sakurapurchaseplugin.config.Config
+import top.iseason.bukkit.sakurapurchaseplugin.config.OrderCache
 import top.iseason.bukkit.sakurapurchaseplugin.entity.Order
 import top.iseason.bukkit.sakurapurchaseplugin.entity.PlayerInfo
 import top.iseason.bukkit.sakurapurchaseplugin.util.getValue
@@ -103,5 +104,18 @@ object PlayerInfoCacheManager {
      */
     fun remove(uuid: UUID) {
         playerCache.remove(uuid)
+    }
+
+    /**
+     * 完成订单时设置对应的缓存等信息
+     */
+    fun finish(uuid: UUID, order: Order) {
+        val playerInfo = getPlayerInfo(uuid)
+        playerInfo.orders.add(order)
+        playerInfo.currentOrder = null
+        OrderCache.orderCache.remove(uuid)
+        OrderCache.groupCache.remove(uuid)
+        playerInfo.lastOrder = order
+        modifyCache += order.amount
     }
 }

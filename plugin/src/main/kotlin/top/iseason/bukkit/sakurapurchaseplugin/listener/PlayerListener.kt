@@ -10,13 +10,17 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.player.*
 import org.bukkit.inventory.PlayerInventory
+import top.iseason.bukkit.sakurapurchaseplugin.config.Config
 import top.iseason.bukkit.sakurapurchaseplugin.config.Lang
+import top.iseason.bukkit.sakurapurchaseplugin.config.OrderCache
 import top.iseason.bukkit.sakurapurchaseplugin.manager.PlayerInfoCacheManager
 import top.iseason.bukkit.sakurapurchaseplugin.manager.PurchaseManager
+import top.iseason.bukkittemplate.debug.info
+import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
+import top.iseason.bukkittemplate.utils.other.runAsync
 
 object PlayerListener : Listener {
-
 
     @EventHandler
     fun onPlayerSwap(event: PlayerSwapHandItemsEvent) {
@@ -82,6 +86,37 @@ object PlayerListener : Listener {
         if (PurchaseManager.purchaseMap.containsKey(event.player)) {
             event.player.sendColorMessage(Lang.pay__command_block)
             event.isCancelled = true
+        }
+    }
+
+    /**
+     * 玩家登录时检查是否有已支付但未完成的订单，如果有就完成他
+     */
+    fun doOnLogin(player: Player) {
+        val uuid = player.uniqueId
+        val order = OrderCache.orderCache[uuid] ?: return
+        val group = OrderCache.groupCache[uuid] ?: return
+        runAsync {
+            val status = PurchaseManager.query(order.orderId)
+            if (status != "SUCCESS") {
+                OrderCache.orderCache.remove(uuid)
+                OrderCache.groupCache.remove(uuid)
+                return@runAsync
+            }
+            val commands = Config.commandGroup[group]
+            if (commands != null) {
+                info("&7玩家 &6${player.name} &7具有已支付但未完成的订单,运行命令组: &6$group")
+            } else {
+                info("&7玩家 &6${player.name} &7具有已支付但未完成的订单,但命令组: &6$group &7不存在")
+                info(order.toString())
+                return@runAsync
+            }
+            info(order.toString())
+            Config.performCommands(player, order.amount, commands)
+            PlayerInfoCacheManager.finish(uuid, order)
+            if (!PurchaseManager.saveOrder(order)) {
+                warn("保存订单异常，请检查链接!")
+            }
         }
     }
 

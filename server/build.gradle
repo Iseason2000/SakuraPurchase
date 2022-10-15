@@ -1,12 +1,17 @@
 plugins {
+    id 'java'
+    id 'maven-publish'
     id 'org.springframework.boot' version '2.7.4'
     id 'io.spring.dependency-management' version '1.0.14.RELEASE'
-    id 'java'
+    id 'org.springframework.boot.experimental.thin-launcher' version '1.0.28.RELEASE'
 }
 
 group = 'top.iseason.sakurapurchase'
 version = '1.0.0'
 sourceCompatibility = '1.8'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'org.springframework.boot.experimental.thin-launcher'
 
 configurations {
 
@@ -16,7 +21,12 @@ configurations {
 }
 
 repositories {
+    mavenLocal()
+    maven { url "https://maven.aliyun.com/repository/public" }
+
     mavenCentral()
+    maven { url "https://repo.spring.io/snapshot" }
+    maven { url "https://repo.spring.io/milestone" }
 }
 
 dependencies {
@@ -36,3 +46,11 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+}
+

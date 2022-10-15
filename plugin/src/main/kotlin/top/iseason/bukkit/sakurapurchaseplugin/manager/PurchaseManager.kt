@@ -9,6 +9,7 @@ import top.iseason.bukkit.sakurapurchaseplugin.SakuraPurchasePlugin
 import top.iseason.bukkit.sakurapurchaseplugin.config.Config
 import top.iseason.bukkit.sakurapurchaseplugin.config.Config.formatByOrder
 import top.iseason.bukkit.sakurapurchaseplugin.config.Lang
+import top.iseason.bukkit.sakurapurchaseplugin.config.OrderCache
 import top.iseason.bukkit.sakurapurchaseplugin.entity.Order
 import top.iseason.bukkit.sakurapurchaseplugin.manager.ConnectionManager.httpClient
 import top.iseason.bukkit.sakurapurchaseplugin.util.MapUtil
@@ -31,6 +32,7 @@ object PurchaseManager {
         payType: PayType,
         orderName: String,
         attach: String = "",
+        group: String,
         /**
          * 回调，提供 amount
          */
@@ -53,6 +55,9 @@ object PurchaseManager {
                     val orderID = json["orderId"] as String
                     val order = Order(player.uniqueId, orderID, orderName, amount, payType, attach, Date())
                     info("&7用户 &6${player.name} &7发起 &a${payType.translation} &7支付,金额: &6$amount &7订单号: &6$orderID")
+                    PlayerInfoCacheManager.getPlayerInfo(player.uniqueId).currentOrder = order
+                    OrderCache.orderCache[player.uniqueId] = order
+                    OrderCache.groupCache[player.uniqueId] = group
                     player.sendColorMessage(
                         Lang.pay__start.formatByOrder(order)
                     )

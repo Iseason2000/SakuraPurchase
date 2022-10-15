@@ -56,10 +56,7 @@ class PurchaseChecker(
                 warn("保存订单异常，请检查链接!")
             }
             //加入缓存
-            val playerInfo = PlayerInfoCacheManager.getPlayerInfo(player.uniqueId)
-            playerInfo.orders.add(order)
-            playerInfo.lastOrder = order
-            PlayerInfoCacheManager.modifyCache += order.amount
+            PlayerInfoCacheManager.finish(player.uniqueId, order)
             onSuccess.accept(order)
             return
         }
@@ -84,6 +81,7 @@ class PurchaseChecker(
     private fun cancelSilently() {
         super.cancel()
         player.inventory.setItem(player.inventory.heldItemSlot, oldItemStack)
+        PlayerInfoCacheManager.getPlayerInfo(player.uniqueId).currentOrder = null
         PurchaseManager.purchaseMap.remove(this.player)
     }
 }

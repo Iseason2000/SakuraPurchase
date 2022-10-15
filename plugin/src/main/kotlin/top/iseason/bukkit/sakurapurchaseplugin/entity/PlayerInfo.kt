@@ -16,6 +16,7 @@ data class PlayerInfo(
         PlayerInfoCacheManager.requestPlayerOrders(uuid)
     }
 
+
     /**
      * 总消费
      */
@@ -25,6 +26,11 @@ data class PlayerInfo(
      * 上个订单
      */
     var lastOrder by lazyMutable { PlayerInfoCacheManager.requestPlayerOrders(uuid, 0, 1).firstOrNull() }
+
+    /**
+     * 当前正在进行的订单
+     */
+    var currentOrder: Order? = null
 
     /**
      * 获取最新的 amount 个记录

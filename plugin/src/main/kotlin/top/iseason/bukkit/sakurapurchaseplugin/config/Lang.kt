@@ -22,7 +22,7 @@ object Lang : SimpleYAMLConfig(updateNotify = false) {
     var pay__sucess = "&a支付成功! 金额: &6{3} 元"
     var pay__cancel = "&6支付已取消!"
     var pay__timeout = "&6支付超时!"
-    var pay__waiting = "&6请使用 &a{2} &6支付，&bShift+F 取消支付."
+    var pay__waiting = "&6请使用 &a{2} &6支付，&bShift+F 取消支付. &c请勿在订单取消后才完成支付."
     var pay__command_block = "&6请先完成支付!"
     var pay__connection_error = "&6支付服务异常，请联系管理员!"
 

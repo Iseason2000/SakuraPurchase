@@ -27,6 +27,8 @@ dependencies {
     implementation("org.bstats:bstats-bukkit:3.0.0")
     compileOnly("org.spigotmc:spigot-api:1.19.2-R0.1-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.11.2")
+    compileOnly("fr.xephi:authme:5.6.0-SNAPSHOT")
+
 }
 
 // 插件名称，请在gradle.properties 修改

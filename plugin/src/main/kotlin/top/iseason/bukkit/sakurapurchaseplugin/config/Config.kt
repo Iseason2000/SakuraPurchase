@@ -4,8 +4,9 @@ import okhttp3.*
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
+import org.bukkit.event.server.ServerCommandEvent
 import top.iseason.bukkit.sakurapurchaseplugin.entity.Order
-import top.iseason.bukkit.sakurapurchaseplugin.manager.ConnectionManager
+import top.iseason.bukkit.sakurapurchaseplugin.hook.PAPIHook
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
 import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
@@ -44,12 +45,13 @@ object Config : SimpleYAMLConfig() {
     @Comment("发起订单的最小间隔(秒)，设置合适的值以避免刷单")
     var coolDown: Double = 30.0
 
-    @Key
+    @Key("command-group")
     @Comment(
-        "sakurapurchase paycommand 支付方式完成之后运行的命令,以控制台的身份",
+        "sakurapurchase pay 完成之后运行的命令(分组),以控制台的身份",
         "原生变量为%player%:玩家名, %amount%:充值的金额%, %10_amount%:表示充值的金额X10"
     )
-    var purchaseCommand: List<String> = listOf("")
+    var commandGroup = mutableMapOf("default" to listOf("say helloWorld!"))
+
     val pattern = Pattern.compile("(%.*?_?amount%)")
 
     val loginUrl
@@ -73,8 +75,6 @@ object Config : SimpleYAMLConfig() {
 
     override fun onLoaded(section: ConfigurationSection) {
         serverHost = serverHost.removeSuffix("/")
-        ConnectionManager.connectToServer()
-        ConnectionManager.testConnection()
     }
 
     /**
@@ -89,9 +89,9 @@ object Config : SimpleYAMLConfig() {
         order.getStringTime()
     )
 
-    fun performCommands(player: Player, amount: Double) {
+    fun performCommands(player: Player, amount: Double, commands: List<String>) {
         submit {
-            for (s in purchaseCommand) {
+            for (s in commands) {
                 var command = s.replace("%player%", player.name)
                 val matcher = pattern.matcher(command)
                 while (matcher.find()) {
@@ -103,11 +103,17 @@ object Config : SimpleYAMLConfig() {
                     }
                     command = command.replace(group, (amount * multiply).toString())
                 }
-                runCatching { Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command) }.getOrElse {
-                    warn("命令 $command 执行失败,请打开debug模式查看报错")
+                command = PAPIHook.setPlaceholder(command, player)
+                runCatching {
+                    val serverCommandEvent = ServerCommandEvent(Bukkit.getConsoleSender(), command)
+                    Bukkit.getPluginManager().callEvent(serverCommandEvent)
+                    if (!serverCommandEvent.isCancelled)
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)
+                    else warn("&命令 $command 执行失败,原因: 被取消")
+                }.getOrElse {
                     if (SimpleLogger.isDebug) {
                         it.printStackTrace()
-                    }
+                    } else warn("&命令 $command 执行失败,请打开debug模式查看报错")
                 }
             }
         }

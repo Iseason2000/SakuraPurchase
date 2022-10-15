@@ -1,13 +1,17 @@
 package top.iseason.bukkit.sakurapurchaseplugin.hook
 
+import me.clip.placeholderapi.PlaceholderAPI
 import me.clip.placeholderapi.expansion.PlaceholderExpansion
 import org.bukkit.OfflinePlayer
+import org.bukkit.entity.Player
 import top.iseason.bukkit.sakurapurchaseplugin.manager.PlayerInfoCacheManager
 import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.hook.BaseHook
 
 object PAPIHook : BaseHook("PlaceholderAPI") {
 
+    fun setPlaceholder(str: String, player: Player?) =
+        if (hasHooked) PlaceholderAPI.setPlaceholders(player, str) else str
 }
 
 /**
@@ -61,7 +65,7 @@ object PAPIExpansion : PlaceholderExpansion() {
             val index = arg2.toIntOrNull() ?: return null
             val arg3 = split.getOrNull(2) ?: return null
             val order = (if (index <= 0) playerInfo.lastOrder
-            else playerInfo.getLastOrders(index, 1).firstOrNull()) ?: return null
+            else playerInfo.currentOrder) ?: return null
             return when (arg3) {
                 "orderid" -> order.orderId
                 "ordername" -> order.orderName

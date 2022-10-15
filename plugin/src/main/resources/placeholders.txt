@@ -1,0 +1,13 @@
+# 玩家变量
+sakurapurchase_player_total 总充值金额
+#以下的 [index] 如果等于 0 表示正在支付的订单，否则为最近支付的第 index 个订单
+sakurapurchase_player_[index]_orderid 支付的订单ID
+sakurapurchase_player_[index]_ordername 支付的订单名称
+sakurapurchase_player_[index]_amount 支付的订单金额
+sakurapurchase_player_[index]_paytype 支付的订单支付类型
+sakurapurchase_player_[index]_attach 支付的订单附加信息
+sakurapurchase_player_[index]_createtime 支付的订单创建时间
+sakurapurchase_player_count 已经支付的订单数
+
+# 服务端变量
+sakurapurchase_total_amount 服务器总氪金金额

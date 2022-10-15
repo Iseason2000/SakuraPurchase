@@ -10,6 +10,7 @@ import top.iseason.bukkit.sakurapurchaseplugin.hook.AuthMeHook
 import top.iseason.bukkit.sakurapurchaseplugin.hook.PAPIExpansion
 import top.iseason.bukkit.sakurapurchaseplugin.hook.PAPIHook
 import top.iseason.bukkit.sakurapurchaseplugin.listener.PlayerListener
+import top.iseason.bukkit.sakurapurchaseplugin.listener.SwapListener
 import top.iseason.bukkit.sakurapurchaseplugin.manager.ConnectionManager
 import top.iseason.bukkit.sakurapurchaseplugin.manager.PurchaseManager
 import top.iseason.bukkittemplate.KotlinPlugin
@@ -44,6 +45,7 @@ object SakuraPurchasePlugin : KotlinPlugin() {
         mainCommand()
         CommandHandler.updateCommands()
         PlayerListener.register()
+        SwapListener.register()
         if (AuthMeHook.hasHooked) {
             listen<LoginEvent> {
                 PlayerListener.doOnLogin(this.player)

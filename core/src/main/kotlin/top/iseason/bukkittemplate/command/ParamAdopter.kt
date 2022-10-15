@@ -2,7 +2,6 @@
 
 package top.iseason.bukkittemplate.command
 
-import com.google.common.base.Enums
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
@@ -55,7 +54,12 @@ open class ParamAdopter<T : Any>(
             val typeParam = paramsAdopter[clazz]
             //匹配所有枚举
             if (typeParam == null && clazz.java.isEnum) {
-                return Enums.getIfPresent(clazz.java as Class<out Enum<*>>, paramStr.uppercase()).orNull() as? T
+                return kotlin.runCatching {
+                    java.lang.Enum.valueOf(
+                        clazz.java as Class<out Enum<*>>,
+                        paramStr.uppercase()
+                    )
+                }.getOrNull() as? T
             }
             if (typeParam == null) throw ParmaException("Param Type is not exist!")
             return typeParam.onCast.onCast(paramStr) as? T

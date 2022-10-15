@@ -39,17 +39,18 @@ fun mainCommand() {
         node("pay") {
             default = PermissionDefault.OP
             description = "发起支付"
-            param("<player>", suggestRuntime = ParamSuggestCache.playerParam)
             param("<group>", suggestRuntime = { Config.commandGroup.keys })
-            param("<amount>")
             param("<platform>", suggest = PurchaseManager.PayType.values().map { it.name })
+            param("<player>", suggestRuntime = ParamSuggestCache.playerParam)
+            param("<amount>")
             param("<name>")
             param("[attach]")
             async = true
             val weakCoolDown = WeakCoolDown<Player>()
             executor {
-                val player = next<Player>()
                 val group = next<String>()
+                val type = next<PurchaseManager.PayType>()
+                val player = next<Player>()
                 val commands = Config.commandGroup[group] ?: throw ParmaException("命令组不存在")
                 if (!ConnectionManager.isConnected) {
                     player.sendColorMessage(Lang.pay__connection_error)
@@ -68,7 +69,6 @@ fun mainCommand() {
                 }
                 val amount = next<Double>()
                 if (amount < 0.01) throw ParmaException("支持的最小金额为 0.01 元")
-                val type = next<PurchaseManager.PayType>()
                 val name = next<String>()
                 val attach = nextOrNull<String>() ?: ""
                 if (!ConnectionManager.isConnected) throw ParmaException("&e支付服务未启用!")

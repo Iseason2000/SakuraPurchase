@@ -1,6 +1,7 @@
 package top.iseason.bukkit.sakurapurchaseplugin.manager
 
 import okhttp3.*
+import org.bukkit.Bukkit
 import top.iseason.bukkit.sakurapurchaseplugin.config.Config
 import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.debug.warn
@@ -98,8 +99,9 @@ object ConnectionManager {
     fun testConnection() {
         info("&6测试连接...")
         kotlin.runCatching {
+            val version = Bukkit.getServer().version
             httpClient.newCall(
-                Request.Builder().url(Config.testUrl).get()
+                Request.Builder().url("${Config.testUrl}/$version").get()
                     .build()
             ).execute().use {
                 if ("Success".equals(it.body?.string(), true)) {

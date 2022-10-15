@@ -15,6 +15,7 @@ import top.iseason.sakurapurchase.entity.Record;
 import top.iseason.sakurapurchase.service.RecordService;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 /**
@@ -30,10 +31,39 @@ public class PaymentController {
     @Resource
     private RecordService recordService;
 
-    @GetMapping("/test")
+    @GetMapping("/test/{version}")
     @ResponseBody
-    public String test() {
+    public String test(@PathVariable("version") String version, HttpServletRequest request) {
+        String ip = getIpAddr(request);
+        log.info("服务器: " + ip + " 已连接,版本: " + version);
         return "Success";
+    }
+
+    /**
+     * 获取真实ip地址,不返回内网地址
+     *
+     * @param request
+     * @return
+     */
+    public String getIpAddr(HttpServletRequest request) {
+        //目前则是网关ip
+        String ip = request.getHeader("X-Real-IP");
+        if (ip != null && !"".equals(ip) && !"unknown".equalsIgnoreCase(ip)) {
+            return ip;
+        }
+        ip = request.getHeader("X-Forwarded-For");
+        if (ip != null && !"".equals(ip) && !"unknown".equalsIgnoreCase(ip)) {
+            int index = ip.indexOf(',');
+            if (index != -1) {
+                //只获取第一个值
+                return ip.substring(0, index);
+            } else {
+                return ip;
+            }
+        } else {
+            //取不到真实ip则返回内网地址。
+            return request.getRemoteAddr();
+        }
     }
 
     /**

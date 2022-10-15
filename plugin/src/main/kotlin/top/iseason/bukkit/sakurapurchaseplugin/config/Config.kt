@@ -44,12 +44,17 @@ object Config : SimpleYAMLConfig() {
     @Comment("发起订单的最小间隔(秒)，设置合适的值以避免刷单")
     var coolDown: Double = 30.0
 
+    @Key
+    @Comment("取消支付的关键词")
+    var cancelWorld = listOf("cancel", "取消")
+
     @Key("command-group")
     @Comment(
         "sakurapurchase pay 完成之后运行的命令(分组),以控制台的身份",
         "原生变量为%player%:玩家名, %amount%:充值的金额%, %10_amount%:表示充值的金额X10"
     )
     var commandGroup = mutableMapOf("default" to listOf("say helloWorld!"))
+
 
     val pattern = Pattern.compile("(%.*?_?amount%)")
 

@@ -22,16 +22,6 @@ import top.iseason.bukkittemplate.utils.other.runAsync
 
 object PlayerListener : Listener {
 
-    @EventHandler
-    fun onPlayerSwap(event: PlayerSwapHandItemsEvent) {
-        if (!PurchaseManager.purchaseMap.containsKey(event.player)) return
-        // shift+F 取消支付
-        if (event.player.isSneaking) {
-            PurchaseManager.purchaseMap[event.player]!!.cancel()
-            return
-        }
-        event.isCancelled = true
-    }
 
     @EventHandler(priority = EventPriority.LOWEST)
     fun onPlayerQuit(event: PlayerQuitEvent) {
@@ -86,6 +76,17 @@ object PlayerListener : Listener {
         if (PurchaseManager.purchaseMap.containsKey(event.player)) {
             event.player.sendColorMessage(Lang.pay__command_block)
             event.isCancelled = true
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    fun onPlayerChat(event: AsyncPlayerChatEvent) {
+        for (key in Config.cancelWorld) {
+            if (event.message.contains(key)) {
+                PurchaseManager.purchaseMap[event.player]!!.cancel()
+                event.isCancelled = true
+                return
+            }
         }
     }
 

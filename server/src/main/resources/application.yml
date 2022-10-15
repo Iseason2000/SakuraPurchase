@@ -1,3 +1,62 @@
+server:
+  # 端口号
+  port: 80
 spring:
-  profiles:
-    active: dev
+  security:
+    user:
+      #配置 账户给bukkit端使用
+      name: test   # 用户名
+      password: 123456  # 密码
+      roles: # 角色
+        - API
+        - ADMIN
+  # 数据库设置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/sakura_purchase?useSSL=false&allowPublicKeyRetrieval=true
+    username: username
+    password: password
+  # 初始化数据库，如果你不清楚这是什么请不要动
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema.sql
+
+# 支付宝支付，自行注册申请 https://certifyweb.alipay.com/certify/reg/guide#/
+alipay:
+  # 应用ID,您的APPID，收款账号既是您的APPID对应支付宝账号，在沙箱应用中获取
+  appId:
+  # 商户私钥，您的PKCS8格式RSA2私钥，通过开发助手生成的应用私钥
+  privateKey:
+  # 支付宝公钥,在沙箱应用获取，通过应用公钥生成支付宝公钥
+  aliPayPublicKey:
+  # 服务器异步通知页面路径需http://格式的完整路径
+  notifyUrl: http://localhost:80/api/pay/notify
+  # 签名方式
+  sandbox: false
+
+# 微信 支付设置 APIv2,自行去申请 https://pay.weixin.qq.com/index.php/apply/applyment_home/guide_normal
+wechat:
+  appId:
+  mchId:
+  mchKey:
+  appSecret:
+  # 证书pkcs12格式 apiclient_cert.p12
+  keyPath: 'C:\Users\Iseason2000\Desktop\apiclient_cert.p12'
+  # 服务器异步通知页面路径需http://格式的完整路径
+  notifyUrl: http://localhost:80/api/pay/notify
+
+#日志管理
+logging:
+  file:
+    path: ./logs
+  level:
+    root: info
+    okhttp3: warn
+    com.lly835.bestpay: warn
+  logback:
+    rollingpolicy:
+      max-history: 7
+      max-file-size: 10MB
+      clean-history-on-start: true
+

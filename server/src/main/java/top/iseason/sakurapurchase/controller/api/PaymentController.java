@@ -34,8 +34,7 @@ public class PaymentController {
     @GetMapping("/test/{version}")
     @ResponseBody
     public String test(@PathVariable("version") String version, HttpServletRequest request) {
-        String ip = getIpAddr(request);
-        log.info("服务器: " + ip + " 已连接,版本: " + version);
+        log.info("服务器: " + getIpAddr(request) + " 已连接,版本: " + version);
         return "Success";
     }
 

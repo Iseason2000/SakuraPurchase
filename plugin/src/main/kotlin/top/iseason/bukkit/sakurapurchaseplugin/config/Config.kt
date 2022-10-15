@@ -4,7 +4,6 @@ import okhttp3.*
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
-import org.bukkit.event.server.ServerCommandEvent
 import top.iseason.bukkit.sakurapurchaseplugin.entity.Order
 import top.iseason.bukkit.sakurapurchaseplugin.hook.PAPIHook
 import top.iseason.bukkittemplate.config.SimpleYAMLConfig
@@ -105,11 +104,7 @@ object Config : SimpleYAMLConfig() {
                 }
                 command = PAPIHook.setPlaceholder(command, player)
                 runCatching {
-                    val serverCommandEvent = ServerCommandEvent(Bukkit.getConsoleSender(), command)
-                    Bukkit.getPluginManager().callEvent(serverCommandEvent)
-                    if (!serverCommandEvent.isCancelled)
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)
-                    else warn("&命令 $command 执行失败,原因: 被取消")
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)
                 }.getOrElse {
                     if (SimpleLogger.isDebug) {
                         it.printStackTrace()

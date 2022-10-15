@@ -23,6 +23,11 @@
 * 退款功能
 * 网页后台管理系统
 
+## 截图
+![QQ截图20221015235508](https://user-images.githubusercontent.com/65019366/195996031-dde2470e-36b8-4203-b242-8ff4e704640c.png)
+![QQ截图20221015235540](https://user-images.githubusercontent.com/65019366/195996039-d983ec74-dc17-4dab-b22f-52f8cda4b2b0.png)
+
+
 ## 安装&配置
 
 ### SakuraPurchaseServer

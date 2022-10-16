@@ -2,6 +2,7 @@ package top.iseason.bukkit.sakurapurchaseplugin.config
 
 import okhttp3.*
 import org.bukkit.Bukkit
+import org.bukkit.Color
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
 import top.iseason.bukkit.sakurapurchaseplugin.entity.Order
@@ -25,36 +26,45 @@ object Config : SimpleYAMLConfig() {
     var serverHost = "http://localhost"
 
     @Key
-    @Comment("支付服务端用户名")
+    @Comment("", "支付服务端用户名")
     var username = "test"
 
     @Key
-    @Comment("支付服务端密码")
+    @Comment("", "支付服务端密码")
     var password = "123456"
 
     @Key
-    @Comment("最大支付超时时间,单位秒")
+    @Comment("", "最大支付超时时间,单位秒")
     var maxTimeout: Double = 60.0
 
     @Key
-    @Comment("订单支付状态查询频率,单位tick")
+    @Comment("", "订单支付状态查询频率,单位tick")
     var queryPeriod: Long = 100
 
     @Key
-    @Comment("发起订单的最小间隔(秒)，设置合适的值以避免刷单")
+    @Comment("", "发起订单的最小间隔(秒)，设置合适的值以避免刷单")
     var coolDown: Double = 30.0
 
     @Key
-    @Comment("取消支付的关键词")
+    @Comment("", "取消支付的关键词")
     var cancelWorld = listOf("cancel", "取消")
 
     @Key("command-group")
     @Comment(
+        "",
         "sakurapurchase pay 完成之后运行的命令(分组),以控制台的身份",
         "原生变量为%player%:玩家名, %amount%:充值的金额%, %10_amount%:表示充值的金额X10"
     )
     var commandGroup = mutableMapOf("default" to listOf("say helloWorld!"))
 
+    @Key
+    @Comment("", "二维码颜色 R,G,B")
+    var qrColorStr: String = "255,255,255"
+    var qrColor: Int = -0XFFFFFFF
+
+    @Comment("", "支付时的取消动作,默认 SHIFT_F", "SHIFT_F: 蹲下+F 取消", "HEAD_UP: 抬头取消")
+    @Key
+    var cancelAction = "SHIFT_F"
     private val pattern = Pattern.compile("(%[0-9|.]*?_?amount%)")
 
     val loginUrl
@@ -77,7 +87,14 @@ object Config : SimpleYAMLConfig() {
     val totalAmountUrl get() = "$apiUrl/record/all-total"
 
     override fun onLoaded(section: ConfigurationSection) {
+        if (cancelAction !in listOf("SHIFT_F", "HEAD_UP")) cancelAction = "SHIFT_F"
         serverHost = serverHost.removeSuffix("/")
+        val split = qrColorStr.trim().split(',')
+        qrColor = kotlin.runCatching { Color.fromRGB(split[0].toInt(), split[1].toInt(), split[2].toInt()).asRGB() }
+            .getOrElse {
+                warn("颜色格式: $qrColorStr 不正确")
+                -0XFFFFFFF
+            }
     }
 
     /**

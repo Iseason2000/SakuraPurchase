@@ -4,6 +4,7 @@ import com.github.johnnyjayjay.spigotmaps.MapBuilder
 import com.github.johnnyjayjay.spigotmaps.rendering.ImageRenderer
 import com.github.johnnyjayjay.spigotmaps.util.ImageTools
 import org.bukkit.inventory.ItemStack
+import top.iseason.bukkit.sakurapurchaseplugin.config.Config
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 
@@ -27,7 +28,7 @@ object MapUtil {
         val image = runCatching {
             QRCodeUtil.generateQRcode(
                 str, 512, 512, 128, 128,
-                icon, -0x1000000
+                icon, Config.qrColor
             )
         }.getOrElse {
             it.printStackTrace()

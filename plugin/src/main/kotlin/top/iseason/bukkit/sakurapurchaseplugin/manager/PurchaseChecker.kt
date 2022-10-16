@@ -37,7 +37,9 @@ class PurchaseChecker(
      * 监听订单zhuangtai
      */
     override fun run() {
-        if (System.currentTimeMillis() - timeStamp >= Config.maxTimeout * 1000) {
+        val timePast = System.currentTimeMillis() - timeStamp
+        val maxWait = Config.maxTimeout * 1000
+        if (timePast >= maxWait) {
             player.sendColorMessage(
                 Lang.pay__timeout.formatByOrder(order)
             )
@@ -60,7 +62,9 @@ class PurchaseChecker(
             onSuccess.accept(order)
             return
         }
-        player.sendColorMessage(Lang.pay__waiting.formatByOrder(order))
+        player.sendColorMessage(
+            Lang.pay__waiting.formatByOrder(order).replace("{time}", ((maxWait - timePast) / 1000).toString())
+        )
 
     }
 

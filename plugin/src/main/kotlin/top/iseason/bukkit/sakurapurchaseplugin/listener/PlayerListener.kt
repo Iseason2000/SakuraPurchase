@@ -41,7 +41,11 @@ object PlayerListener : Listener {
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerMove(event: PlayerMoveEvent) {
-        if (PurchaseManager.purchaseMap.containsKey(event.player)) event.isCancelled = true
+        if (!PurchaseManager.purchaseMap.containsKey(event.player)) return
+        if (Config.cancelAction == "SHIFT_F") event.isCancelled = true
+        else if (event.player.eyeLocation.pitch < 0) {
+            PurchaseManager.purchaseMap[event.player]!!.cancel()
+        }
     }
 
     @EventHandler(ignoreCancelled = true)

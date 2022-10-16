@@ -139,26 +139,41 @@ pause
 
 ~~~ yaml
 # 支付服务端地址
-serverHost: http://localhost/
+serverHost: http://localhost
+
 # 支付服务端用户名
 username: test
+
 # 支付服务端密码
 password: '123456'
+
 # 最大支付超时时间,单位秒
 maxTimeout: 60.0
+
 # 订单支付状态查询频率,单位tick
 queryPeriod: 100
+
 # 发起订单的最小间隔(秒)，设置合适的值以避免刷单
 coolDown: 30.0
+
 # 取消支付的关键词
 cancelWorld:
 - cancel
 - 取消
+
 # sakurapurchase pay 完成之后运行的命令(分组),以控制台的身份
 # 原生变量为%player%:玩家名, %amount%:充值的金额%, %10_amount%:表示充值的金额X10
 command-group:
   default:
   - cmi money give %player% %10_amount%
+
+# 二维码颜色 R,G,B
+qrColorStr: 0,0,0
+
+# 支付时的取消动作,默认 SHIFT_F
+# SHIFT_F: 蹲下+F 取消
+# HEAD_UP: 抬头取消
+cancelAction: HEAD_UP
 
 ~~~
 

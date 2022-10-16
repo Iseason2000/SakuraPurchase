@@ -71,7 +71,14 @@ object MessageUtils {
      * 发送带颜色转换的消息,不输出null与空string
      */
     fun CommandSender.sendColorMessage(message: Any?, prefix: String = defaultPrefix) {
-        if (message == null || message.toString().isEmpty()) return
+        if (message == null) return
+        if (message is Collection<*>) {
+            message.forEach { m ->
+                sendColorMessage(m, prefix)
+            }
+            return
+        }
+        if (message.toString().isEmpty()) return
         message.toString().split("\\n").forEach {
             sendMessage("$prefix$it".toColor())
         }
@@ -142,6 +149,18 @@ object MessageUtils {
             temp = temp.replace("{$index}", any.toString())
         }
         return temp
+    }
+
+    fun Collection<String>.formatBy(vararg values: Any?): Collection<String> {
+        return map {
+            var temp = it
+            values.forEachIndexed { index, any ->
+                if (any == null) return@forEachIndexed
+                temp = temp.replace("{$index}", any.toString())
+            }
+            temp
+        }
+
     }
 }
 

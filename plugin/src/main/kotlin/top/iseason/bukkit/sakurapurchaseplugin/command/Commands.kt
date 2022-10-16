@@ -57,6 +57,12 @@ fun mainCommand() {
                     player.sendColorMessage(Lang.pay__connection_error)
                     return@executor
                 }
+                val amount = next<Double>()
+                if (amount < 0.01) throw ParmaException("支持的最小金额为 0.01 元")
+                val name = next<String>()
+                val attach = nextOrNull<String>() ?: ""
+                if (!ConnectionManager.isConnected) throw ParmaException("&e支付服务未启用!")
+                // 检查冷却
                 val coolDown = (Config.coolDown * 1000).toLong()
                 if (weakCoolDown.check(player, coolDown)) {
                     throw ParmaException(
@@ -68,11 +74,6 @@ fun mainCommand() {
                         )
                     )
                 }
-                val amount = next<Double>()
-                if (amount < 0.01) throw ParmaException("支持的最小金额为 0.01 元")
-                val name = next<String>()
-                val attach = nextOrNull<String>() ?: ""
-                if (!ConnectionManager.isConnected) throw ParmaException("&e支付服务未启用!")
                 PurchaseManager.purchase(player, amount, type, name, attach, group) {
                     //成功执行命令
                     Config.performCommands(player, amount, commands)
@@ -110,9 +111,9 @@ fun mainCommand() {
                 val order = OrderCache.orderCache[player.uniqueId] ?: throw ParmaException("玩家没有未支付的订单")
                 val group = OrderCache.groupCache[player.uniqueId] ?: throw ParmaException("玩家没有未支付的订单")
                 val commands = Config.commandGroup[group] ?: throw ParmaException("命令组已失效，请联系管理员")
-                it.sendColorMessage("&e查询中...")
+                it.sendColorMessage("&e查询玩家未支付的订单...")
                 val status = PurchaseManager.query(order.orderId)
-                it.sendColorMessage("&7玩家 &a${player.name} 具有订单: &b$order 状态: &f$status")
+                it.sendColorMessage("&7玩家 &a${player.name} \\n&b$order \\n&e状态: &f$status")
                 if (status == "SUCCESS") {
                     if (!PurchaseManager.saveOrder(order)) {
                         warn("保存订单异常，请检查链接!")

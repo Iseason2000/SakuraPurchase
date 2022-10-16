@@ -30,7 +30,7 @@ object PlayerListener : Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    fun onPlayerQuit(event: PlayerDeathEvent) {
+    fun onPlayerDeath(event: PlayerDeathEvent) {
         val purchaseChecker = PurchaseManager.purchaseMap[event.entity] ?: return
         if (!event.keepInventory) {
             event.drops.removeIf { it == purchaseChecker.map }
@@ -51,7 +51,8 @@ object PlayerListener : Listener {
     @EventHandler(ignoreCancelled = true)
     fun onPlayerDamage(event: EntityDamageEvent) {
         val player = event.entity as? Player ?: return
-        if (PurchaseManager.purchaseMap.containsKey(player)) event.isCancelled = true
+        if (PurchaseManager.purchaseMap.containsKey(player) && Config.cancelAction == "SHIFT_F") event.isCancelled =
+            true
     }
 
     @EventHandler(ignoreCancelled = true)

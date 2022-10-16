@@ -55,8 +55,7 @@ object Config : SimpleYAMLConfig() {
     )
     var commandGroup = mutableMapOf("default" to listOf("say helloWorld!"))
 
-
-    val pattern = Pattern.compile("(%.*?_?amount%)")
+    private val pattern = Pattern.compile("(%[0-9|.]*?_?amount%)")
 
     val loginUrl
         get() = "$serverHost/login"

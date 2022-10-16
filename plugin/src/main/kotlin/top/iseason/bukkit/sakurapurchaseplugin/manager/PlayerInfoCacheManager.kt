@@ -111,7 +111,9 @@ object PlayerInfoCacheManager {
      */
     fun finish(uuid: UUID, order: Order) {
         val playerInfo = getPlayerInfo(uuid)
-        playerInfo.orders.add(order)
+        //初始化过才加入缓存
+        if (playerInfo.isInitOrders)
+            playerInfo.orders.add(order)
         playerInfo.currentOrder = null
         OrderCache.orderCache.remove(uuid)
         OrderCache.groupCache.remove(uuid)

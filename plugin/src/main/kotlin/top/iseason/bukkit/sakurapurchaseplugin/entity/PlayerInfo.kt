@@ -10,9 +10,16 @@ data class PlayerInfo(
     val uuid: UUID
 ) {
     /**
+     * 是否已经初始化所有订单
+     */
+    var isInitOrders = false
+        private set
+
+    /**
      * 全部订单
      */
     val orders: MutableList<Order> by lazyMutable {
+        isInitOrders = true
         PlayerInfoCacheManager.requestPlayerOrders(uuid)
     }
 
@@ -37,8 +44,9 @@ data class PlayerInfo(
      */
     fun getLastOrders(offset: Int, amount: Int): List<Order> {
         val mutableListOf = mutableListOf<Order>()
+        val reversed = orders.reversed()
         for (index in offset..offset + amount) {
-            val orNull = orders.getOrNull(index) ?: continue
+            val orNull = reversed.getOrNull(index) ?: continue
             mutableListOf.add(orNull)
         }
         return mutableListOf

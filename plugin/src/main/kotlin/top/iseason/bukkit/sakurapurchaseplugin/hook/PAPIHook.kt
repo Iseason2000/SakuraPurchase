@@ -16,8 +16,7 @@ object PAPIHook : BaseHook("PlaceholderAPI") {
 
 /**
  * 变量列表
- *
- * sakurapurchase_player_total 总充值金额
+ * 玩家
  *
  * 以下的 [index] 如果等于 0 表示正在支付的订单，否则为最近支付的第 index 个订单
  *
@@ -35,7 +34,10 @@ object PAPIHook : BaseHook("PlaceholderAPI") {
  *
  * sakurapurchase_player_count 已经支付的订单数
  *
- * sakurapurchase_total_amount 服务器总氪金金额
+ * sakurapurchase_player_total 总充值金额
+ *
+ * 全局
+ * sakurapurchase_total 服务器总氪金金额
  *
  */
 object PAPIExpansion : PlaceholderExpansion() {
@@ -62,6 +64,7 @@ object PAPIExpansion : PlaceholderExpansion() {
             val arg2 = split.getOrNull(1) ?: return null
             val playerInfo = PlayerInfoCacheManager.getPlayerInfo(player.uniqueId)
             if (arg2 == "count") return playerInfo.orders.count().toString()
+            if (arg2 == "total") return playerInfo.totalAmount.toString()
             val index = arg2.toIntOrNull() ?: return null
             val arg3 = split.getOrNull(2) ?: return null
             val order = (if (index <= 0) playerInfo.lastOrder

@@ -23,6 +23,7 @@ fun mainCommand() {
         description = "支付插件主命令"
 
         node("run") {
+            async = true
             default = PermissionDefault.OP
             description = "为玩家运行命令组"
             param("<player>", suggestRuntime = ParamSuggestCache.playerParam)
@@ -129,6 +130,7 @@ fun mainCommand() {
             }
         }
         node("reConnect") {
+            async = true
             default = PermissionDefault.OP
             description = "重新链接支付服务器"
             executor {

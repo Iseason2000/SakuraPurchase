@@ -8,6 +8,5 @@ sakurapurchase_player_[index]_paytype 支付的订单支付类型
 sakurapurchase_player_[index]_attach 支付的订单附加信息
 sakurapurchase_player_[index]_createtime 支付的订单创建时间
 sakurapurchase_player_count 已经支付的订单数
-
 # 服务端变量
-sakurapurchase_total_amount 服务器总氪金金额
+sakurapurchase_total 服务器总氪金金额

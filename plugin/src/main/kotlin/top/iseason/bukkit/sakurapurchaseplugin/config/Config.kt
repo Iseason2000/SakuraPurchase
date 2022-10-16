@@ -59,7 +59,7 @@ object Config : SimpleYAMLConfig() {
 
     @Key
     @Comment("", "二维码颜色 R,G,B")
-    var qrColorStr: String = "255,255,255"
+    var qrColorStr: String = "0,0,0"
     var qrColor: Int = -0XFFFFFFF
 
     @Comment("", "支付时的取消动作,默认 SHIFT_F", "SHIFT_F: 蹲下+F 取消", "HEAD_UP: 抬头取消")
@@ -89,7 +89,7 @@ object Config : SimpleYAMLConfig() {
     override fun onLoaded(section: ConfigurationSection) {
         if (cancelAction !in listOf("SHIFT_F", "HEAD_UP")) cancelAction = "SHIFT_F"
         serverHost = serverHost.removeSuffix("/")
-        val split = qrColorStr.trim().split(',')
+        val split = qrColorStr.replace(" ", "").split(',')
         qrColor = kotlin.runCatching { Color.fromRGB(split[0].toInt(), split[1].toInt(), split[2].toInt()).asRGB() }
             .getOrElse {
                 warn("颜色格式: $qrColorStr 不正确")

@@ -23,12 +23,12 @@ public class JsonUtil {
      * @return converted json string.
      */
     public static String toJson(Object obj) {
-        gsonBuilder.setPrettyPrinting();
+//        gsonBuilder.setPrettyPrinting();
         return gsonBuilder.create().toJson(obj);
     }
 
     public static String toJsonWithUnderscores(Object obj) {
-        gsonBuilder.setPrettyPrinting();
+//        gsonBuilder.setPrettyPrinting();
         gsonBuilder.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);
         return gsonBuilder.create().toJson(obj);
     }

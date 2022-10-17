@@ -154,7 +154,7 @@ public class PaymentController {
      * @param orderId 订单ID
      * @return
      */
-    @GetMapping("/refund")
+    @PostMapping("/refund")
     @ResponseBody
     public RefundResponse refund(@RequestParam String orderId) {
         Record byId = recordService.getById(orderId);
@@ -190,7 +190,7 @@ public class PaymentController {
         //返回成功信息给支付平台，否则会不停的异步通知
         String result = null;
         if (response.getPayPlatformEnum() == BestPayPlatformEnum.WX) {
-            result = "<xml>\n    <return_code><![CDATA[SUCCESS]]></return_code>\n    <return_msg><![CDATA[OK]]></return_msg>\n</xml>";
+            result = "<xml>\n<return_code><![CDATA[SUCCESS]]></return_code>\n<return_msg><![CDATA[OK]]></return_msg>\n</xml>";
         } else if (response.getPayPlatformEnum() == BestPayPlatformEnum.ALIPAY) {
             result = "success";
         }

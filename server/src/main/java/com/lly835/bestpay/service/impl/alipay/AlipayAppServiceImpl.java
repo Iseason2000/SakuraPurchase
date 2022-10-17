@@ -14,6 +14,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -69,8 +70,11 @@ public class AlipayAppServiceImpl extends AliPayServiceImpl {
 
         aliPayOrderQueryRequest.setBizContent(JsonUtil.toJsonWithUnderscores(bizContent).replaceAll("\\s*", ""));
         String sign = AliPaySignature.sign(MapUtil.object2MapWithUnderline(aliPayOrderQueryRequest), aliPayConfig.getPrivateKey());
-        aliPayOrderQueryRequest.setSign(URLEncoder.encode(sign));
-
+        try {
+            aliPayOrderQueryRequest.setSign(URLEncoder.encode(sign, "utf-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
         Map<String, String> stringStringMap = MapUtil.object2MapWithUnderline(aliPayOrderQueryRequest);
         String body = MapUtil.toUrl(stringStringMap);
         PayResponse payResponse = new PayResponse();

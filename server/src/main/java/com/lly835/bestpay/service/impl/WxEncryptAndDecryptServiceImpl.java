@@ -54,9 +54,7 @@ public class WxEncryptAndDecryptServiceImpl extends AbstractEncryptAndDecryptSer
         Cipher cipher = null;
         try {
             cipher = Cipher.getInstance(ALGORITHM_MODE_PADDING);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             e.printStackTrace();
         }
         try {
@@ -66,9 +64,7 @@ public class WxEncryptAndDecryptServiceImpl extends AbstractEncryptAndDecryptSer
         }
         try {
             return new String(cipher.doFinal(Base64.getDecoder().decode(data)));
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
+        } catch (IllegalBlockSizeException | BadPaddingException e) {
             e.printStackTrace();
         }
 

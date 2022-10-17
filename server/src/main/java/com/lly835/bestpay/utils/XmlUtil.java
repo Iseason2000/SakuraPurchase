@@ -12,6 +12,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,7 +72,7 @@ public class XmlUtil {
             Map<String, String> data = new HashMap<>();
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            InputStream stream = new ByteArrayInputStream(strXML.getBytes("UTF-8"));
+            InputStream stream = new ByteArrayInputStream(strXML.getBytes(StandardCharsets.UTF_8));
             org.w3c.dom.Document doc = documentBuilder.parse(stream);
             doc.getDocumentElement().normalize();
             NodeList nodeList = doc.getDocumentElement().getChildNodes();

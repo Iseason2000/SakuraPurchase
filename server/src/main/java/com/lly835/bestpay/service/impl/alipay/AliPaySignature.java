@@ -51,11 +51,10 @@ public class AliPaySignature {
         List<String> keys = new ArrayList<>(params.keySet());
         Collections.sort(keys);
         int index = 0;
-        for (int i = 0; i < keys.size(); i++) {
-            String key = keys.get(i);
+        for (String key : keys) {
             String value = params.get(key);
             if (StringUtils.isNotBlank(key) && StringUtils.isNotBlank(value)) {
-                content.append((index == 0 ? "" : "&") + key + "=" + value);
+                content.append(index == 0 ? "" : "&").append(key).append("=").append(value);
                 index++;
             }
         }
@@ -150,7 +149,7 @@ public class AliPaySignature {
         params.remove("sign_type");
 
         StringBuffer content = new StringBuffer();
-        List<String> keys = new ArrayList<String>(params.keySet());
+        List<String> keys = new ArrayList<>(params.keySet());
         Collections.sort(keys);
 
         for (int i = 0; i < keys.size(); i++) {

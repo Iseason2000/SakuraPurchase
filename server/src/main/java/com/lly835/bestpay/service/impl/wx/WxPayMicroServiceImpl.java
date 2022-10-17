@@ -56,7 +56,6 @@ public class WxPayMicroServiceImpl extends WxPayServiceImpl {
         //对付款码支付无用的字段
         wxRequest.setNotifyUrl("");
         wxRequest.setTradeType("");
-
         RequestBody body = RequestBody.create(MediaType.parse("application/xml; charset=utf-8"), XmlUtil.toString(wxRequest));
 
         WxPayApi api = null;

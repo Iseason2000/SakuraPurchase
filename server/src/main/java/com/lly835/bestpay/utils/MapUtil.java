@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URLEncoder;
 import java.util.*;
@@ -63,8 +64,8 @@ public class MapUtil {
         }
         Map<String, String> map = new HashMap<>();
         String[] key2ValArr = mapStr.replace("{", "").replace("}", "").split(", ");
-        for (int i = 0; i < key2ValArr.length; i++) {
-            String[] keyAndVal = key2ValArr[i].split("=");
+        for (String s : key2ValArr) {
+            String[] keyAndVal = s.split("=");
             map.put(keyAndVal[0], keyAndVal[1]);
         }
         return map;
@@ -179,7 +180,7 @@ public class MapUtil {
      * @param map
      * @return
      */
-    public static String toUrlWithSortAndEncode(Map<String, String> map) {
+    public static String toUrlWithSortAndEncode(Map<String, String> map) throws UnsupportedEncodingException {
         List<String> keys = new ArrayList<>(map.keySet());
         Collections.sort(keys);
 
@@ -191,9 +192,9 @@ public class MapUtil {
                 continue;
             }
             if (i == keys.size() - 1) {//拼接时，不包括最后一个&字符
-                prestr = prestr + key + "=" + URLEncoder.encode(value);
+                prestr = prestr + key + "=" + URLEncoder.encode(value, "utf-8");
             } else {
-                prestr = prestr + key + "=" + URLEncoder.encode(value) + "&";
+                prestr = prestr + key + "=" + URLEncoder.encode(value, "utf-8") + "&";
             }
         }
         return prestr;
@@ -225,11 +226,11 @@ public class MapUtil {
      * @return
      */
     public static HashMap<String, String> form2MapWithCamelCase(String orderinfo) {
-        String listinfo[];
-        HashMap<String, String> map = new HashMap<String, String>();
+        String[] listinfo;
+        HashMap<String, String> map = new HashMap<>();
         listinfo = orderinfo.split("&");
         for (String s : listinfo) {
-            String list[] = s.split("=");
+            String[] list = s.split("=");
             if (list.length > 1) {
                 map.put(CamelCaseUtil.toCamelCase(list[0]), list[1]);
             }

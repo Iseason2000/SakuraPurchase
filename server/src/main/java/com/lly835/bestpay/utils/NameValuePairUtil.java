@@ -26,9 +26,7 @@ public abstract class NameValuePairUtil {
      */
     public static List<NameValuePair> convert(Map<String, String> map) {
         List<NameValuePair> nameValuePairs = new ArrayList<>();
-        map.forEach((key, value) -> {
-            nameValuePairs.add(new BasicNameValuePair(key, value));
-        });
+        map.forEach((key, value) -> nameValuePairs.add(new BasicNameValuePair(key, value)));
 
         return nameValuePairs;
     }

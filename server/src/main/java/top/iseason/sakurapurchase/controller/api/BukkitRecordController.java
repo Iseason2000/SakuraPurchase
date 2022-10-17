@@ -95,6 +95,7 @@ public class BukkitRecordController {
     @PostMapping("/save")
     @ResponseBody
     public Boolean save(@RequestParam("uuid") String uuid, @RequestParam("orderId") Long orderId) {
+        log.info("bukkit 订单: " + orderId + "已完成");
         return bukkitRecordService.save(new BukkitRecord(null, uuid, orderId));
     }
 }

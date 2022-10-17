@@ -68,7 +68,7 @@ object PAPIExpansion : PlaceholderExpansion() {
             val index = arg2.toIntOrNull() ?: return null
             val arg3 = split.getOrNull(2) ?: return null
             val order = (if (index <= 0) playerInfo.lastOrder
-            else playerInfo.currentOrder) ?: return null
+            else playerInfo.currentOrder) ?: return ""
             return when (arg3) {
                 "orderid" -> order.orderId
                 "ordername" -> order.orderName

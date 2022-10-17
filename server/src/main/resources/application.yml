@@ -2,6 +2,8 @@ server:
   # 端口号
   port: 80
 spring:
+  profiles:
+    active: dev
   security:
     user:
       #配置 账户给bukkit端使用

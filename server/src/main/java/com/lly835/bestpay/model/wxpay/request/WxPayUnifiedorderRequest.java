@@ -1,56 +1,61 @@
 package com.lly835.bestpay.model.wxpay.request;
 
 import lombok.Data;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 
 /**
  * Created by 廖师兄
  * 2017-07-02 13:42
  */
 @Data
-@Root(name = "xml", strict = false)
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "xml")
 public class WxPayUnifiedorderRequest {
 
-    @Element(name = "appid")
+    @XmlElement(name = "appid")
     private String appid;
 
-    @Element(name = "mch_id")
+    @XmlElement(name = "mch_id")
     private String mchId;
 
-    @Element(name = "nonce_str")
+    @XmlElement(name = "nonce_str")
     private String nonceStr;
 
-    @Element(name = "sign")
+    @XmlElement(name = "sign")
     private String sign;
 
-    @Element(name = "attach", required = false)
+    @XmlElement(name = "attach", required = false)
     private String attach;
 
-    @Element(name = "body", required = false)
+    @XmlElement(name = "body", required = false)
     private String body;
 
-    @Element(name = "detail", required = false)
+    @XmlElement(name = "detail", required = false)
     private String detail;
 
-    @Element(name = "notify_url")
+    @XmlElement(name = "notify_url")
     private String notifyUrl;
 
-    @Element(name = "openid", required = false)
+    @XmlElement(name = "openid", required = false)
     private String openid;
 
-    @Element(name = "out_trade_no")
+    @XmlElement(name = "out_trade_no")
     private String outTradeNo;
 
-    @Element(name = "spbill_create_ip")
+    @XmlElement(name = "spbill_create_ip")
     private String spbillCreateIp;
 
-    @Element(name = "total_fee")
+    @XmlElement(name = "total_fee")
     private Integer totalFee;
 
-    @Element(name = "trade_type")
+    @XmlElement(name = "trade_type")
     private String tradeType;
 
-    @Element(name = "auth_code", required = false)
+    @XmlElement(name = "auth_code", required = false)
     private String authCode;
 }

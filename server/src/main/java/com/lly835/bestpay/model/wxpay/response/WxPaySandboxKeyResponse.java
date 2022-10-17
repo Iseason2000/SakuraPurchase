@@ -1,26 +1,31 @@
 package com.lly835.bestpay.model.wxpay.response;
 
 import lombok.Data;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 
 /**
  * Created by lly835@163.com
  * 2018-05-17 11:32
  */
 @Data
-@Root(name = "xml", strict = false)
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "xml")
 public class WxPaySandboxKeyResponse {
 
-    @Element(name = "return_code")
+    @XmlElement(name = "return_code")
     private String returnCode;
 
-    @Element(name = "return_msg", required = false)
+    @XmlElement(name = "return_msg", required = false)
     private String returnMsg;
 
-    @Element(name = "mch_id", required = false)
+    @XmlElement(name = "mch_id", required = false)
     private String mchId;
 
-    @Element(name = "sandbox_signkey", required = false)
+    @XmlElement(name = "sandbox_signkey", required = false)
     private String sandboxSignkey;
 }

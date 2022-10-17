@@ -10,13 +10,15 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
+import retrofit2.converter.jaxb.JaxbConverterFactory;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +33,7 @@ public class WxPaySandboxKey {
     public void get(String mchId, String mchKey) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(WxPayConstants.WXPAY_GATEWAY)
-                .addConverterFactory(SimpleXmlConverterFactory.create())
+                .addConverterFactory(JaxbConverterFactory.create())
                 .build();
         SandboxParam sandboxParam = new SandboxParam();
         sandboxParam.setMchId(mchId);
@@ -56,16 +58,17 @@ public class WxPaySandboxKey {
 
 
     @Data
-    @Root(name = "xml")
+    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlRootElement(name = "xml")
     static class SandboxParam {
 
-        @Element(name = "mch_id")
+        @XmlElement(name = "mch_id")
         private String mchId;
 
-        @Element(name = "nonce_str")
+        @XmlElement(name = "nonce_str")
         private String nonceStr;
 
-        @Element(name = "sign")
+        @XmlElement(name = "sign")
         private String sign;
 
         public Map<String, String> buildMap() {

@@ -8,8 +8,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.simpleframework.xml.Element;
 
+import javax.xml.bind.annotation.XmlElement;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URLEncoder;
@@ -43,7 +43,7 @@ public class MapUtil {
                 String fieldName = field.getName();
 
                 //如果 element 注解 name 字段设置了内容, 使用其当成字段名
-                Element element = field.getAnnotation(Element.class);
+                XmlElement element = field.getAnnotation(XmlElement.class);
                 if (element != null && StringUtils.isNotEmpty(element.name())) {
                     fieldName = element.name();
                 }

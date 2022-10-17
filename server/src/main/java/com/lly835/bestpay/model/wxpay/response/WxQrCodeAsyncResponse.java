@@ -1,8 +1,12 @@
 package com.lly835.bestpay.model.wxpay.response;
 
 import lombok.Data;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 
 /**
  * 微信扫码异步调用请求
@@ -11,28 +15,29 @@ import org.simpleframework.xml.Root;
  */
 
 @Data
-@Root(name = "xml", strict = false)
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "xml")
 public class WxQrCodeAsyncResponse {
 
-    @Element(name = "appid", required = false)
+    @XmlElement(name = "appid", required = false)
     private String appid;
 
-    @Element(name = "openid", required = false)
+    @XmlElement(name = "openid", required = false)
     private String openId;
 
-    @Element(name = "mch_id", required = false)
+    @XmlElement(name = "mch_id", required = false)
     private String mchId;
 
-    @Element(name = "is_subscribe", required = false)
+    @XmlElement(name = "is_subscribe", required = false)
     private String isSubscribe;
 
-    @Element(name = "nonce_str", required = false)
+    @XmlElement(name = "nonce_str", required = false)
     private String nonceStr;
 
-    @Element(name = "product_id", required = false)
+    @XmlElement(name = "product_id", required = false)
     private String productId; //商品ID
 
-    @Element(name = "sign", required = false)
+    @XmlElement(name = "sign", required = false)
     private String sign;
 
 }

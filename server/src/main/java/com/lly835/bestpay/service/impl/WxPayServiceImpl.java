@@ -25,7 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
+import retrofit2.converter.jaxb.JaxbConverterFactory;
 
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
@@ -46,7 +46,7 @@ public class WxPayServiceImpl extends BestPayServiceImpl {
 
     protected final Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(WxPayConstants.WXPAY_GATEWAY)
-            .addConverterFactory(SimpleXmlConverterFactory.create())
+            .addConverterFactory(JaxbConverterFactory.create())
             .client(new OkHttpClient.Builder()
                     .addInterceptor((new HttpLoggingInterceptor()
                             .setLevel(HttpLoggingInterceptor.Level.BODY)))
@@ -55,7 +55,7 @@ public class WxPayServiceImpl extends BestPayServiceImpl {
             .build();
     protected final Retrofit devRetrofit = new Retrofit.Builder()
             .baseUrl(WxPayConstants.WXPAY_GATEWAY_SANDBOX)
-            .addConverterFactory(SimpleXmlConverterFactory.create())
+            .addConverterFactory(JaxbConverterFactory.create())
             .client(new OkHttpClient.Builder()
                     .addInterceptor((new HttpLoggingInterceptor()
                             .setLevel(HttpLoggingInterceptor.Level.BODY)))
@@ -229,7 +229,7 @@ public class WxPayServiceImpl extends BestPayServiceImpl {
                 .build();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(wxPayConfig.isSandbox() ? WxPayConstants.WXPAY_GATEWAY_SANDBOX : WxPayConstants.WXPAY_GATEWAY)
-                .addConverterFactory(SimpleXmlConverterFactory.create())
+                .addConverterFactory(JaxbConverterFactory.create())
                 .client(okHttpClient)
                 .build();
         String xml = XmlUtil.toString(wxRequest);

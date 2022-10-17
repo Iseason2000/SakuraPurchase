@@ -1,8 +1,12 @@
 package com.lly835.bestpay.model.wxpay.response;
 
 import lombok.Data;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 
 /**
  * 下载对账文件返回-只有发生错误的时候才会返回
@@ -10,15 +14,16 @@ import org.simpleframework.xml.Root;
  * 2019/3/20 16:48
  */
 @Data
-@Root(name = "xml", strict = false)
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "xml")
 public class WxDownloadBillResponse {
 
-    @Element(name = "return_code")
+    @XmlElement(name = "return_code")
     private String returnCode;
 
-    @Element(name = "return_msg", required = false)
+    @XmlElement(name = "return_msg", required = false)
     private String returnMsg;
 
-    @Element(name = "error_code")
+    @XmlElement(name = "error_code")
     private String errorCode;
 }

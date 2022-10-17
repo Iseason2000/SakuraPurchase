@@ -1,35 +1,40 @@
 package com.lly835.bestpay.model.wxpay.request;
 
 import lombok.Data;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 
 /**
  * Created by 廖师兄
  * 2018-05-31 17:47
  */
 @Data
-@Root(name = "xml", strict = false)
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "xml")
 public class WxOrderQueryRequest {
 
-    @Element(name = "appid")
+    @XmlElement(name = "appid")
     private String appid;
 
-    @Element(name = "mch_id")
+    @XmlElement(name = "mch_id")
     private String mchId;
 
-    @Element(name = "transaction_id", required = false)
+    @XmlElement(name = "transaction_id", required = false)
     private String transactionId;
 
-    @Element(name = "out_trade_no", required = false)
+    @XmlElement(name = "out_trade_no", required = false)
     private String outTradeNo;
 
-    @Element(name = "nonce_str")
+    @XmlElement(name = "nonce_str")
     private String nonceStr;
 
-    @Element(name = "sign")
+    @XmlElement(name = "sign")
     private String sign;
 
-    @Element(name = "sign_type", required = false)
+    @XmlElement(name = "sign_type", required = false)
     private String signType;
 }

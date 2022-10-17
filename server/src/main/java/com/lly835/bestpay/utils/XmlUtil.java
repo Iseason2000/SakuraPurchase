@@ -1,14 +1,16 @@
 package com.lly835.bestpay.utils;
 
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.core.Persister;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,9 +29,10 @@ public class XmlUtil {
      * @return
      */
     public static Object toObject(String xml, Class objClass) {
-        Serializer serializer = new Persister();
         try {
-            return serializer.read(objClass, xml);
+            JAXBContext jaxbContext = JAXBContext.newInstance(objClass);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            return unmarshaller.unmarshal(new StringReader(xml));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -43,15 +46,17 @@ public class XmlUtil {
      * @return
      */
     public static String toString(Object obj) {
-        Serializer serializer = new Persister();
-        StringWriter output = new StringWriter();
+        StringWriter writer = new StringWriter();
         try {
-            serializer.write(obj, output);
+            JAXBContext jaxbContext = JAXBContext.newInstance(obj.getClass());
+            Marshaller marshaller = jaxbContext.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            marshaller.setProperty(Marshaller.JAXB_ENCODING, "utf-8");
+            marshaller.marshal(obj, writer);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return output.toString();
+        return writer.toString();
     }
 
     /**

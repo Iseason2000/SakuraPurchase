@@ -10,6 +10,7 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.Objects;
 
 @Data
 @Builder
@@ -56,5 +57,17 @@ public class Record {
 
     public BestPayPlatformEnum getPlatformEnum() {
         return BestPayPlatformEnum.values()[platform];
+    }
+
+    @Override
+    public int hashCode() {
+        return orderId.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Record)) return false;
+        return Objects.equals(orderId, ((Record) obj).orderId);
     }
 }

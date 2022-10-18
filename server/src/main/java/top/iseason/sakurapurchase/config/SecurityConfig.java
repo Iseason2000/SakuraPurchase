@@ -12,6 +12,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.authorizeRequests()
+                //支付回调放行
+                .antMatchers("/api/pay/notify")
+                .permitAll()
+                //基础访问权限配置
                 .antMatchers("/api/**")
                 .hasRole("API")
                 .antMatchers("/static/**")
@@ -19,9 +23,19 @@ public class SecurityConfig {
                 .anyRequest()
                 .authenticated()
                 .and()
+                //登录
                 .formLogin()
+                .loginPage("/login")
+                .usernameParameter("username")
+                .passwordParameter("password")
+                .defaultSuccessUrl("/", true)
                 .permitAll()
                 .and()
+                //记住我
+                .rememberMe()
+                .tokenValiditySeconds(604800)
+                .and()
+                //防止跨域攻击
                 .csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
 

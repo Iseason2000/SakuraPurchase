@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<!--[if IE 8]>
+<html lang="en" class="ie8 no-js" xmlns:th=http://www.thymeleaf.org
+      xmlns:sec=http://www.thymeleaf.org/extras/spring-security> <![endif]-->
+<!--[if IE 9]>
+<html lang="zh-CN" class="ie9 no-js" xmlns:th=http://www.thymeleaf.org
+      xmlns:sec=http://www.thymeleaf.org/extras/spring-security> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="zh-CN" xmlns:th=http://www.thymeleaf.org
+>
+<!--<![endif]-->
+<!-- Begin Head -->
+
+<head th:fragment="head">
+    <title>樱花支付-后台管理</title>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+    <meta content="" name="author">
+    <meta content="320" name="MobileOptimized">
+    <!--Start Style -->
+    <link href="static/css/fonts.css" rel="stylesheet" type="text/css">
+    <link href="static/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="static/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="static/css/icofont.min.css" rel="stylesheet" type="text/css">
+    <link href="static/css/style.css" rel="stylesheet" type="text/css">
+    <link href="" id="theme-change" rel="stylesheet" type="text/css">
+</head>
+
+<header class="header-wrapper main-header" th:fragment="header">
+    <div class="header-inner-wrapper">
+        <div class="logo-wrapper">
+            <a class="admin-logo" href="">
+                <h2 style="color: white">樱花支付后台</h2>
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="header-left">
+                <div class="header-links">
+                    <a class="toggle-btn" href="javascript:void(0);">
+                        <span></span>
+                    </a>
+                </div>
+            </div>
+            <div class="header-controls">
+
+                <div class="user-info-wrapper header-links">
+                    <a class="user-info" href="javascript:void(0);">
+                        <img alt="" class="user-img" src="static/picture/user.jpg">
+                        <div class="blink-animation">
+                            <span class="blink-circle"></span>
+                            <span class="main-circle"></span>
+                        </div>
+                    </a>
+                    <div class="user-info-box">
+                        <div class="drop-down-header">
+                            <h4 th:text="${username}">未登录</h4>
+                        </div>
+                        <ul>
+                            <li>
+                                <a href="login.html">
+                                    <i class="fas fa-sign-out-alt"></i> logout
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

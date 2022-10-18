@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `record`
     `attach`       text            NULL,
     `create_time`  datetime        NOT NULL,
     PRIMARY KEY (`order_id`) USING BTREE,
-    UNIQUE INDEX `id` (`order_id`) USING HASH
+    INDEX `status` (`status`) USING BTREE
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   ROW_FORMAT = Dynamic;

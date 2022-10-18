@@ -136,14 +136,18 @@ public class PaymentController {
                     .resultMsg(e.getMessage())
                     .build();
         }
-
+        OrderStatusEnum orderStatusEnum = queryResponse.getOrderStatusEnum();
         //状态不一致则更新
-        if (byId.getOrderStatus() != queryResponse.getOrderStatusEnum() && queryResponse.getOrderStatusEnum() != OrderStatusEnum.CLOSED) {
+        if (byId.getOrderStatus() != orderStatusEnum && orderStatusEnum != OrderStatusEnum.CLOSED) {
             byId.setStatus(queryResponse.getOrderStatusEnum().name());
             if (queryResponse.getOutTradeNo() != null) {
                 byId.setOutTradeNo(queryResponse.getOutTradeNo());
             }
             recordService.updateById(byId);
+            if (orderStatusEnum == OrderStatusEnum.SUCCESS) {
+                recordService.modifyTotalPaidAmount(byId.getOrderAmount());
+                recordService.modifyTotalPaidCount(1);
+            }
         }
         return queryResponse;
     }
@@ -174,6 +178,8 @@ public class PaymentController {
         }
         log.info("[退款成功] request={}", JsonUtil.toJson(response));
         byId.setStatus(OrderStatusEnum.REFUND.name());
+        recordService.modifyTotalPaidAmount(-byId.getOrderAmount());
+        recordService.modifyTotalPaidCount(-1);
         recordService.saveOrUpdate(byId);
         return response;
     }
@@ -185,7 +191,12 @@ public class PaymentController {
     @ResponseBody
     public String notify(@RequestBody String notifyData) {
         log.debug("[异步通知] 支付平台的数据request={}", notifyData);
-        PayResponse response = bestPayService.asyncNotify(notifyData);
+        PayResponse response = null;
+        try {
+            response = bestPayService.asyncNotify(notifyData);
+        } catch (Exception e) {
+            log.debug(e.getMessage());
+        }
         log.info("[异步通知] 处理后的数据data={}", JsonUtil.toJson(response));
         //返回成功信息给支付平台，否则会不停的异步通知
         String result = null;

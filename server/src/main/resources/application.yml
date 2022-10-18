@@ -23,6 +23,8 @@ spring:
     init:
       mode: always
       schema-locations: classpath:db/schema.sql
+  mvc:
+    static-path-pattern: /static/**
 
 # 支付宝支付，自行注册申请 https://certifyweb.alipay.com/certify/reg/guide#/
 alipay:

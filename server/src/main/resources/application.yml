@@ -4,7 +4,7 @@ server:
 spring:
   thymeleaf:
     cache: true
-    prefix: file:templates #如果使用前端管理界面则位前端资源的路径
+    prefix: file:templates/ #如果使用前端管理界面则位前端资源的路径
   profiles:
     active: dev
   security:

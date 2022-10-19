@@ -27,6 +27,9 @@
 
 ![QQ截图20221015235508](https://user-images.githubusercontent.com/65019366/195996031-dde2470e-36b8-4203-b242-8ff4e704640c.png)
 ![QQ截图20221015235540](https://user-images.githubusercontent.com/65019366/195996039-d983ec74-dc17-4dab-b22f-52f8cda4b2b0.png)
+![image](https://user-images.githubusercontent.com/65019366/196718781-aeb28b5a-d5b4-4a8e-9da4-3f4c171f5dea.png)
+![image](https://user-images.githubusercontent.com/65019366/196718817-78d04d26-62f0-435f-8920-b5a6bef6bb72.png)
+
 
 ## 安装&配置
 
@@ -49,7 +52,7 @@ server:
 spring:
   thymeleaf:
     cache: true
-    prefix: file:templates #如果使用前端管理界面则位前端资源的路径
+    prefix: file:templates/ #如果使用前端管理界面则位前端资源的路径
   profiles:
     active: dev
   security:

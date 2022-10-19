@@ -11,7 +11,6 @@ import top.iseason.sakurapurchase.entity.TotalStat;
 import top.iseason.sakurapurchase.mapper.RecordMapper;
 import top.iseason.sakurapurchase.service.RecordService;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -98,18 +97,5 @@ public class RecordServiceImpl extends ServiceImpl<RecordMapper, Record> impleme
             modifyTotalPaidCount(-1);
         }
         return b;
-    }
-
-    /**
-     * 初始化统计数据
-     */
-    @PostConstruct
-    private void initStatics() {
-        log.info("开始初始化统计数据...");
-        DoubleAdder doubleAdder = new DoubleAdder();
-        doubleAdder.add(baseMapper.getTotalPaidAmount());
-        totalPaidAmount = doubleAdder;
-        totalPaidCount = new AtomicInteger(baseMapper.getTotalPaidCount());
-        log.info("统计数据初始化完成");
     }
 }

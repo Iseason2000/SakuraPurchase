@@ -24,9 +24,9 @@
 * 网页后台管理系统
 
 ## 截图
+
 ![QQ截图20221015235508](https://user-images.githubusercontent.com/65019366/195996031-dde2470e-36b8-4203-b242-8ff4e704640c.png)
 ![QQ截图20221015235540](https://user-images.githubusercontent.com/65019366/195996039-d983ec74-dc17-4dab-b22f-52f8cda4b2b0.png)
-
 
 ## 安装&配置
 
@@ -37,6 +37,9 @@
 前往 [Release](https://github.com/Iseason2000/SakuraPurchase/releases)
 
 下载 SakuraPurchaseServer-x.x.x.jar
+
+如果要使用前端界面则下载 `web.zip` 文件放到同目录下
+
 并放到服务器的任意文件夹中,创建并配置好文件 `application.yml`
 
 ~~~ yaml
@@ -44,6 +47,11 @@ server:
   # 端口号
   port: 80
 spring:
+  thymeleaf:
+    cache: true
+    prefix: file:templates #如果使用前端管理界面则位前端资源的路径
+  profiles:
+    active: dev
   security:
     user:
       #配置 账户给bukkit端使用
@@ -63,6 +71,8 @@ spring:
     init:
       mode: always
       schema-locations: classpath:db/schema.sql
+  mvc:
+    static-path-pattern: /static/**
 
 # 支付宝支付，自行注册申请 https://certifyweb.alipay.com/certify/reg/guide#/
 alipay:

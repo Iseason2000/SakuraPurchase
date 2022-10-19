@@ -213,7 +213,7 @@ public class PaymentController {
         return result;
     }
 
-//    /**
+    //    /**
 //     * 关闭支付，只对支付宝有效
 //     *
 //     * @param orderId
@@ -232,4 +232,12 @@ public class PaymentController {
 //        CloseResponse close = bestPayService.close(request);
 //        return close;
 //    }
+    @PostMapping("remove")
+    @ResponseBody
+    public String remove(@RequestParam("orderId") String orderId) {
+        if (recordService.removeById(orderId)) {
+            return "删除成功";
+        }
+        return "删除失败";
+    }
 }

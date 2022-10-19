@@ -16,15 +16,19 @@ public class TotalStat {
     }
 
     public String getTotalAmount() {
-        return fmt.format(stats.stream().mapToDouble(Stat::getAmount).sum());
+        return fmt.format(stats.stream().mapToDouble(Stat::getAmount).sum()) + "￥";
     }
 
     public String getTotalCount() {
-        return fmt.format(stats.stream().mapToInt(Stat::getCount).sum());
+        return String.valueOf(stats.stream().mapToInt(Stat::getCount).sum());
     }
 
     public List<Double> getAmount() {
         return stats.stream().map(it -> (double) Math.round(it.getAmount() * 100) / 100).collect(Collectors.toList());
+    }
+
+    public List<Integer> getCount() {
+        return stats.stream().map(Stat::getCount).collect(Collectors.toList());
     }
 
     public List<String> getPeriod() {

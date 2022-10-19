@@ -1,20 +1,20 @@
 'use strict';
 $(function () {
-    chartA();
-    chartB();
-    chartC();
-    chartD();
-    chartE();
-    chartF();
-    chartG();
-    chartK();
-    chartH();
-    chartJ();
-    chartI();
-    chartL();
-    chartGG();
-    chartGG2();
-    chartGG3();
+    // chartA();
+    // chartB();
+    // chartC();
+    // chartD();
+    // chartE();
+    // chartF();
+    // chartG();
+    // chartK();
+    // chartH();
+    // chartJ();
+    // chartI();
+    // chartL();
+    // chartGG();
+    // chartGG2();
+    // chartGG3();
 });
 
 /* Simple Area Chart  */

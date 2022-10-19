@@ -4,16 +4,16 @@ plugins {
     id 'org.springframework.boot' version '2.7.4'
     id 'io.spring.dependency-management' version '1.0.14.RELEASE'
     id 'org.springframework.boot.experimental.thin-launcher' version '1.0.28.RELEASE'
-
 }
 
 group = 'top.iseason.sakurapurchase'
-version = '1.0.0'
+version = '1.0.1'
 sourceCompatibility = '1.8'
 
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'org.springframework.boot.experimental.thin-launcher'
+
 configurations {
 
     compileOnly {
@@ -59,7 +59,9 @@ dependencies {
 }
 thinJar {
     exclude 'application-dev.yml'
-
+    exclude 'templates/**'
+    exclude 'static/**'
+    archiveFileName = "${project.name}-${project.version}-thin.jar"
 }
 tasks.named('test') {
     useJUnitPlatform()

@@ -8,6 +8,7 @@ import com.lly835.bestpay.enums.OrderStatusEnum;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
+import top.iseason.sakurapurchase.utils.DataUtils;
 
 import java.util.Date;
 import java.util.Objects;
@@ -55,8 +56,20 @@ public class Record {
         return OrderStatusEnum.findByName(status);
     }
 
+    public String getStatusDesc() {
+        return getOrderStatus().getDesc();
+    }
+
     public BestPayPlatformEnum getPlatformEnum() {
         return BestPayPlatformEnum.values()[platform];
+    }
+
+    public String getPlatformName() {
+        return getPlatformEnum().getName();
+    }
+
+    public String getFormatTime() {
+        return DataUtils.formatDate(createTime);
     }
 
     @Override

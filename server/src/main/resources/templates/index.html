@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <!--[if IE 8]>
-<html lang="en" class="ie8 no-js" xmlns:th=http://www.thymeleaf.org
-      xmlns:sec=http://www.thymeleaf.org/extras/spring-security> <![endif]-->
+<html lang="zh-CN" class="ie8 no-js" xmlns:th=http://www.thymeleaf.org> <![endif]-->
 <!--[if IE 9]>
-<html lang="zh-CN" class="ie9 no-js" xmlns:th=http://www.thymeleaf.org
-      xmlns:sec=http://www.thymeleaf.org/extras/spring-security> <![endif]-->
+<html lang="zh-CN" class="ie9 no-js" xmlns:th=http://www.thymeleaf.org> <![endif]-->
 <!--[if !IE]><!-->
-<html lang="zh-CN" xmlns:th=http://www.thymeleaf.org
->
+<html lang="zh-CN" xmlns:th=http://www.thymeleaf.org>
 <!--<![endif]-->
 <!-- Begin Head -->
 
@@ -97,8 +94,7 @@
                 <div class="col-xl-12 col-lg-12 col-md-12">
                     <div class="card chart-card">
                         <div class="card-header">
-                            <h4 class="has-btn">充值趋势 <span><button class="btn btn-primary squer-btn sm-btn"
-                                                                       type="button">Download</button></span>
+                            <h4 class="has-btn">充值趋势 <span></span>
                             </h4>
                         </div>
                         <div class="card-body">
@@ -114,17 +110,23 @@
                                             <li class="nav-item">
                                                 <a aria-controls="tab1" aria-selected="true" class="nav-link active"
                                                    data-toggle="pill"
-                                                   href="#tab1" id="tab1-tab" role="tab">今天</a>
+                                                   href="#tab1" id="tab1-tab" role="tab"
+                                                   th:onclick="chartD([[${dailyTotal.getAmount()}]],[[${dailyTotal.getCount()}]], [[${dailyTotal.getPeriod()}]]);"
+                                                >今天</a>
                                             </li>
                                             <li class="nav-item">
                                                 <a aria-controls="tab2" aria-selected="false" class="nav-link"
                                                    data-toggle="pill"
-                                                   href="#tab2" id="tab2-tab" role="tab">本周</a>
+                                                   href="#tab2" id="tab2-tab" role="tab"
+                                                   th:onclick="chartD([[${weeklyTotal.getAmount()}]],[[${weeklyTotal.getCount()}]], [[${weeklyTotal.getPeriod()}]]);"
+                                                >本周</a>
                                             </li>
                                             <li class="nav-item">
                                                 <a aria-controls="tab3" aria-selected="false" class="nav-link"
                                                    data-toggle="pill"
-                                                   href="#tab3" id="tab3-tab" role="tab">今年</a>
+                                                   href="#tab3" id="tab3-tab" role="tab"
+                                                   th:onclick="chartD([[${yearlyTotal.getAmount()}]],[[${yearlyTotal.getCount()}]],  [[${yearlyTotal.getPeriod()}]]);"
+                                                >今年</a>
                                             </li>
                                         </ul>
                                         <div class="tab-content" id="pills-tabContent">
@@ -141,7 +143,8 @@
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td><i class=" fas fa-user-friends mr-2 icon-only"></i>订单数
+                                                            <td><i class=" fas fa-user-friends mr-2 icon-only"
+                                                                   style="background:#ffa000 "></i>订单数
                                                             </td>
                                                             <td th:text="${dailyTotal.getTotalCount()}">
                                                                 5894
@@ -164,7 +167,8 @@
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td><i class=" fas fa-user-friends mr-2 icon-only"></i>订单数
+                                                            <td><i class=" fas fa-user-friends mr-2 icon-only"
+                                                                   style="background:#ffa000 "></i>订单数
                                                             </td>
                                                             <td th:text="${weeklyTotal.getTotalCount()}">
                                                                 5894
@@ -187,7 +191,8 @@
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td><i class=" fas fa-user-friends mr-2 icon-only"></i>订单数
+                                                            <td><i class=" fas fa-user-friends mr-2 icon-only"
+                                                                   style="background:#ffa000"></i>订单数
                                                             </td>
                                                             <td th:text="${yearlyTotal.getTotalCount()}">
                                                                 5894
@@ -205,514 +210,10 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Products Orders Start -->
-            <div class="row">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                    <div class="card chart-card">
-                        <div class="card-header">
-                            <h4>Newest Orders</h4>
-                        </div>
-                        <div class="card-body pb-4">
-                            <div class="chart-holder">
-                                <div class="table-responsive">
-                                    <table class="table table-styled mb-0">
-                                        <thead>
-                                        <tr>
-                                            <th>
-                                                <div class="checkbox">
-                                                    <input id="checkbox1" type="checkbox">
-                                                    <label for="checkbox1"></label>
-                                                </div>
-                                            </th>
-                                            <th>Order ID</th>
-                                            <th>Billing Name</th>
-                                            <th>Date</th>
-                                            <th>Total</th>
-                                            <th>Payment Status</th>
-                                            <th>Payment Method</th>
-                                            <th>View Details</th>
-                                            <th>Action</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr>
-                                            <td>
-                                                <div class="checkbox">
-                                                    <input id="checkbox2" type="checkbox">
-                                                    <label for="checkbox2"></label>
-                                                </div>
-                                            </td>
-                                            <td>#JH2033</td>
-                                            <td>
-                                                        <span class="img-thumb ">
-                                                            <img alt=" " src="static/picture/1.jpg">
-                                                            <span class="ml-2 ">Emily Arnold</span>
-                                                        </span>
-                                            </td>
-                                            <td>22/06/2021</td>
-                                            <td>$600</td>
-                                            <td>
-                                                <label class="mb-0 badge badge-primary" data-original-title="Pending"
-                                                       title="">Pending</label>
-                                            </td>
-                                            <td>
-                                                        <span class="img-thumb">
-                                                            <i class="fab fa-cc-paypal"></i>
-                                                            <span class="ml-2">Paypal</span>
-                                                        </span>
-                                            </td>
-                                            <td>
-                                                <label class="mb-0 badge badge-primary" data-original-title="Pending"
-                                                       title="">View Detail</label>
-                                            </td>
-                                            <td class="relative">
-                                                <a class="action-btn " href="javascript:void(0); ">
-                                                    <svg class="default-size " viewbox="0 0 341.333 341.333 ">
-                                                        <g>
-                                                            <g>
-                                                                <g>
-                                                                    <path d="M170.667,85.333c23.573,0,42.667-19.093,42.667-42.667C213.333,19.093,194.24,0,170.667,0S128,19.093,128,42.667 C128,66.24,147.093,85.333,170.667,85.333z "></path>
-                                                                    <path d="M170.667,128C147.093,128,128,147.093,128,170.667s19.093,42.667,42.667,42.667s42.667-19.093,42.667-42.667 S194.24,128,170.667,128z "></path>
-                                                                    <path d="M170.667,256C147.093,256,128,275.093,128,298.667c0,23.573,19.093,42.667,42.667,42.667s42.667-19.093,42.667-42.667 C213.333,275.093,194.24,256,170.667,256z "></path>
-                                                                </g>
-                                                            </g>
-                                                        </g>
-                                                    </svg>
-                                                </a>
-                                                <div class="action-option ">
-                                                    <ul>
-                                                        <li>
-                                                            <a href="javascript:void(0); "><i
-                                                                    class="far fa-edit mr-2 "></i>Edit</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="javascript:void(0); "><i
-                                                                    class="far fa-trash-alt mr-2 "></i>Delete</a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <div class="checkbox">
-                                                    <input id="checkbox3" type="checkbox">
-                                                    <label for="checkbox3"></label>
-                                                </div>
-                                            </td>
-                                            <td>#MK4433</td>
-                                            <td>
-                                                        <span class="img-thumb ">
-                                                            <img alt=" " src="static/picture/4.jpg">
-                                                            <span class="ml-2 ">Mark Doe</span>
-                                                        </span>
-                                            </td>
-                                            <td>14/07/2021</td>
-                                            <td>$700</td>
-                                            <td>
-                                                <label class="mb-0 badge badge-success" data-original-title="Pending"
-                                                       title="">Success</label>
-                                            </td>
-                                            <td>
-                                                        <span class="img-thumb">
-                                                            <i class="fab fa-cc-visa"></i>
-                                                            <span class="ml-2">Visa</span>
-                                                        </span>
-                                            </td>
-                                            <td>
-                                                <label class="mb-0 badge badge-primary" data-original-title="Pending"
-                                                       title="">View Detail</label>
-                                            </td>
-                                            <td class="relative">
-                                                <a class="action-btn " href="javascript:void(0); ">
-                                                    <svg class="default-size " viewbox="0 0 341.333 341.333 ">
-                                                        <g>
-                                                            <g>
-                                                                <g>
-                                                                    <path d="M170.667,85.333c23.573,0,42.667-19.093,42.667-42.667C213.333,19.093,194.24,0,170.667,0S128,19.093,128,42.667 C128,66.24,147.093,85.333,170.667,85.333z "></path>
-                                                                    <path d="M170.667,128C147.093,128,128,147.093,128,170.667s19.093,42.667,42.667,42.667s42.667-19.093,42.667-42.667 S194.24,128,170.667,128z "></path>
-                                                                    <path d="M170.667,256C147.093,256,128,275.093,128,298.667c0,23.573,19.093,42.667,42.667,42.667s42.667-19.093,42.667-42.667 C213.333,275.093,194.24,256,170.667,256z "></path>
-                                                                </g>
-                                                            </g>
-                                                        </g>
-                                                    </svg>
-                                                </a>
-                                                <div class="action-option">
-                                                    <ul>
-                                                        <li>
-                                                            <a href="javascript:void(0);"><i
-                                                                    class="far fa-edit mr-2 "></i>Edit</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="javascript:void(0);"><i
-                                                                    class="far fa-trash-alt mr-2 "></i>Delete</a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <div class="checkbox">
-                                                    <input id="checkbox4" type="checkbox">
-                                                    <label for="checkbox4"></label>
-                                                </div>
-                                            </td>
-                                            <td>#MD4578</td>
-                                            <td>
-                                                        <span class="img-thumb">
-                                                            <img alt=" " src="static/picture/7.jpg">
-                                                            <span class="ml-2 ">Mark Smith</span>
-                                                        </span>
-                                            </td>
-                                            <td>28/08/2021</td>
-                                            <td>$800</td>
-                                            <td>
-                                                <label class="mb-0 badge badge-danger" data-original-title="Pending"
-                                                       title="">Cancel</label>
-                                            </td>
-                                            <td>
-                                                        <span class="img-thumb">
-                                                            <i class="fas fa-credit-card"></i>
-                                                            <span class="ml-2">Credit Card</span>
-                                                        </span>
-                                            </td>
-                                            <td>
-                                                <label class="mb-0 badge badge-primary" data-original-title="Pending"
-                                                       title="">View Detail</label>
-                                            </td>
-                                            <td class="relative">
-                                                <a class="action-btn " href="javascript:void(0); ">
-                                                    <svg class="default-size " viewbox="0 0 341.333 341.333 ">
-                                                        <g>
-                                                            <g>
-                                                                <g>
-                                                                    <path d="M170.667,85.333c23.573,0,42.667-19.093,42.667-42.667C213.333,19.093,194.24,0,170.667,0S128,19.093,128,42.667 C128,66.24,147.093,85.333,170.667,85.333z "></path>
-                                                                    <path d="M170.667,128C147.093,128,128,147.093,128,170.667s19.093,42.667,42.667,42.667s42.667-19.093,42.667-42.667 S194.24,128,170.667,128z "></path>
-                                                                    <path d="M170.667,256C147.093,256,128,275.093,128,298.667c0,23.573,19.093,42.667,42.667,42.667s42.667-19.093,42.667-42.667 C213.333,275.093,194.24,256,170.667,256z "></path>
-                                                                </g>
-                                                            </g>
-                                                        </g>
-                                                    </svg>
-                                                </a>
-                                                <div class="action-option ">
-                                                    <ul>
-                                                        <li>
-                                                            <a href="javascript:void(0); "><i
-                                                                    class="far fa-edit mr-2 "></i>Edit</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="javascript:void(0); "><i
-                                                                    class="far fa-trash-alt mr-2 "></i>Delete</a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <div class="checkbox">
-                                                    <input id="checkbox5" type="checkbox">
-                                                    <label for="checkbox5"></label>
-                                                </div>
-                                            </td>
-                                            <td>#DD1048</td>
-                                            <td>
-                                                        <span class="img-thumb ">
-                                                            <img alt=" " src="static/picture/1.jpg">
-                                                            <span class="ml-2 ">Mike Wood</span>
-                                                        </span>
-                                            </td>
-                                            <td>13/04/2021</td>
-                                            <td>$880</td>
-                                            <td>
-                                                <label class="mb-0 badge badge-primary" data-original-title="Pending"
-                                                       title="">Pending</label>
-                                            </td>
-                                            <td>
-                                                        <span class="img-thumb">
-                                                            <i class="fab fa-cc-mastercard"></i>
-                                                            <span class="ml-2">Mastercard</span>
-                                                        </span>
-                                            </td>
-                                            <td>
-                                                <label class="mb-0 badge badge-primary" data-original-title="Pending"
-                                                       title="">View Detail</label>
-                                            </td>
-                                            <td class="relative">
-                                                <a class="action-btn " href="javascript:void(0); ">
-                                                    <svg class="default-size " viewbox="0 0 341.333 341.333 ">
-                                                        <g>
-                                                            <g>
-                                                                <g>
-                                                                    <path d="M170.667,85.333c23.573,0,42.667-19.093,42.667-42.667C213.333,19.093,194.24,0,170.667,0S128,19.093,128,42.667 C128,66.24,147.093,85.333,170.667,85.333z "></path>
-                                                                    <path d="M170.667,128C147.093,128,128,147.093,128,170.667s19.093,42.667,42.667,42.667s42.667-19.093,42.667-42.667 S194.24,128,170.667,128z "></path>
-                                                                    <path d="M170.667,256C147.093,256,128,275.093,128,298.667c0,23.573,19.093,42.667,42.667,42.667s42.667-19.093,42.667-42.667 C213.333,275.093,194.24,256,170.667,256z "></path>
-                                                                </g>
-                                                            </g>
-                                                        </g>
-                                                    </svg>
-                                                </a>
-                                                <div class="action-option ">
-                                                    <ul>
-                                                        <li>
-                                                            <a href="javascript:void(0); "><i
-                                                                    class="far fa-edit mr-2 "></i>Edit</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="javascript:void(0); "><i
-                                                                    class="far fa-trash-alt mr-2 "></i>Delete</a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <div class="checkbox">
-                                                    <input id="checkbox6" type="checkbox">
-                                                    <label for="checkbox6"></label>
-                                                </div>
-                                            </td>
-                                            <td>#JH2033</td>
-                                            <td>
-                                                        <span class="img-thumb ">
-                                                            <img alt=" " src="static/picture/3.jpg">
-                                                            <span class="ml-2 ">Emily Arnold</span>
-                                                        </span>
-                                            </td>
-                                            <td>22/06/2021</td>
-                                            <td>$600</td>
-                                            <td>
-                                                <label class="mb-0 badge badge-success" data-original-title="Pending"
-                                                       title="">Success</label>
-                                            </td>
-                                            <td>
-                                                        <span class="img-thumb">
-                                                            <i class="fab fa-cc-paypal"></i>
-                                                            <span class="ml-2">Paypal</span>
-                                                        </span>
-                                            </td>
-                                            <td>
-                                                <label class="mb-0 badge badge-primary" data-original-title="Pending"
-                                                       title="">View Detail</label>
-                                            </td>
-                                            <td class="relative">
-                                                <a class="action-btn " href="javascript:void(0); ">
-                                                    <svg class="default-size " viewbox="0 0 341.333 341.333 ">
-                                                        <g>
-                                                            <g>
-                                                                <g>
-                                                                    <path d="M170.667,85.333c23.573,0,42.667-19.093,42.667-42.667C213.333,19.093,194.24,0,170.667,0S128,19.093,128,42.667 C128,66.24,147.093,85.333,170.667,85.333z "></path>
-                                                                    <path d="M170.667,128C147.093,128,128,147.093,128,170.667s19.093,42.667,42.667,42.667s42.667-19.093,42.667-42.667 S194.24,128,170.667,128z "></path>
-                                                                    <path d="M170.667,256C147.093,256,128,275.093,128,298.667c0,23.573,19.093,42.667,42.667,42.667s42.667-19.093,42.667-42.667 C213.333,275.093,194.24,256,170.667,256z "></path>
-                                                                </g>
-                                                            </g>
-                                                        </g>
-                                                    </svg>
-                                                </a>
-                                                <div class="action-option ">
-                                                    <ul>
-                                                        <li>
-                                                            <a href="javascript:void(0); "><i
-                                                                    class="far fa-edit mr-2 "></i>Edit</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="javascript:void(0); "><i
-                                                                    class="far fa-trash-alt mr-2 "></i>Delete</a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <div class="checkbox">
-                                                    <input id="checkbox7" type="checkbox">
-                                                    <label for="checkbox7"></label>
-                                                </div>
-                                            </td>
-                                            <td>#MK4433</td>
-                                            <td>
-                                                        <span class="img-thumb ">
-                                                            <img alt=" " src="static/picture/1.jpg">
-                                                            <span class="ml-2 ">John Doe</span>
-                                                        </span>
-                                            </td>
-                                            <td>14/07/2021</td>
-                                            <td>$700</td>
-                                            <td>
-                                                <label class="mb-0 badge badge-danger" data-original-title="Pending"
-                                                       title="">Cancel</label>
-                                            </td>
-                                            <td>
-                                                        <span class="img-thumb">
-                                                            <i class="fab fa-cc-visa"></i>
-                                                            <span class="ml-2">Visa</span>
-                                                        </span>
-                                            </td>
-                                            <td>
-                                                <label class="mb-0 badge badge-primary" data-original-title="Pending"
-                                                       title="">View Detail</label>
-                                            </td>
-                                            <td class="relative">
-                                                <a class="action-btn " href="javascript:void(0); ">
-                                                    <svg class="default-size " viewbox="0 0 341.333 341.333 ">
-                                                        <g>
-                                                            <g>
-                                                                <g>
-                                                                    <path d="M170.667,85.333c23.573,0,42.667-19.093,42.667-42.667C213.333,19.093,194.24,0,170.667,0S128,19.093,128,42.667 C128,66.24,147.093,85.333,170.667,85.333z "></path>
-                                                                    <path d="M170.667,128C147.093,128,128,147.093,128,170.667s19.093,42.667,42.667,42.667s42.667-19.093,42.667-42.667 S194.24,128,170.667,128z "></path>
-                                                                    <path d="M170.667,256C147.093,256,128,275.093,128,298.667c0,23.573,19.093,42.667,42.667,42.667s42.667-19.093,42.667-42.667 C213.333,275.093,194.24,256,170.667,256z "></path>
-                                                                </g>
-                                                            </g>
-                                                        </g>
-                                                    </svg>
-                                                </a>
-                                                <div class="action-option ">
-                                                    <ul>
-                                                        <li>
-                                                            <a href="javascript:void(0); "><i
-                                                                    class="far fa-edit mr-2 "></i>Edit</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="javascript:void(0); "><i
-                                                                    class="far fa-trash-alt mr-2 "></i>Delete</a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <div class="checkbox">
-                                                    <input id="checkbox8" type="checkbox">
-                                                    <label for="checkbox8"></label>
-                                                </div>
-                                            </td>
-                                            <td>#MD4578</td>
-                                            <td>
-                                                        <span class="img-thumb ">
-                                                            <img alt=" " src="static/picture/7.jpg">
-                                                            <span class="ml-2 ">Mark Smith</span>
-                                                        </span>
-                                            </td>
-                                            <td>28/08/2021</td>
-                                            <td>$800</td>
-                                            <td>
-                                                <label class="mb-0 badge badge-success" data-original-title="Pending"
-                                                       title="">Success</label>
-                                            </td>
-                                            <td>
-                                                        <span class="img-thumb">
-                                                            <i class="fas fa-credit-card"></i>
-                                                            <span class="ml-2">Credit Card</span>
-                                                        </span>
-                                            </td>
-                                            <td>
-                                                <label class="mb-0 badge badge-primary" data-original-title="Pending"
-                                                       title="">View Detail</label>
-                                            </td>
-                                            <td class="relative">
-                                                <a class="action-btn " href="javascript:void(0); ">
-                                                    <svg class="default-size " viewbox="0 0 341.333 341.333 ">
-                                                        <g>
-                                                            <g>
-                                                                <g>
-                                                                    <path d="M170.667,85.333c23.573,0,42.667-19.093,42.667-42.667C213.333,19.093,194.24,0,170.667,0S128,19.093,128,42.667 C128,66.24,147.093,85.333,170.667,85.333z "></path>
-                                                                    <path d="M170.667,128C147.093,128,128,147.093,128,170.667s19.093,42.667,42.667,42.667s42.667-19.093,42.667-42.667 S194.24,128,170.667,128z "></path>
-                                                                    <path d="M170.667,256C147.093,256,128,275.093,128,298.667c0,23.573,19.093,42.667,42.667,42.667s42.667-19.093,42.667-42.667 C213.333,275.093,194.24,256,170.667,256z "></path>
-                                                                </g>
-                                                            </g>
-                                                        </g>
-                                                    </svg>
-                                                </a>
-                                                <div class="action-option ">
-                                                    <ul>
-                                                        <li>
-                                                            <a href="javascript:void(0); "><i
-                                                                    class="far fa-edit mr-2 "></i>Edit</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="javascript:void(0); "><i
-                                                                    class="far fa-trash-alt mr-2 "></i>Delete</a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <div class="checkbox">
-                                                    <input id="checkbox9" type="checkbox">
-                                                    <label for="checkbox9"></label>
-                                                </div>
-                                            </td>
-                                            <td>#DD1048</td>
-                                            <td>
-                                                        <span class="img-thumb ">
-                                                            <img alt=" " src="static/picture/4.jpg">
-                                                            <span class="ml-2 ">Mike Wood</span>
-                                                        </span>
-                                            </td>
-                                            <td>13/04/2021</td>
-                                            <td>$880</td>
-                                            <td>
-                                                <label class="mb-0 badge badge-primary" data-original-title="Pending"
-                                                       title="">Pending</label>
-                                            </td>
-                                            <td>
-                                                        <span class="img-thumb">
-                                                            <i class="fab fa-cc-mastercard"></i>
-                                                            <span class="ml-2">Mastercard</span>
-                                                        </span>
-                                            </td>
-                                            <td>
-                                                <label class="mb-0 badge badge-primary" data-original-title="Pending"
-                                                       title="">View Detail</label>
-                                            </td>
-                                            <td class="relative">
-                                                <a class="action-btn " href="javascript:void(0); ">
-                                                    <svg class="default-size " viewbox="0 0 341.333 341.333 ">
-                                                        <g>
-                                                            <g>
-                                                                <g>
-                                                                    <path d="M170.667,85.333c23.573,0,42.667-19.093,42.667-42.667C213.333,19.093,194.24,0,170.667,0S128,19.093,128,42.667 C128,66.24,147.093,85.333,170.667,85.333z "></path>
-                                                                    <path d="M170.667,128C147.093,128,128,147.093,128,170.667s19.093,42.667,42.667,42.667s42.667-19.093,42.667-42.667 S194.24,128,170.667,128z "></path>
-                                                                    <path d="M170.667,256C147.093,256,128,275.093,128,298.667c0,23.573,19.093,42.667,42.667,42.667s42.667-19.093,42.667-42.667 C213.333,275.093,194.24,256,170.667,256z "></path>
-                                                                </g>
-                                                            </g>
-                                                        </g>
-                                                    </svg>
-                                                </a>
-                                                <div class="action-option ">
-                                                    <ul>
-                                                        <li>
-                                                            <a href="javascript:void(0); "><i
-                                                                    class="far fa-edit mr-2 "></i>Edit</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="javascript:void(0); "><i
-                                                                    class="far fa-trash-alt mr-2 "></i>Delete</a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
 </div>
-
 
 <!-- Script Start -->
 <script src="static/js/jquery.min.js"></script>
@@ -727,12 +228,11 @@
 <!-- Custom Script -->
 <script src="static/js/custom.js"></script>
 <script th:inline="javascript">
-    var dailyData = [[${dailyTotal.getAmount()}]]
-    var dailyPeriod = [[${dailyTotal.getPeriod()}]]
 
-    chartD();
+    chartD([[${dailyTotal.getAmount()}]], [[${dailyTotal.getCount()}]], [[${dailyTotal.getPeriod()}]], "今日充值");
 
-    function chartD() {
+    function chartD(d1, d2, p) {
+
         var options = {
             chart: {
                 height: 350,
@@ -753,11 +253,11 @@
                     },
                 }
             },
-            colors: ["#11a0fd"],
+            colors: ['#11a0fd', '#ffa000'],
             dataLabels: {
-                enabled: true,
+                enabled: false,
                 formatter: function (val) {
-                    return val + "%";
+                    return val + "￥";
                 },
                 offsetY: -20,
                 style: {
@@ -767,11 +267,15 @@
                 }
             },
             series: [{
-                name: 'Revenue',
-                data: dailyData
-            }],
+                name: '金额',
+                data: d1
+            }, {
+                name: '单数',
+                data: d2
+            }
+            ],
             xaxis: {
-                categories: dailyPeriod,
+                categories: p,
                 position: 'top',
                 labels: {
                     offsetY: -18,
@@ -816,7 +320,7 @@
                     stops: [50, 0, 100, 100]
                 },
             },
-            yaxis: {
+            yaxis: [{
                 axisBorder: {
                     show: false
                 },
@@ -826,30 +330,29 @@
                 labels: {
                     show: false,
                     formatter: function (val) {
-                        return val + " ￥";
+                        return val + "￥";
                     }
                 }
 
-            },
-            title: {
-                text: '今日充值趋势',
-                floating: true,
-                offsetY: 320,
-                align: 'center',
-                style: {
-                    color: '#10163a',
-                    fontFamily: 'Poppins, sans-serif',
+            }, {
+                axisBorder: {
+                    show: false
+                },
+                axisTicks: {
+                    show: false,
+                },
+                labels: {
+                    show: false
                 }
-            },
+            }],
         }
-
+        $("#chartD").empty()
         var chart = new ApexCharts(
             document.querySelector("#chartD"),
             options
         );
 
         chart.render();
-
     }
 </script>
 </body>

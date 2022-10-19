@@ -52,7 +52,7 @@ public interface RecordService extends IService<Record> {
      *
      * @return
      */
-    List<Stat> getWeek(int limit);
+    List<Stat> getAWeek(int offset);
 
     /**
      * 按月统计结果

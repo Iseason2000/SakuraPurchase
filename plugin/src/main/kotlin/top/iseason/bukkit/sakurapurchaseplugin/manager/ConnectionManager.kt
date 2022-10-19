@@ -78,6 +78,7 @@ object ConnectionManager {
             val formBody = FormBody.Builder()
                 .add("username", Config.username)
                 .add("password", Config.password)
+                .add("remember-me", "true")
                 .add("_csrf", MyCookieJar.lastToken)
                 .build()
             val loginRequest = Request.Builder()

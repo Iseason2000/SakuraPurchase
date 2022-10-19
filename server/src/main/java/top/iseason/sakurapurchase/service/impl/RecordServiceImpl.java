@@ -53,13 +53,13 @@ public class RecordServiceImpl extends ServiceImpl<RecordMapper, Record> impleme
     }
 
     @Override
-    public List<Stat> getWeek(int limit) {
-        return baseMapper.getWeek(limit, 1);
+    public List<Stat> getAWeek(int offset) {
+        return baseMapper.getAWeek(offset);
     }
 
     @Override
     public List<Stat> getMonth(int limit) {
-        return baseMapper.getMonth(limit, 1);
+        return baseMapper.getMonth(limit, 0);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class RecordServiceImpl extends ServiceImpl<RecordMapper, Record> impleme
 
     @Override
     public TotalStat getWeeklyTotal() {
-        if (weekly == null) weekly = new TotalStat(getDays(7));
+        if (weekly == null) weekly = new TotalStat(getAWeek(0));
         return weekly;
     }
 

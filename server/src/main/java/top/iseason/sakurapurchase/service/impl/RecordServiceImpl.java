@@ -33,11 +33,21 @@ public class RecordServiceImpl extends ServiceImpl<RecordMapper, Record> impleme
 
     @Override
     public Double getTotalPaidAmount() {
+        if (totalPaidAmount == null) {
+            DoubleAdder doubleAdder = new DoubleAdder();
+            Double amount = baseMapper.getTotalPaidAmount();
+            if (amount == null) amount = 0.0;
+            doubleAdder.add(amount);
+            totalPaidAmount = doubleAdder;
+        }
         return totalPaidAmount.doubleValue();
     }
 
     @Override
     public Integer getTotalPaidCount() {
+        if (totalPaidCount == null) {
+            totalPaidCount = new AtomicInteger(baseMapper.getTotalPaidCount());
+        }
         return totalPaidCount.get();
     }
 

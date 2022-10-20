@@ -30,7 +30,6 @@
 ![image](https://user-images.githubusercontent.com/65019366/196718781-aeb28b5a-d5b4-4a8e-9da4-3f4c171f5dea.png)
 ![image](https://user-images.githubusercontent.com/65019366/196718817-78d04d26-62f0-435f-8920-b5a6bef6bb72.png)
 
-
 ## 安装&配置
 
 ### SakuraPurchaseServer
@@ -39,7 +38,12 @@
 
 前往 [Release](https://github.com/Iseason2000/SakuraPurchase/releases)
 
-下载 SakuraPurchaseServer-x.x.x.jar
+下载 SakuraPurchaseServer-x.x.x-xx.jar
+
+`-full` 后缀的是全包;
+`-thin` 的是瘦身包，启动时会下载依赖
+
+选择一个即可
 
 如果要使用前端界面则下载 `web.zip` 文件放到同目录下
 

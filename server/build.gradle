@@ -31,6 +31,7 @@ repositories {
 }
 
 dependencies {
+
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -45,11 +46,13 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 
+
     //    implementation("cn.springboot:best-pay-sdk:1.3.7")
     // best pay 已迁移至本地斌修复退款bug
 //    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-jaxb:2.9.0'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.10.0'
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'

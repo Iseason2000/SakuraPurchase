@@ -119,7 +119,7 @@ public class RecordServiceImpl extends ServiceImpl<RecordMapper, Record> impleme
      * 每小时更新
      */
     @Async
-    @Scheduled(cron = "0 * 0/1 * * ?")
+    @Scheduled(cron = "0 0 0/1 * * ?")
     void updatePerHour() {
         daily = new TotalStat(getHours(24));
 

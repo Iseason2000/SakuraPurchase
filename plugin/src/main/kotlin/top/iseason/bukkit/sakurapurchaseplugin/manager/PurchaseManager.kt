@@ -129,6 +129,24 @@ object PurchaseManager {
         return false
     }
 
+    fun closeOrder(order: Order): Boolean {
+        if (!ConnectionManager.isConnected) return false
+        val body = FormBody.Builder()
+            .add("orderId", order.orderId)
+            .add("_csrf", ConnectionManager.token) //防止跨域攻击
+            .build()
+        val request = Request.Builder().url(Config.closeUrl).post(body).build()
+        kotlin.runCatching {
+            httpClient.newCall(request).execute().use {
+                return it.isSuccessful
+            }
+        }.getOrElse {
+            it.printStackTrace()
+            ConnectionManager.isConnected = false
+        }
+        return false
+    }
+
     enum class PayType(
         val type: String,
         val translation: String

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lly835.bestpay.enums.BestPayPlatformEnum;
+import com.lly835.bestpay.enums.BestPayTypeEnum;
 import com.lly835.bestpay.enums.OrderStatusEnum;
 import lombok.Builder;
 import lombok.Data;
@@ -24,7 +25,7 @@ public class Record {
     /**
      * 平台0为支付宝 1为微信
      */
-    private Integer platform;
+    private Integer payType;
     /**
      * 订单状态
      */
@@ -61,7 +62,11 @@ public class Record {
     }
 
     public BestPayPlatformEnum getPlatformEnum() {
-        return BestPayPlatformEnum.values()[platform];
+        return getPayTypeEnum().getPlatform();
+    }
+
+    public BestPayTypeEnum getPayTypeEnum() {
+        return BestPayTypeEnum.values()[payType];
     }
 
     public String getPlatformName() {

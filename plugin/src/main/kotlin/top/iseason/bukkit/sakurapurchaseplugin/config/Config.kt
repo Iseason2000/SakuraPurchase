@@ -67,24 +67,18 @@ object Config : SimpleYAMLConfig() {
     var cancelAction = "SHIFT_F"
     private val pattern = Pattern.compile("(%[0-9|.]*?_?amount%)")
 
-    val loginUrl
-        get() = "$serverHost/login"
-    val apiUrl
-        get() = "$serverHost/api"
-    val purchaseUrl
-        get() = "$apiUrl/pay/buy"
-    val queryUrl
-        get() = "$apiUrl/pay/query"
-    val testUrl
-        get() = "$apiUrl/pay/test"
+    val loginUrl get() = "$serverHost/login"
+    val apiUrl get() = "$serverHost/api"
+    val purchaseUrl get() = "$apiUrl/pay/buy"
+    val queryUrl get() = "$apiUrl/pay/query"
+    val testUrl get() = "$apiUrl/pay/test"
+    val closeUrl get() = "$apiUrl/pay/close"
 
-    val userTotalUrl
-        get() = "$apiUrl/record/user-total"
-    val userAllUrl
-        get() = "$apiUrl/record/user-all"
+    val userTotalUrl get() = "$apiUrl/record/user-total"
+    val userAllUrl get() = "$apiUrl/record/user-all"
     val saveUrl get() = "$apiUrl/record/save"
-
     val totalAmountUrl get() = "$apiUrl/record/all-total"
+
 
     override fun onLoaded(section: ConfigurationSection) {
         if (cancelAction !in listOf("SHIFT_F", "HEAD_UP")) cancelAction = "SHIFT_F"

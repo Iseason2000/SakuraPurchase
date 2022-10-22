@@ -256,6 +256,45 @@ public class WxPayServiceImpl extends BestPayServiceImpl {
         return buildRefundResponse(response);
     }
 
+    @Override
+    public CloseResponse close(CloseRequest request) {
+        WxOrderCloseRequest wxRequest = new WxOrderCloseRequest();
+        wxRequest.setAppid(wxPayConfig.getAppId());
+        wxRequest.setMchId(wxPayConfig.getMchId());
+        wxRequest.setOutTradeNo(request.getOrderId());
+        wxRequest.setNonceStr(RandomUtil.getRandomStr());
+        wxRequest.setSign(WxPaySignature.sign(MapUtil.buildMap(wxRequest), wxPayConfig.getMchKey()));
+        RequestBody body = RequestBody.create(MediaType.parse("application/xml; charset=utf-8"), XmlUtil.toString(wxRequest));
+
+        WxPayApi api;
+        if (wxPayConfig.isSandbox()) {
+            api = devRetrofit.create(WxPayApi.class);
+        } else {
+            api = retrofit.create(WxPayApi.class);
+        }
+        Call<WxCloseResponse> call = api.close(body);
+        Response<WxCloseResponse> retrofitResponse = null;
+        try {
+            retrofitResponse = call.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (!retrofitResponse.isSuccessful()) {
+            throw new RuntimeException("【关闭微信订单】网络异常");
+        }
+        WxCloseResponse response = retrofitResponse.body();
+        if (!response.getReturnCode().equals(WxPayConstants.SUCCESS)) {
+            throw new RuntimeException("【关闭微信订单】returnCode != SUCCESS, returnMsg = " + response.getReturnMsg());
+        }
+        if (!response.getResultCode().equals(WxPayConstants.SUCCESS)) {
+            throw new RuntimeException("【关闭微信订单】resultCode != SUCCESS, err_code = " + response.getErrCode() + " err_code_des=" + response.getErrCodeDes());
+        }
+        CloseResponse closeResponse = new CloseResponse();
+        closeResponse.setOrderId(request.getOrderId() != null ? request.getOrderId() : "");
+        closeResponse.setOutTradeNo(request.getOutOrderId());
+        return closeResponse;
+    }
+
     /**
      * 查询订单
      *
@@ -314,11 +353,6 @@ public class WxPayServiceImpl extends BestPayServiceImpl {
 
     private RefundResponse buildRefundResponse(WxRefundResponse response) {
         RefundResponse refundResponse = new RefundResponse();
-        response.setReturnCode(response.getReturnCode());
-        response.setReturnMsg(response.getReturnMsg());
-        response.setResultCode(response.getResultCode());
-        response.setErrCode(response.getErrCode());
-        response.setErrCodeDes(response.getErrCodeDes());
         refundResponse.setOrderId(response.getOutTradeNo());
         refundResponse.setOrderAmount(MoneyUtil.Fen2Yuan(response.getTotalFee()));
         refundResponse.setOutTradeNo(response.getTransactionId());

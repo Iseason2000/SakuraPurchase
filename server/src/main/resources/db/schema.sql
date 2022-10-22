@@ -4,7 +4,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 CREATE TABLE IF NOT EXISTS `record`
 (
     `order_id`     BIGINT          NOT NULL,
-    `platform`     int             NOT NULL,
+    `pay_type`     int             NOT NULL,
     `status`       varchar(255)    NOT NULL,
     `order_name`   varchar(255)    NOT NULL,
     `order_amount` double UNSIGNED NOT NULL,

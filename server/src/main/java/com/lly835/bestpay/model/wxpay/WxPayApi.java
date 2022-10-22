@@ -1,9 +1,6 @@
 package com.lly835.bestpay.model.wxpay;
 
-import com.lly835.bestpay.model.wxpay.response.WxOrderQueryResponse;
-import com.lly835.bestpay.model.wxpay.response.WxPaySandboxKeyResponse;
-import com.lly835.bestpay.model.wxpay.response.WxPaySyncResponse;
-import com.lly835.bestpay.model.wxpay.response.WxRefundResponse;
+import com.lly835.bestpay.model.wxpay.response.*;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -72,4 +69,8 @@ public interface WxPayApi {
      */
     @POST("mmpaysptrans/pay_bank")
     Call<WxPaySyncResponse> payBank(@Body RequestBody body);
+
+    @POST("pay/closeorder")
+    Call<WxCloseResponse> close(@Body RequestBody body);
+
 }

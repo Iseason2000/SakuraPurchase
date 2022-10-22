@@ -87,5 +87,6 @@ class PurchaseChecker(
         player.inventory.setItem(player.inventory.heldItemSlot, oldItemStack)
         PlayerInfoCacheManager.getPlayerInfo(player.uniqueId).currentOrder = null
         PurchaseManager.purchaseMap.remove(this.player)
+        PurchaseManager.closeOrder(order);
     }
 }

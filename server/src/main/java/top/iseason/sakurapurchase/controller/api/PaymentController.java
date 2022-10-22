@@ -96,7 +96,7 @@ public class PaymentController {
         //记录
         recordService.save(Record.builder()
                 .orderId(orderId)
-                .platform(payType == BestPayTypeEnum.ALIPAY_QRCODE ? 0 : 1)
+                .payType(payType.ordinal())
                 .status(OrderStatusEnum.NOTPAY.name())
                 .orderName(orderName)
                 .orderAmount(amount)
@@ -181,6 +181,35 @@ public class PaymentController {
         recordService.modifyTotalPaidAmount(-byId.getOrderAmount());
         recordService.modifyTotalPaidCount(-1);
         recordService.saveOrUpdate(byId);
+        return response;
+    }
+
+    /**
+     * 关闭订单
+     *
+     * @param orderId
+     * @return
+     */
+    @PostMapping("/close")
+    @ResponseBody
+    public CloseResponse close(@RequestParam String orderId) {
+        Record byId = recordService.getById(orderId);
+        if (byId == null) return null;
+        CloseRequest closeRequest = new CloseRequest();
+        closeRequest.setOrderId(orderId);
+        closeRequest.setPayTypeEnum(byId.getPayTypeEnum());
+        closeRequest.setOutOrderId(byId.getOutTradeNo());
+        closeRequest.setOperatorId("platform");
+        byId.setStatus(OrderStatusEnum.CLOSED.name());
+        recordService.updateById(byId);
+        CloseResponse response;
+        try {
+            response = bestPayService.close(closeRequest);
+        } catch (Exception e) {
+            log.info("[关闭失败] message={}", e.getMessage());
+            return null;
+        }
+        log.info("[关闭成功] request={}", JsonUtil.toJson(response));
         return response;
     }
 

@@ -5,6 +5,7 @@ import org.bukkit.Bukkit
 import top.iseason.bukkit.sakurapurchaseplugin.config.Config
 import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.debug.warn
+import top.iseason.bukkittemplate.utils.other.EasyCoolDown
 import java.util.concurrent.TimeUnit
 
 object ConnectionManager {
@@ -45,6 +46,16 @@ object ConnectionManager {
         .build()
 
     var isConnected: Boolean = false
+        get() {
+            if (!field) {
+                if (!EasyCoolDown.check("try_reconnect", 60000)) {
+                    info("尝试重新连接服务器")
+                    connectToServer()
+                    testConnection()
+                }
+            }
+            return field
+        }
 
     /**
      * 链接登录服务器

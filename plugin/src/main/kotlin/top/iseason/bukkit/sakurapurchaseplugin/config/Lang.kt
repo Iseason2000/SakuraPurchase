@@ -32,6 +32,10 @@ object Lang : SimpleYAMLConfig(updateNotify = false) {
     @Comment("只有一个参数{0}为冷却剩余秒数")
     var pay__coolDown = "&6请等待 &a{0} &6秒后再次发起订单!"
 
+
+    var refund_success = "&a退款成功"
+    var refund_failure = "&6退款失败，订单不存在或已退款!"
+
     var command__no_record = "&e没有记录!"
 
     @Comment(

@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import top.iseason.sakurapurchase.entity.Record;
 import top.iseason.sakurapurchase.entity.Stat;
 import top.iseason.sakurapurchase.entity.TotalStat;
@@ -105,6 +106,7 @@ public class RecordServiceImpl extends ServiceImpl<RecordMapper, Record> impleme
         return yearly;
     }
 
+    @Transactional
     @Override
     public boolean removeRecord(Record record) {
         boolean b = removeById(record);

@@ -11,10 +11,11 @@ import top.iseason.bukkit.sakurapurchaseplugin.util.getValue
 import top.iseason.bukkit.sakurapurchaseplugin.util.lazyMutable
 import top.iseason.bukkit.sakurapurchaseplugin.util.setValue
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 object PlayerInfoCacheManager {
 
-    private val playerCache = mutableMapOf<UUID, PlayerInfo>()
+    private val playerCache = ConcurrentHashMap<UUID, PlayerInfo>()
     private var isCached = false
 
     /**
@@ -31,7 +32,7 @@ object PlayerInfoCacheManager {
      * 初始化之后对当前值的修改会映射到totalAmount的缓存中
      */
     var modifyCache = 0.0
-        set(filed) {
+        @Synchronized set(filed) {
             if (isCached) totalAmount += filed
             else field = filed
         }

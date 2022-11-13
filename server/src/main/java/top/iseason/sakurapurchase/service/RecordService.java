@@ -1,12 +1,14 @@
 package top.iseason.sakurapurchase.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.transaction.annotation.Transactional;
 import top.iseason.sakurapurchase.entity.Record;
 import top.iseason.sakurapurchase.entity.Stat;
 import top.iseason.sakurapurchase.entity.TotalStat;
 
 import java.util.List;
 
+@Transactional
 public interface RecordService extends IService<Record> {
     /**
      * 删除记录并更新统计缓存

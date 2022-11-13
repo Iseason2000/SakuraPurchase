@@ -73,6 +73,7 @@ object Config : SimpleYAMLConfig() {
     val queryUrl get() = "$apiUrl/pay/query"
     val testUrl get() = "$apiUrl/pay/test"
     val closeUrl get() = "$apiUrl/pay/close"
+    val refundUrl get() = "$apiUrl/pay/refund"
 
     val userTotalUrl get() = "$apiUrl/record/user-total"
     val userAllUrl get() = "$apiUrl/record/user-all"

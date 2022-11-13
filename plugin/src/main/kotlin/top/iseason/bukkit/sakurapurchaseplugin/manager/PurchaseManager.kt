@@ -18,10 +18,12 @@ import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Consumer
 
 object PurchaseManager {
-    val purchaseMap = mutableMapOf<Player, PurchaseChecker>()
+
+    val purchaseMap = ConcurrentHashMap<Player, PurchaseChecker>()
 
     /**
      * 为玩家发起支付支付,并启动查询
@@ -139,6 +141,25 @@ object PurchaseManager {
         kotlin.runCatching {
             httpClient.newCall(request).execute().use {
                 return it.isSuccessful
+            }
+        }.getOrElse {
+            it.printStackTrace()
+            ConnectionManager.isConnected = false
+        }
+        return false
+    }
+
+    fun refundOrder(orderId: String): Boolean {
+        if (!ConnectionManager.isConnected) return false
+        val body = FormBody.Builder()
+            .add("orderId", orderId)
+            .add("_csrf", ConnectionManager.token) //防止跨域攻击
+            .build()
+        val request = Request.Builder().url(Config.refundUrl).post(body).build()
+        kotlin.runCatching {
+            httpClient.newCall(request).execute().use {
+                val string = it.body?.string()
+                return it.isSuccessful && !(string == null || string == "null")
             }
         }.getOrElse {
             it.printStackTrace()

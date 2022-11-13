@@ -1,11 +1,13 @@
 package top.iseason.sakurapurchase.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.transaction.annotation.Transactional;
 import top.iseason.sakurapurchase.entity.BukkitRecord;
 import top.iseason.sakurapurchase.entity.Record;
 
 import java.util.List;
 
+@Transactional
 public interface BukkitRecordService extends IService<BukkitRecord> {
     /**
      * 查询用户的所有订单
@@ -14,6 +16,7 @@ public interface BukkitRecordService extends IService<BukkitRecord> {
      * @param uuid 用户uuid
      * @return 用户的所有订单
      */
+
     List<Record> getUserRecords(String uuid);
 
     /**

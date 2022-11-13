@@ -46,7 +46,7 @@ object ConnectionManager {
         .build()
 
     var isConnected: Boolean = false
-        get() {
+        @Synchronized get() {
             if (!field) {
                 if (!EasyCoolDown.check("try_reconnect", 60000)) {
                     info("尝试重新连接服务器")

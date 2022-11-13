@@ -80,6 +80,20 @@ fun mainCommand() {
                 }
             }
         }
+
+        node("refund") {
+            default = PermissionDefault.OP
+            description = "给某个订单退款"
+            param("<orderId>")
+            async = true
+            executor {
+                val orderId = next<String>()
+                if (PurchaseManager.refundOrder(orderId)) {
+                    it.sendColorMessage(Lang.refund_success)
+                } else it.sendColorMessage(Lang.refund_failure)
+            }
+        }
+
         node("log") {
             async = true
             description = "查询支付过的订单"

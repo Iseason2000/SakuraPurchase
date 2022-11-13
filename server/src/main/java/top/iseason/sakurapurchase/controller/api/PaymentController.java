@@ -9,7 +9,7 @@ import com.lly835.bestpay.model.*;
 import com.lly835.bestpay.service.BestPayService;
 import com.lly835.bestpay.utils.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import top.iseason.sakurapurchase.entity.Record;
 import top.iseason.sakurapurchase.service.RecordService;
@@ -21,7 +21,7 @@ import java.util.Date;
 /**
  * 支付相关api
  */
-@Controller
+@RestController
 @Slf4j
 @RequestMapping("/api/pay")
 public class PaymentController {
@@ -32,7 +32,6 @@ public class PaymentController {
     private RecordService recordService;
 
     @GetMapping("/test/{version}")
-    @ResponseBody
     public String test(@PathVariable("version") String version, HttpServletRequest request) {
         log.info("服务器: " + getIpAddr(request) + " 已连接,版本: " + version);
         return "Success";
@@ -68,8 +67,8 @@ public class PaymentController {
     /**
      * 发起二维码支付 /api/pay/buy?payType=ALIPAY_QRCODE&orderName=测试商品&amount=0.01
      */
+    @Transactional
     @PostMapping(value = "/buy")
-    @ResponseBody
     public PayResponse pay(
             @RequestParam("type") BestPayTypeEnum payType,
             @RequestParam("name") String orderName,
@@ -113,8 +112,8 @@ public class PaymentController {
      * @param orderId
      * @return
      */
+    @Transactional
     @GetMapping("/query/{orderId}")
-    @ResponseBody
     public OrderQueryResponse query(@PathVariable("orderId") String orderId) {
         //没有缓存则在线查询
         Record byId = recordService.getById(orderId);
@@ -158,8 +157,8 @@ public class PaymentController {
      * @param orderId 订单ID
      * @return
      */
+    @Transactional
     @PostMapping("/refund")
-    @ResponseBody
     public RefundResponse refund(@RequestParam String orderId) {
         Record byId = recordService.getById(orderId);
         if (byId == null) return null;
@@ -190,8 +189,8 @@ public class PaymentController {
      * @param orderId
      * @return
      */
+    @Transactional
     @PostMapping("/close")
-    @ResponseBody
     public CloseResponse close(@RequestParam String orderId) {
         Record byId = recordService.getById(orderId);
         if (byId == null) return null;
@@ -217,7 +216,6 @@ public class PaymentController {
      * 异步回调
      */
     @PostMapping(value = "/notify")
-    @ResponseBody
     public String notify(@RequestBody String notifyData) {
         log.debug("[异步通知] 支付平台的数据request={}", notifyData);
         PayResponse response = null;
@@ -262,7 +260,6 @@ public class PaymentController {
 //        return close;
 //    }
     @PostMapping("remove")
-    @ResponseBody
     public String remove(@RequestParam("orderId") String orderId) {
         if (recordService.removeById(orderId)) {
             return "删除成功";

@@ -62,9 +62,13 @@ object Config : SimpleYAMLConfig() {
     var qrColorStr: String = "0,0,0"
     var qrColor: Int = -0XFFFFFFF
 
-    @Comment("", "支付时的取消动作,默认 SHIFT_F", "SHIFT_F: 蹲下+F 取消", "HEAD_UP: 抬头取消")
+    @Comment(
+        "", "支付时的取消动作,默认 HEAD_UP",
+        "SHIFT_F: 蹲下+F 取消,仅1.9+",
+        "HEAD_UP: 抬头取消"
+    )
     @Key
-    var cancelAction = "SHIFT_F"
+    var cancelAction = "HEAD_UP"
     private val pattern = Pattern.compile("(%[0-9|.]*?_?amount%)")
 
     val loginUrl get() = "$serverHost/login"
@@ -79,7 +83,6 @@ object Config : SimpleYAMLConfig() {
     val userAllUrl get() = "$apiUrl/record/user-all"
     val saveUrl get() = "$apiUrl/record/save"
     val totalAmountUrl get() = "$apiUrl/record/all-total"
-
 
     override fun onLoaded(section: ConfigurationSection) {
         if (cancelAction !in listOf("SHIFT_F", "HEAD_UP")) cancelAction = "SHIFT_F"

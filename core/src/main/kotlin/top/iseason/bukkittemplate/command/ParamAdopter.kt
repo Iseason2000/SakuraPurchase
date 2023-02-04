@@ -106,12 +106,6 @@ private fun setDefaultParams() {
     ParamAdopter(Double::class, errorMessage = "&c%s &7不是一个有效的小数") {
         runCatching { it.toDouble() }.getOrNull()
     }.register()
-    ParamAdopter(Float::class, errorMessage = "&c%s &7不是一个有效的小数") {
-        runCatching { it.toFloat() }.getOrNull()
-    }.register()
-    ParamAdopter(Long::class, errorMessage = "&c%s &7不是一个有效的长整数") {
-        runCatching { it.toLong() }.getOrNull()
-    }.register()
     ParamAdopter(String::class) { it }.register()
     ParamAdopter(
         PotionEffectType::class,

@@ -7,13 +7,26 @@ import top.iseason.bukkittemplate.config.annotations.Comment
 import top.iseason.bukkittemplate.config.annotations.FilePath
 import top.iseason.bukkittemplate.config.annotations.Key
 import top.iseason.bukkittemplate.debug.SimpleLogger
-import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils
 
 @Key
 @FilePath("lang.yml")
-object Lang : SimpleYAMLConfig(updateNotify = false) {
-    @Comment("所有消息的前缀")
+object Lang : SimpleYAMLConfig() {
+    @Comment(
+        "",
+        "消息留空将不会显示，使用 '\\n' 或换行符 可以换行",
+        "支持 & 颜色符号，1.17以上支持16进制颜色代码，如 #66ccff",
+        "{0}、{1}、{2}、{3} 等格式为该消息独有的变量占位符",
+        "所有消息支持PlaceHolderAPI",
+        "以下是一些特殊消息, 大小写不敏感，可以通过 \\n 自由组合",
+        "以 [BoardCast] 开头将以广播的形式发送，支持BungeeCord",
+        "以 [Actionbar] 开头将发送ActionBar消息",
+        "以 [Command] 开头将以消息接收者的身份运行命令",
+        "以 [Console] 开头将以控制台的身份运行命令",
+        "以 [OP-Command] 开头将赋予消息接收者临时op运行命令 (慎用)"
+    )
+    var readme = ""
+
     var prefix = "&a[&6${BukkitTemplate.getPlugin().description.name}&a] &f"
 
     @Comment("", "参数以{index}声明,index的范围=[0,5]: orderId, orderName, payType, amount, attach, createTIme")
@@ -48,7 +61,6 @@ object Lang : SimpleYAMLConfig(updateNotify = false) {
     override fun onLoaded(section: ConfigurationSection) {
         SimpleLogger.prefix = prefix
         MessageUtils.defaultPrefix = prefix
-        info("&a语言文件已重载!")
     }
 
 }

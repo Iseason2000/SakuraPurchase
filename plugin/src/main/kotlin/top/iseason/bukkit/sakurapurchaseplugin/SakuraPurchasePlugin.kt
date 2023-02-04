@@ -1,6 +1,7 @@
 package top.iseason.bukkit.sakurapurchaseplugin
 
 import fr.xephi.authme.events.LoginEvent
+import org.bstats.bukkit.Metrics
 import org.bukkit.event.player.PlayerLoginEvent
 import top.iseason.bukkit.sakurapurchaseplugin.command.mainCommand
 import top.iseason.bukkit.sakurapurchaseplugin.config.Config
@@ -23,20 +24,13 @@ import java.io.File
 
 object SakuraPurchasePlugin : KotlinPlugin() {
 
-    override fun onAsyncLoad() {
-
-    }
-
     override fun onEnable() {
+        Metrics(javaPlugin, 17635)
         PAPIHook.checkHooked()
         AuthMeHook.checkHooked()
         if (PAPIHook.hasHooked) {
             PAPIExpansion.register()
         }
-//        SimpleLogger.prefix = "&a[&6${javaPlugin.description.name}&a]&r ".toColor()
-    }
-
-    override fun onAsyncEnable() {
         OrderCache.load()
         Lang.load(false)
         Config.load(false)

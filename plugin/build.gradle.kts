@@ -4,9 +4,6 @@ plugins {
 
 repositories {
     mavenCentral()
-    maven {
-        url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
-    }
 }
 
 dependencies {
@@ -20,15 +17,14 @@ dependencies {
 
     // 本地依赖放在libs文件夹内
     compileOnly(fileTree("libs") { include("*.jar") })
-
+    implementation("org.bstats:bstats-bukkit:3.0.0")
     compileOnly("com.squareup.okhttp3:okhttp:4.10.0")
-    compileOnly("com.google.zxing:core:3.5.0")
+    compileOnly("com.google.zxing:core:3.5.1")
     implementation("com.github.johnnyjayjay:spigot-maps:2.1.1")
     implementation("org.bstats:bstats-bukkit:3.0.0")
     compileOnly("org.spigotmc:spigot-api:1.19.2-R0.1-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.11.2")
     compileOnly("fr.xephi:authme:5.6.0-SNAPSHOT")
-
 }
 
 // 插件名称，请在gradle.properties 修改
@@ -50,6 +46,12 @@ val exposedVersion: String by rootProject
 val obfuscated: String by rootProject
 val isObfuscated = obfuscated == "true"
 val shrink: String by rootProject
+val defaultFile = File("../build", "${rootProject.name}-${rootProject.version}.jar")
+val output =
+    if (isObfuscated)
+        File(jarOutputFile, "${rootProject.name}-${rootProject.version}-obfuscated.jar")
+    else
+        File(jarOutputFile, "${rootProject.name}-${rootProject.version}.jar")
 
 tasks {
     shadowJar {
@@ -58,7 +60,6 @@ tasks {
         }
         relocate("top.iseason.bukkittemplate", "$groupS.libs.core")
         relocate("org.bstats", "$groupS.libs.bstats")
-        relocate("com.github.johnnyjayjay", "$groupS.libs.maps")
         relocate("io.github.bananapuncher714.nbteditor", "$groupS.libs.nbteditor")
     }
     build {
@@ -128,13 +129,10 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     keepclassmembers(allowObf, "class * implements org.bukkit.event.Listener {*;}")
     keepclassmembers(allowObf, "class * implements org.jetbrains.exposed.dao.id.IdTable {*;}")
     keepclassmembers(allowObf, "class * implements org.jetbrains.exposed.dao.Entity {*;}")
-    keepattributes("Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*,EnclosingMethod")
-    keepkotlinmetadata()
+    keepattributes("Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*")
+    keep("class kotlin.Metadata {}")
     repackageclasses()
-    if (isObfuscated)
-        outjars(File(jarOutputFile, "${rootProject.name}-${rootProject.version}-obfuscated.jar"))
-    else
-        outjars(File(jarOutputFile, "${rootProject.name}-${rootProject.version}.jar"))
+    outjars(output)
 }
 
 fun getProperties(properties: String) = rootProject.properties[properties].toString()

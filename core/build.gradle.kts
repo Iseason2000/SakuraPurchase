@@ -1,18 +1,17 @@
 plugins {
     kotlin("jvm")
-    id("org.jetbrains.dokka") version "1.7.10"
+    id("org.jetbrains.dokka") version "1.7.20"
 }
 
 group = "top.iseason.bukkittemplate"
 
 val exposedVersion: String by rootProject
+repositories {
 
+}
 dependencies {
-
-    implementation("io.github.bananapuncher714:nbteditor:7.18.3")
     compileOnly("org.spigotmc:spigot-api:1.19.2-R0.1-SNAPSHOT")
-
-    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.7.10")
+    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.7.20")
 }
 tasks {
     compileJava {

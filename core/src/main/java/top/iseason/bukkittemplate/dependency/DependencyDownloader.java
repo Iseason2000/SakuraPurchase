@@ -1,7 +1,10 @@
 package top.iseason.bukkittemplate.dependency;
 
 import org.bukkit.Bukkit;
+import org.xml.sax.SAXException;
+import top.iseason.bukkittemplate.BukkitTemplate;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
@@ -18,10 +21,10 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class DependencyDownloader {
 
-    public static File parent = new File(".", "libraries");
-    public static Set<String> exists = new HashSet<>();
+    public static File parent = new File("libraries");
     public List<String> repositories = new ArrayList<>();
     public List<String> dependencies = new ArrayList<>();
+    public static Set<String> exists = new HashSet<>();
 
     /**
      * 下载依赖
@@ -29,17 +32,18 @@ public class DependencyDownloader {
      *
      * @param dependency   依赖地址
      * @param recursiveSub 是否下载子依赖
+     * @return true 表示加载依赖成功
      */
-    public static void downloadDependency(String dependency, boolean recursiveSub, List<String> repositories) {
+    public static boolean downloadDependency(String dependency, boolean recursiveSub, List<String> repositories) {
         String[] split = dependency.split(":");
         if (split.length != 3) {
-            Bukkit.getLogger().warning("invalid dependency " + dependency);
-            return;
+            Bukkit.getLogger().warning("Invalid dependency " + dependency);
+            return false;
         }
         String groupId = split[0];
         String artifact = split[1];
         String classId = groupId + "." + artifact;
-        if (exists.contains(classId)) return;
+        if (exists.contains(classId)) return true;
         exists.add(classId);
         String version = split[2];
         String suffix = groupId.replace(".", "/") + "/" + artifact + "/" + version + "/";
@@ -52,9 +56,11 @@ public class DependencyDownloader {
         if (jarFile.exists()) {
             try {
                 ClassInjector.addURL(jarFile.toURI().toURL());
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         } else {
+            boolean downloaded = false;
             for (String repository : repositories) {
                 try {
                     String jarStr = repository + suffix + jarName;
@@ -64,13 +70,16 @@ public class DependencyDownloader {
                         continue;
                     }
                     ClassInjector.addURL(jarFile.toURI().toURL());
+                    downloaded = true;
                     break;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
+            if (!downloaded) return false;
         }
-        if (!recursiveSub) return;
+        if (!recursiveSub) return true;
+
         for (String repository : repositories) {
             try {
                 URL pomUrl = new URL(repository + suffix + pomName);
@@ -78,13 +87,21 @@ public class DependencyDownloader {
                     pomFile.delete();
                     continue;
                 }
-                for (String subDependency : new XmlDependency(pomFile).getDependency()) {
-                    downloadDependency(subDependency, false, repositories);
+                try {
+                    XmlParser xmlDependency = new XmlParser(pomFile);
+                    for (String subDependency : xmlDependency.getDependency()) {
+                        if (!downloadDependency(subDependency, false, repositories)) {
+                            Bukkit.getLogger().warning("Loading sub dependency" + subDependency + " error!");
+                        }
+                    }
+                } catch (ParserConfigurationException | IOException | SAXException e) {
+                    Bukkit.getLogger().warning("Loading file " + pomFile + " error!");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        return true;
     }
 
     /**
@@ -114,7 +131,7 @@ public class DependencyDownloader {
             if (!download(shaUrl, sha)) return false;
             return checkSha(file, sha);
         } catch (IOException e) {
-            return true;
+            return false;
         }
     }
 
@@ -123,7 +140,7 @@ public class DependencyDownloader {
      *
      * @param url  文件链接
      * @param file 保存路径
-     * @return
+     * @return true 下载成功
      */
     private static boolean download(URL url, File file) {
         HttpURLConnection connection;
@@ -209,13 +226,17 @@ public class DependencyDownloader {
         return this;
     }
 
-    public void setup() {
+    public boolean setup() {
         for (String dependency : dependencies) {
-            downloadDependency(dependency, true, repositories);
+            if (!downloadDependency(dependency, true, repositories)) {
+                return false;
+            }
         }
+        return true;
     }
 
-    public void downloadDependency(String dependency) {
-        downloadDependency(dependency, true, repositories);
+    public boolean downloadDependency(String dependency) {
+        if (BukkitTemplate.isOfflineLibInstalled()) return true;
+        return downloadDependency(dependency, true, repositories);
     }
 }

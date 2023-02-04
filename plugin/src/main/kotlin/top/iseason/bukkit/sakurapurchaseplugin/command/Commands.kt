@@ -29,11 +29,11 @@ fun mainCommand() {
             param("<player>", suggestRuntime = ParamSuggestCache.playerParam)
             param("<group>", suggestRuntime = { Config.commandGroup.keys })
             param("[amount]")
-            executor {
-                val player = next<Player>()
-                val group = next<String>()
+            executor { params, _ ->
+                val player = params.next<Player>()
+                val group = params.next<String>()
                 val commands = Config.commandGroup[group] ?: throw ParmaException("命令组不存在")
-                val amount = nextOrNull<Double>() ?: 0.01
+                val amount = params.nextOrNull<Double>() ?: 0.01
                 Config.performCommands(player, amount, commands)
             }
         }
@@ -48,30 +48,25 @@ fun mainCommand() {
             param("[attach]")
             async = true
             val weakCoolDown = WeakCoolDown<Player>()
-            executor {
-                val group = next<String>()
-                val type = next<PurchaseManager.PayType>()
-                val player = next<Player>()
+            executor { params, _ ->
+                val group = params.next<String>()
+                val type = params.next<PurchaseManager.PayType>()
+                val player = params.next<Player>()
                 val commands = Config.commandGroup[group] ?: throw ParmaException("命令组不存在")
                 if (!ConnectionManager.isConnected) {
                     player.sendColorMessage(Lang.pay__connection_error)
                     return@executor
                 }
-                val amount = next<Double>()
+                val amount = params.next<Double>()
                 if (amount < 0.01) throw ParmaException("支持的最小金额为 0.01 元")
-                val name = next<String>()
-                val attach = nextOrNull<String>() ?: ""
+                val name = params.next<String>()
+                val attach = params.nextOrNull<String>() ?: ""
                 if (!ConnectionManager.isConnected) throw ParmaException("&e支付服务未启用!")
                 // 检查冷却
                 val coolDown = (Config.coolDown * 1000).toLong()
                 if (weakCoolDown.check(player, coolDown)) {
                     throw ParmaException(
-                        Lang.pay__coolDown.formatBy(
-                            weakCoolDown.getCoolDown(
-                                player,
-                                coolDown
-                            ) / 1000.0
-                        )
+                        Lang.pay__coolDown.formatBy(weakCoolDown.getCoolDown(player)?.div(1000.0))
                     )
                 }
                 PurchaseManager.purchase(player, amount, type, name, attach, group) {
@@ -86,11 +81,11 @@ fun mainCommand() {
             description = "给某个订单退款"
             param("<orderId>")
             async = true
-            executor {
-                val orderId = next<String>()
+            executor { params, sender ->
+                val orderId = params.next<String>()
                 if (PurchaseManager.refundOrder(orderId)) {
-                    it.sendColorMessage(Lang.refund_success)
-                } else it.sendColorMessage(Lang.refund_failure)
+                    sender.sendColorMessage(Lang.refund_success)
+                } else sender.sendColorMessage(Lang.refund_failure)
             }
         }
 
@@ -98,21 +93,21 @@ fun mainCommand() {
             async = true
             description = "查询支付过的订单"
             param("[index]", suggest = listOf("1", "2", "3", "4", "5"))
-            param("[player]", suggestRuntime = {
-                if (isOp) Bukkit.getOnlinePlayers().map { it.name }
+            param("[player]", suggestRuntime = { it ->
+                if (it.isOp) Bukkit.getOnlinePlayers().map { it.name }
                 else emptyList()
             })
-            executor {
-                val page = nextOrNull<Int>() ?: 1
-                val player = nextOrNull<Player>()
-                if (player != null && !it.isOp) return@executor
-                val rp = player ?: it as? Player ?: return@executor
+            executor { params, sender ->
+                val page = params.nextOrNull<Int>() ?: 1
+                var player = params.nextOrNull<Player>()
+                if (player != null && !sender.isOp) player = null
+                val rp = player ?: sender as? Player ?: return@executor
                 val playerInfo = PlayerInfoCacheManager.getPlayerInfo(rp.uniqueId)
                 val lastOrders = playerInfo.getLastOrders((page - 1) * 5, 5)
                 if (lastOrders.isEmpty())
-                    it.sendColorMessage(Lang.command__no_record)
+                    sender.sendColorMessage(Lang.command__no_record)
                 else
-                    it.sendColorMessages(lastOrders, prefix = "")
+                    sender.sendColorMessages(lastOrders, prefix = "")
             }
         }
         node("check") {
@@ -120,14 +115,14 @@ fun mainCommand() {
             default = PermissionDefault.OP
             async = true
             param("<player>", suggestRuntime = ParamSuggestCache.playerParam)
-            executor {
-                val player = next<Player>()
+            executor { params, sender ->
+                val player = params.next<Player>()
                 val order = OrderCache.orderCache[player.uniqueId] ?: throw ParmaException("玩家没有未支付的订单")
                 val group = OrderCache.groupCache[player.uniqueId] ?: throw ParmaException("玩家没有未支付的订单")
                 val commands = Config.commandGroup[group] ?: throw ParmaException("命令组已失效，请联系管理员")
-                it.sendColorMessage("&e查询玩家未支付的订单...")
+                sender.sendColorMessage("&e查询玩家未支付的订单...")
                 val status = PurchaseManager.query(order.orderId)
-                it.sendColorMessage("&7玩家 &a${player.name} \\n&b$order \\n&e状态: &f$status")
+                sender.sendColorMessage("&7玩家 &a${player.name} \\n&b$order \\n&e状态: &f$status")
                 if (status == "SUCCESS") {
                     if (!PurchaseManager.saveOrder(order)) {
                         warn("保存订单异常，请检查链接!")
@@ -148,7 +143,7 @@ fun mainCommand() {
             async = true
             default = PermissionDefault.OP
             description = "重新链接支付服务器"
-            executor {
+            executor { _, _ ->
                 ConnectionManager.connectToServer()
                 ConnectionManager.testConnection()
             }
@@ -156,7 +151,7 @@ fun mainCommand() {
         node("debug") {
             default = PermissionDefault.OP
             description = "切换调试模式"
-            executor {
+            executor { _, _ ->
                 SimpleLogger.isDebug = !SimpleLogger.isDebug
             }
         }

@@ -24,6 +24,7 @@ import java.util.Date;
 @RestController
 @Slf4j
 @RequestMapping("/api/pay")
+@Transactional
 public class PaymentController {
     private final Sequence sequence = new Sequence(null);
     @Resource

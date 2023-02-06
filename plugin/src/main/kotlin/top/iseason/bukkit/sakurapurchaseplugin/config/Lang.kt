@@ -56,7 +56,7 @@ object Lang : SimpleYAMLConfig() {
         "参数以{index}声明,index的范围=[0,5]: orderId, orderName, payType, amount, attach, createTIme"
     )
     var command__order_format =
-        "&7订单: &6 {0} &7名称:&f {1} \\n&7支付方式: &e{2} &7金额: &a{3} &7创建时间:&b {5} \\n&7其他:&f{4}\\n "
+        "&7订单: &6 {0} &7命令组:&f {1} \\n&7支付方式: &e{2} &7金额: &a{3} &7创建时间:&b {5} \\n&7其他:&f{4}\\n "
 
     override fun onLoaded(section: ConfigurationSection) {
         SimpleLogger.prefix = prefix

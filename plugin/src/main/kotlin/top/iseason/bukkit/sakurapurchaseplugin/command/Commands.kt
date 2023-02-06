@@ -30,6 +30,7 @@ fun mainCommand() {
             param("<group>", suggestRuntime = { Config.commandGroup.keys })
             param("[amount]")
             executor { params, _ ->
+                if (!ConnectionManager.isConnected) throw ParmaException("服务端未连接!")
                 val player = params.next<Player>()
                 val group = params.next<String>()
                 val commands = Config.commandGroup[group] ?: throw ParmaException("命令组不存在")
@@ -49,6 +50,7 @@ fun mainCommand() {
             async = true
             val weakCoolDown = WeakCoolDown<Player>()
             executor { params, _ ->
+                if (!ConnectionManager.isConnected) throw ParmaException("服务端未连接!")
                 val type = params.next<PurchaseManager.PayType>()
                 val group = params.next<String>()
                 val player = params.next<Player>()
@@ -82,6 +84,7 @@ fun mainCommand() {
             param("<orderId>")
             async = true
             executor { params, sender ->
+                if (!ConnectionManager.isConnected) throw ParmaException("服务端未连接!")
                 val orderId = params.next<String>()
                 if (PurchaseManager.refundOrder(orderId)) {
                     sender.sendColorMessage(Lang.refund_success)
@@ -98,6 +101,7 @@ fun mainCommand() {
                 else emptyList()
             })
             executor { params, sender ->
+                if (!ConnectionManager.isConnected) throw ParmaException("服务端未连接!")
                 val page = params.nextOrNull<Int>() ?: 1
                 var player = params.nextOrNull<Player>()
                 if (player != null && !sender.isOp) player = null
@@ -116,6 +120,7 @@ fun mainCommand() {
             async = true
             param("<player>", suggestRuntime = ParamSuggestCache.playerParam)
             executor { params, sender ->
+                if (!ConnectionManager.isConnected) throw ParmaException("服务端未连接!")
                 val player = params.next<Player>()
                 val order = OrderCache.orderCache[player.uniqueId] ?: throw ParmaException("玩家没有未支付的订单")
                 val group = OrderCache.groupCache[player.uniqueId] ?: throw ParmaException("玩家没有未支付的订单")

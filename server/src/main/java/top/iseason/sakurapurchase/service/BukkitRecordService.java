@@ -82,4 +82,5 @@ public interface BukkitRecordService extends IService<BukkitRecord> {
      * @return
      */
     List<Record> getUserRecordIds(String uuid, int offset, int amount);
+
 }

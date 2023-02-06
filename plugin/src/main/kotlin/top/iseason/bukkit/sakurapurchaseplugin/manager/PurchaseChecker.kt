@@ -52,8 +52,8 @@ class PurchaseChecker(
             player.sendColorMessage(
                 Lang.pay__sucess.formatByOrder(order)
             )
-            info("&7玩家 &6${player.name} &7订单 &6${order.orderId} &a已完成支付(${order.payType.translation}), &7金额 &6${order.amount} &7商品信息: &f${order.orderName} ${order.attach}")
-            cancelSilently()
+            cancelSilently(false)
+            info("&7玩家 &6${player.name} &7订单 &6${order.orderId} &a已完成支付(${order.payType.translation}), &7金额 &6${order.amount} &7命令组: &f${order.orderName} ${order.attach}")
             if (!PurchaseManager.saveOrder(order)) {
                 warn("保存订单异常，请检查链接!")
             }
@@ -82,11 +82,12 @@ class PurchaseChecker(
     /**
      * 取消，但是不提示
      */
-    private fun cancelSilently() {
+    private fun cancelSilently(setClose: Boolean = true) {
         super.cancel()
         player.inventory.setItem(player.inventory.heldItemSlot, oldItemStack)
         PlayerInfoCacheManager.getPlayerInfo(player.uniqueId).currentOrder = null
         PurchaseManager.purchaseMap.remove(this.player)
-        PurchaseManager.closeOrder(order);
+        if (setClose)
+            PurchaseManager.closeOrder(order);
     }
 }

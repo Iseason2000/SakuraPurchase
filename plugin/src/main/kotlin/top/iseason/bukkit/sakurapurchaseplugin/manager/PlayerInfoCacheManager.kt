@@ -68,11 +68,15 @@ object PlayerInfoCacheManager {
                 "${Config.userAllUrl}/$uuid?offset=$offset&amount=$amount"
             } else "${Config.userAllUrl}/$uuid"
         val request = Request.Builder().url(url).get().build()
+//        println("request url :${url}")
         kotlin.runCatching {
             ConnectionManager.httpClient.newCall(request).execute().use {
+//                println("respose code :${it.code}")
                 val json = it.body?.string() ?: return@use
+//                println("data :${json}")
                 val mutableListOf = mutableListOf<Order>()
                 val fromJson = Gson().fromJson(json, JsonArray::class.java)
+//                println("data size :${fromJson.size()}")
                 for (jsonElement in fromJson) {
                     val order = Order.from(uuid, jsonElement.asJsonObject) ?: continue
                     mutableListOf.add(order)

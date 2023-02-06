@@ -1,21 +1,27 @@
 package top.iseason.sakurapurchase.controller.api;
 
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import top.iseason.sakurapurchase.entity.BukkitRecord;
 import top.iseason.sakurapurchase.entity.Record;
 import top.iseason.sakurapurchase.service.BukkitRecordService;
+import top.iseason.sakurapurchase.service.RecordService;
 
 import javax.annotation.Resource;
 import java.util.List;
 
+@Transactional
 @Controller
 @Slf4j
 @RequestMapping("/api/record")
 public class BukkitRecordController {
     @Resource
     BukkitRecordService bukkitRecordService;
+    @Resource
+    private RecordService recordService;
 
     /**
      * 查询用户的订单
@@ -29,8 +35,9 @@ public class BukkitRecordController {
                                 @RequestParam(value = "offset", required = false) Integer offset,
                                 @RequestParam(value = "amount", required = false) Integer amount
     ) {
-        if (offset != null && amount != null) return bukkitRecordService.getUserRecordIds(uuid, offset, amount);
-        return bukkitRecordService.getUserRecords(uuid);
+        return (offset != null && amount != null) ?
+                bukkitRecordService.getUserRecordIds(uuid, offset, amount) :
+                bukkitRecordService.getUserRecords(uuid);
     }
 
     /**
@@ -96,6 +103,10 @@ public class BukkitRecordController {
     @ResponseBody
     public Boolean save(@RequestParam("uuid") String uuid, @RequestParam("orderId") Long orderId) {
         log.info("bukkit 订单: " + orderId + "已完成");
+        recordService.update(new LambdaUpdateWrapper<Record>()
+                .set(Record::getStatus, "SUCCESS")
+                .eq(Record::getOrderId, orderId)
+        );
         return bukkitRecordService.save(new BukkitRecord(null, uuid, orderId));
     }
 }

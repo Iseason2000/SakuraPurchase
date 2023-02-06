@@ -25,16 +25,19 @@ data class Order(
 
         fun from(uuid: UUID, json: JsonObject): Order? {
             return try {
+                val asString = json["platformEnum"].asString
+                val platform = if (asString == "WX") PurchaseManager.PayType.WXPAY else PurchaseManager.PayType.ALIPAY
                 Order(
                     uuid,
                     json["orderId"].asString,
                     json["orderName"].asString,
                     json["orderAmount"].asDouble,
-                    PurchaseManager.PayType.values()[json["platform"].asInt],
+                    platform,
                     json["attach"].asString,
                     format.parse(json["createTime"].asString)
                 )
             } catch (e: Throwable) {
+//                e.printStackTrace()
                 null
             }
         }
@@ -45,8 +48,8 @@ data class Order(
                     uuid,
                     section.getString("orderId")!!,
                     section.getString("orderName")!!,
-                    section.getDouble("orderAmount"),
-                    PurchaseManager.PayType.values()[section.getInt("platform")],
+                    section.getDouble("amount"),
+                    PurchaseManager.PayType.values()[section.getInt("payType")],
                     section.getString("attach")!!,
                     format.parse(section.getString("createTime"))
                 )

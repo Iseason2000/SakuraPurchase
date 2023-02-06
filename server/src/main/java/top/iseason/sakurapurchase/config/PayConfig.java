@@ -11,7 +11,7 @@ import javax.annotation.Resource;
 public class PayConfig {
 
     @Resource
-    private WechatAccountConfig accountConfig;
+    private WechatAccountConfig weChatAccountConfig;
 
     @Resource
     private AliPayAccountConfig aliPayAccountConfig;
@@ -19,14 +19,13 @@ public class PayConfig {
     @Bean
     public WxPayConfig wxPayConfig() {
         WxPayConfig wxPayConfig = new WxPayConfig();
-        wxPayConfig.setAppId(accountConfig.getAppId());
-        wxPayConfig.setMchId(accountConfig.getMchId());
-        wxPayConfig.setMchKey(accountConfig.getMchKey());
-        wxPayConfig.setAppSecret(accountConfig.getMiniAppSecret());
-
-        wxPayConfig.setKeyPath(accountConfig.getKeyPath());
-        wxPayConfig.setNotifyUrl(accountConfig.getNotifyUrl());
-        wxPayConfig.setAppAppId(accountConfig.getAppAppId());
+        wxPayConfig.setAppId(weChatAccountConfig.getAppId());
+        wxPayConfig.setMchId(weChatAccountConfig.getMchId());
+        wxPayConfig.setMchKey(weChatAccountConfig.getMchKey());
+//        wxPayConfig.setAppSecret(weChatAccountConfig.getAppSecret());
+        wxPayConfig.setKeyPath(weChatAccountConfig.getKeyPath());
+        wxPayConfig.setNotifyUrl(weChatAccountConfig.getNotifyUrl());
+        wxPayConfig.setAppAppId(weChatAccountConfig.getAppAppId());
         return wxPayConfig;
     }
 

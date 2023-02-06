@@ -80,6 +80,7 @@ object PurchaseManager {
                 }
             }
         }.getOrElse {
+            it.printStackTrace()
             warn("发起支付失败 ${it.message}")
             ConnectionManager.isConnected = false
         }

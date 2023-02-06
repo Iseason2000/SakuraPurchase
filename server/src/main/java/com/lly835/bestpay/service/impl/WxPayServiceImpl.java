@@ -115,7 +115,7 @@ public class WxPayServiceImpl extends BestPayServiceImpl {
         wxRequest.setAttach(request.getAttach());
         wxRequest.setSign(WxPaySignature.sign(MapUtil.buildMap(wxRequest), wxPayConfig.getMchKey()));
 
-        wxRequest.setAuthCode("");
+//        wxRequest.setAuthCode("");
 
         RequestBody body = RequestBody.create(MediaType.parse("application/xml; charset=utf-8"), XmlUtil.toString(wxRequest));
 

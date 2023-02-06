@@ -56,6 +56,6 @@ public class WxPayUnifiedorderRequest {
     @XmlElement(name = "trade_type")
     private String tradeType;
 
-    @XmlElement(name = "auth_code", required = false)
-    private String authCode;
+//    @XmlElement(name = "auth_code", required = false)
+//    private String authCode;
 }

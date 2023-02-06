@@ -28,6 +28,7 @@ public class WechatAccountConfig {
      * 小程序appSecret
      */
     private String miniAppSecret;
+
     private String appSecret;
 
     /**
@@ -56,5 +57,6 @@ public class WechatAccountConfig {
      * 获取地址 https://open.weixin.qq.com
      */
     private String appAppId;
+
     private String appId;
 }

@@ -44,10 +44,12 @@ alipay:
 
 # 微信 支付设置 APIv2,自行去申请 https://pay.weixin.qq.com/index.php/apply/applyment_home/guide_normal
 wechat:
-  appId:
-  mchId:
-  mchKey:
-  appSecret:
+  # 公众号appId
+  appId: ''
+  # 商户号
+  mchId: ''
+  # 商户密钥
+  mchKey: ''
   # 证书pkcs12格式 apiclient_cert.p12
   keyPath: 'C:\Users\Iseason2000\Desktop\apiclient_cert.p12'
   # 服务器异步通知页面路径需http://格式的完整路径

@@ -44,7 +44,7 @@ public class WxPayMicroServiceImpl extends WxPayServiceImpl {
         wxRequest.setTotalFee(MoneyUtil.Yuan2Fen(request.getOrderAmount()));
         wxRequest.setBody(request.getOrderName());
         wxRequest.setOpenid(request.getOpenid());
-        wxRequest.setAuthCode(request.getAuthCode());
+//        wxRequest.setAuthCode(request.getAuthCode());
 
         wxRequest.setAppid(wxPayConfig.getAppId());
         wxRequest.setMchId(wxPayConfig.getMchId());
@@ -58,7 +58,7 @@ public class WxPayMicroServiceImpl extends WxPayServiceImpl {
         wxRequest.setTradeType("");
         RequestBody body = RequestBody.create(MediaType.parse("application/xml; charset=utf-8"), XmlUtil.toString(wxRequest));
 
-        WxPayApi api = null;
+        WxPayApi api;
         if (wxPayConfig.isSandbox()) {
             api = devRetrofit.create(WxPayApi.class);
         } else {

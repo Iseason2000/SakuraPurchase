@@ -8,7 +8,8 @@ public class ProjectExceptionAdvice {
 
     @ExceptionHandler(Throwable.class)
     public String doException(Throwable exception) {
-        return "Error " + exception.getMessage();
+        exception.printStackTrace();
+        return "{\"Error\": \"" + exception.getMessage() + "\"}";
     }
 
 }

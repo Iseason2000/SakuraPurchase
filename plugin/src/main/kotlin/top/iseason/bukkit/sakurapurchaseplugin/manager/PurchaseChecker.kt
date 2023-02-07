@@ -27,7 +27,6 @@ class PurchaseChecker(
 
     init {
         player.inventory.setItem(player.inventory.heldItemSlot, map)
-        PurchaseManager.purchaseMap[player] = this
         submit {
             player.teleport(player.location.apply { pitch = 90F })
         }
@@ -50,7 +49,7 @@ class PurchaseChecker(
         val query = PurchaseManager.query(order.orderId)
         if (query == "SUCCESS") {
             player.sendColorMessage(
-                Lang.pay__sucess.formatByOrder(order)
+                Lang.pay__success.formatByOrder(order)
             )
             cancelSilently(false)
             info("&7玩家 &6${player.name} &7订单 &6${order.orderId} &a已完成支付(${order.payType.translation}), &7金额 &6${order.amount} &7命令组: &f${order.orderName} ${order.attach}")

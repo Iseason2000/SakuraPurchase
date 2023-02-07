@@ -49,11 +49,25 @@ fun mainCommand() {
             param("[attach]")
             async = true
             val weakCoolDown = WeakCoolDown<Player>()
-            executor { params, _ ->
-                if (!ConnectionManager.isConnected) throw ParmaException("服务端未连接!")
+            executor { params, sender ->
+                if (!ConnectionManager.isConnected) throw ParmaException("&e支付服务未启用!")
                 val type = params.next<PurchaseManager.PayType>()
                 val group = params.next<String>()
                 val player = params.next<Player>()
+                if (PurchaseManager.purchaseMap.containsKey(player)) {
+//                    player.sendColorMessage()
+                    if (player != sender) player.sendColorMessage(Lang.pay__exist)
+                    throw ParmaException("玩家有尚未支付的订单!")
+                }
+                // 检查冷却
+                val coolDown = (Config.coolDown * 1000).toLong()
+                if (weakCoolDown.check(player, coolDown)) {
+                    val coolDownMessage = Lang.pay__coolDown.formatBy(
+                        Config.coolDown - weakCoolDown.getCoolDown(player).toInt() / 1000
+                    )
+                    if (player != sender) player.sendColorMessage(coolDownMessage)
+                    throw ParmaException(coolDownMessage)
+                }
                 val commands = Config.commandGroup[group] ?: throw ParmaException("命令组不存在")
                 if (!ConnectionManager.isConnected) {
                     player.sendColorMessage(Lang.pay__connection_error)
@@ -63,14 +77,7 @@ fun mainCommand() {
                 if (amount < 0.01) throw ParmaException("支持的最小金额为 0.01 元")
 //                val name = params.next<String>()
                 val attach = params.nextOrNull<String>() ?: ""
-                if (!ConnectionManager.isConnected) throw ParmaException("&e支付服务未启用!")
-                // 检查冷却
-                val coolDown = (Config.coolDown * 1000).toLong()
-                if (weakCoolDown.check(player, coolDown)) {
-                    throw ParmaException(
-                        Lang.pay__coolDown.formatBy(weakCoolDown.getCoolDown(player)?.div(1000.0))
-                    )
-                }
+
                 PurchaseManager.purchase(player, amount, type, group, attach, group) {
                     //成功执行命令
                     Config.performCommands(player, amount, commands)

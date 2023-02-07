@@ -32,9 +32,10 @@ object Lang : SimpleYAMLConfig() {
     @Comment("", "参数以{index}声明,index的范围=[0,5]: orderId, orderName, payType, amount, attach, createTIme")
     var pay = ""
     var pay__start = "&a请使用 &6{2} &a支付.."
-    var pay__sucess = "&a支付成功! 金额: &6{3} 元"
+    var pay__success = "&a支付成功! 金额: &6{3} 元"
     var pay__cancel = "&6支付已取消!"
     var pay__timeout = "&6支付超时!"
+    var pay__exist = "&6你有未支付的订单!"
 
     @Comment("额外参数 {time} 剩余支付时间")
     var pay__waiting =

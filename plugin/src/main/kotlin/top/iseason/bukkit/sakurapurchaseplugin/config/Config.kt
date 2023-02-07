@@ -43,7 +43,7 @@ object Config : SimpleYAMLConfig() {
 
     @Key
     @Comment("", "发起订单的最小间隔(秒)，设置合适的值以避免刷单")
-    var coolDown: Double = 30.0
+    var coolDown: Int = 30
 
     @Key
     @Comment("", "取消支付的关键词")

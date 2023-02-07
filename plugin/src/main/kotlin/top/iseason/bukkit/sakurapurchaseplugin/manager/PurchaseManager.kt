@@ -22,7 +22,9 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Consumer
 
 object PurchaseManager {
-
+    /**
+     * 正在支付的玩家
+     */
     val purchaseMap = ConcurrentHashMap<Player, PurchaseChecker>()
 
     /**
@@ -65,12 +67,14 @@ object PurchaseManager {
                     )
                     val qrMap = MapUtil.generateQRMap(qrCode) ?: return@use
                     //默认 5秒检查一次
-                    PurchaseChecker(
+                    val purchaseChecker = PurchaseChecker(
                         player,
                         order,
                         qrMap,
                         onSuccess
-                    ).runTaskTimerAsynchronously(
+                    )
+                    purchaseMap[player] = purchaseChecker
+                    purchaseChecker.runTaskTimerAsynchronously(
                         SakuraPurchasePlugin.javaPlugin,
                         Config.queryPeriod,
                         Config.queryPeriod

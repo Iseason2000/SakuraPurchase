@@ -99,7 +99,6 @@ wechat:
   appId:
   mchId:
   mchKey:
-  appSecret:
   # 证书pkcs12格式 apiclient_cert.p12
   keyPath: 'C:\Users\Iseason2000\Desktop\apiclient_cert.p12'
   # 服务器异步通知页面路径需http://格式的完整路径
@@ -120,6 +119,14 @@ logging:
       clean-history-on-start: true
 
 ~~~
+
+服务端API 请运行服务端然后输入
+
+服务端地址/doc.html
+
+如
+
+http://localhost:80/doc.html
 
 创建启动脚本
 Windows start.bat

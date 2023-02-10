@@ -5,6 +5,7 @@ import org.bukkit.configuration.ConfigurationSection
 import top.iseason.bukkit.sakurapurchaseplugin.config.Config.formatByOrder
 import top.iseason.bukkit.sakurapurchaseplugin.config.Lang
 import top.iseason.bukkit.sakurapurchaseplugin.manager.PurchaseManager
+import top.iseason.bukkittemplate.debug.SimpleLogger
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,11 +34,12 @@ data class Order(
                     json["orderName"].asString,
                     json["orderAmount"].asDouble,
                     platform,
-                    json["attach"].asString,
+                    if (!json["attach"].isJsonNull) json["attach"].asString else "",
                     format.parse(json["createTime"].asString)
                 )
             } catch (e: Throwable) {
-//                e.printStackTrace()
+                if (SimpleLogger.isDebug)
+                    e.printStackTrace()
                 null
             }
         }

@@ -1,8 +1,5 @@
 package top.iseason.bukkit.sakurapurchaseplugin.manager
 
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import okhttp3.Request
 import top.iseason.bukkit.sakurapurchaseplugin.config.Config
 import top.iseason.bukkit.sakurapurchaseplugin.config.OrderCache
 import top.iseason.bukkit.sakurapurchaseplugin.entity.Order
@@ -46,16 +43,10 @@ object PlayerInfoCacheManager {
      */
     fun requestPlayerTotalAmount(uuid: UUID): Double {
         if (!ConnectionManager.isConnected) return 0.0
-        val request = Request.Builder().url("${Config.userTotalUrl}/$uuid").get().build()
-        kotlin.runCatching {
-            ConnectionManager.httpClient.newCall(request).execute().use {
-                val string = it.body?.string() ?: return@use
-                return kotlin.runCatching { string.toDouble() }.getOrElse { 0.0 }
-            }
-        }.getOrElse {
-            ConnectionManager.isConnected = false
-        }
-        return 0.0
+        val httpGet = ConnectionManager.httpGet("${Config.userTotalUrl}/$uuid")
+        return if (httpGet.isSuccess())
+            httpGet.data?.asDouble ?: 0.0
+        else 0.0
     }
 
     /**
@@ -67,41 +58,23 @@ object PlayerInfoCacheManager {
             if (amount != 0) {
                 "${Config.userAllUrl}/$uuid?offset=$offset&amount=$amount"
             } else "${Config.userAllUrl}/$uuid"
-        val request = Request.Builder().url(url).get().build()
-//        println("request url :${url}")
-        kotlin.runCatching {
-            ConnectionManager.httpClient.newCall(request).execute().use {
-//                println("respose code :${it.code}")
-                val json = it.body?.string() ?: return@use
-//                println("data :${json}")
-                val mutableListOf = mutableListOf<Order>()
-                val fromJson = Gson().fromJson(json, JsonArray::class.java)
-//                println("data size :${fromJson.size()}")
-                for (jsonElement in fromJson) {
-                    val order = Order.from(uuid, jsonElement.asJsonObject) ?: continue
-                    mutableListOf.add(order)
-                }
-                return mutableListOf
+        val httpGet = ConnectionManager.httpGet(url)
+        val mutableListOf = mutableListOf<Order>()
+        if (httpGet.isSuccess()) {
+            httpGet.data?.asJsonArray?.forEach {
+                val order = Order.from(uuid, it.asJsonObject) ?: return@forEach
+                mutableListOf.add(order)
             }
-        }.getOrElse {
-            it.printStackTrace()
-            ConnectionManager.isConnected = false
         }
-        return mutableListOf()
+        return mutableListOf
     }
 
     fun requestTotalAmount(): Double {
         if (!ConnectionManager.isConnected) return 0.0
-        val request = Request.Builder().url(Config.totalAmountUrl).get().build()
-        kotlin.runCatching {
-            ConnectionManager.httpClient.newCall(request).execute().use {
-                val string = it.body?.string() ?: return@use
-                return kotlin.runCatching { string.toDouble() }.getOrElse { 0.0 }
-            }
-        }.getOrElse {
-            ConnectionManager.isConnected = false
-        }
-        return 0.0
+        val httpGet = ConnectionManager.httpGet(Config.totalAmountUrl)
+        return if (httpGet.isSuccess())
+            httpGet.data?.asDouble ?: 0.0
+        else 0.0
     }
 
     /**

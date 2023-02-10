@@ -2,12 +2,13 @@ package top.iseason.sakurapurchase.entity;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
-public class TotalStat {
+public class TotalStat implements Serializable {
     final private static DecimalFormat fmt = new DecimalFormat("#.##");
     private List<Stat> stats;
 

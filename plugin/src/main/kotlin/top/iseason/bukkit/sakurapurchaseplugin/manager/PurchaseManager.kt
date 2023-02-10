@@ -1,8 +1,6 @@
 package top.iseason.bukkit.sakurapurchaseplugin.manager
 
 import com.google.gson.Gson
-import okhttp3.FormBody
-import okhttp3.Request
 import okhttp3.Response
 import org.bukkit.entity.Player
 import top.iseason.bukkit.sakurapurchaseplugin.SakuraPurchasePlugin
@@ -11,9 +9,7 @@ import top.iseason.bukkit.sakurapurchaseplugin.config.Config.formatByOrder
 import top.iseason.bukkit.sakurapurchaseplugin.config.Lang
 import top.iseason.bukkit.sakurapurchaseplugin.config.OrderCache
 import top.iseason.bukkit.sakurapurchaseplugin.entity.Order
-import top.iseason.bukkit.sakurapurchaseplugin.manager.ConnectionManager.httpClient
 import top.iseason.bukkit.sakurapurchaseplugin.util.MapUtil
-import top.iseason.bukkittemplate.debug.SimpleLogger
 import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
@@ -42,51 +38,41 @@ object PurchaseManager {
          */
         onSuccess: Consumer<Order>
     ) {
-
-        val body = FormBody.Builder()
-            .add("type", payType.type)
-            .add("name", orderName)
-            .add("amount", amount.toString())
-            .add("attach", attach)
-            .add("_csrf", ConnectionManager.token) //防止跨域攻击
-            .build()
-        val request = Request.Builder().url(Config.purchaseUrl).post(body).build()
-        kotlin.runCatching {
-            httpClient.newCall(request).execute().use {
-                if (it.isSuccessful) {
-                    val json = it.toStringMap()
-                    val qrCode = json["codeUrl"] as String
-                    val orderID = json["orderId"] as String
-                    val order = Order(player.uniqueId, orderID, orderName, amount, payType, attach, Date())
-                    info("&7用户 &6${player.name} &7发起 &a${payType.translation} &7支付,金额: &6$amount &7订单号: &6$orderID")
-                    PlayerInfoCacheManager.getPlayerInfo(player.uniqueId).currentOrder = order
-                    OrderCache.orderCache[player.uniqueId] = order
-                    OrderCache.groupCache[player.uniqueId] = group
-                    player.sendColorMessage(
-                        Lang.pay__start.formatByOrder(order)
-                    )
-                    val qrMap = MapUtil.generateQRMap(qrCode) ?: return@use
-                    //默认 5秒检查一次
-                    val purchaseChecker = PurchaseChecker(
-                        player,
-                        order,
-                        qrMap,
-                        onSuccess
-                    )
-                    purchaseMap[player] = purchaseChecker
-                    purchaseChecker.runTaskTimerAsynchronously(
-                        SakuraPurchasePlugin.javaPlugin,
-                        Config.queryPeriod,
-                        Config.queryPeriod
-                    )
-                } else {
-                    warn("发起支付失败: ${it.code}")
-                }
-            }
-        }.getOrElse {
-            it.printStackTrace()
-            warn("发起支付失败 ${it.message}")
-            ConnectionManager.isConnected = false
+        val httpPost = ConnectionManager.httpPost(Config.purchaseUrl, buildMap {
+            put("type", payType.type)
+            put("name", orderName)
+            put("amount", amount.toString())
+            put("attach", attach)
+            put("_csrf", ConnectionManager.token) //防止跨域攻击
+        })
+        if (httpPost.isSuccess()) {
+            val json = httpPost.data!!.asJsonObject
+            val qrCode = json["codeUrl"].asString
+            val orderID = json["orderId"].asString
+            val order = Order(player.uniqueId, orderID, orderName, amount, payType, attach, Date())
+            info("&7用户 &6${player.name} &7发起 &a${payType.translation} &7支付,金额: &6$amount &7订单号: &6$orderID")
+            PlayerInfoCacheManager.getPlayerInfo(player.uniqueId).currentOrder = order
+            OrderCache.orderCache[player.uniqueId] = order
+            OrderCache.groupCache[player.uniqueId] = group
+            player.sendColorMessage(
+                Lang.pay__start.formatByOrder(order)
+            )
+            val qrMap = MapUtil.generateQRMap(qrCode) ?: return
+            //默认 5秒检查一次
+            val purchaseChecker = PurchaseChecker(
+                player,
+                order,
+                qrMap,
+                onSuccess
+            )
+            purchaseMap[player] = purchaseChecker
+            purchaseChecker.runTaskTimerAsynchronously(
+                SakuraPurchasePlugin.javaPlugin,
+                Config.queryPeriod,
+                Config.queryPeriod
+            )
+        } else {
+            warn("发起支付失败: ${httpPost.state} ${httpPost.message}")
         }
     }
 
@@ -96,20 +82,10 @@ object PurchaseManager {
     fun query(orderId: String): String {
         val status = "UNKNOWN"
         if (!ConnectionManager.isConnected) return status
-        val request = Request.Builder().url("${Config.queryUrl}/$orderId").get().build()
-        kotlin.runCatching {
-            httpClient.newCall(request).execute().use {
-                if (it.isSuccessful) {
-                    val s = it.toStringMap()["orderStatusEnum"] as? String
-                    if (s != null) return s
-                    return status
-                }
-            }
-        }.getOrElse {
-            if (SimpleLogger.isDebug) {
-                it.printStackTrace()
-            }
-            ConnectionManager.isConnected = false
+        val httpGet = ConnectionManager.httpGet("${Config.queryUrl}/$orderId")
+        if (httpGet.isSuccess()) {
+            val asJsonObject = httpGet.data!!.asJsonObject
+            return asJsonObject["orderStatusEnum"].asString
         }
         return status
     }
@@ -119,58 +95,30 @@ object PurchaseManager {
      */
     fun saveOrder(order: Order): Boolean {
         if (!ConnectionManager.isConnected) return false
-        val body = FormBody.Builder()
-            .add("uuid", order.uuid.toString())
-            .add("orderId", order.orderId)
-            .add("_csrf", ConnectionManager.token) //防止跨域攻击
-            .build()
-        val request = Request.Builder().url(Config.saveUrl).post(body).build()
-        kotlin.runCatching {
-            httpClient.newCall(request).execute().use {
-                return it.isSuccessful
-            }
-        }.getOrElse {
-            it.printStackTrace()
-            ConnectionManager.isConnected = false
-        }
-        return false
+        val httpPost = ConnectionManager.httpPost(Config.saveUrl, buildMap {
+            put("uuid", order.uuid.toString())
+            put("orderId", order.orderId)
+            put("_csrf", ConnectionManager.token) //防止跨域攻击
+        })
+        return httpPost.isSuccess()
     }
 
     fun closeOrder(order: Order): Boolean {
         if (!ConnectionManager.isConnected) return false
-        val body = FormBody.Builder()
-            .add("orderId", order.orderId)
-            .add("_csrf", ConnectionManager.token) //防止跨域攻击
-            .build()
-        val request = Request.Builder().url(Config.closeUrl).post(body).build()
-        kotlin.runCatching {
-            httpClient.newCall(request).execute().use {
-                return it.isSuccessful
-            }
-        }.getOrElse {
-            it.printStackTrace()
-            ConnectionManager.isConnected = false
-        }
-        return false
+        val httpPost = ConnectionManager.httpPost(Config.closeUrl, buildMap {
+            put("orderId", order.orderId)
+            put("_csrf", ConnectionManager.token) //防止跨域攻击
+        })
+        return httpPost.isSuccess()
     }
 
     fun refundOrder(orderId: String): Boolean {
         if (!ConnectionManager.isConnected) return false
-        val body = FormBody.Builder()
-            .add("orderId", orderId)
-            .add("_csrf", ConnectionManager.token) //防止跨域攻击
-            .build()
-        val request = Request.Builder().url(Config.refundUrl).post(body).build()
-        kotlin.runCatching {
-            httpClient.newCall(request).execute().use {
-                val string = it.body?.string()
-                return it.isSuccessful && !(string == null || string == "null")
-            }
-        }.getOrElse {
-            it.printStackTrace()
-            ConnectionManager.isConnected = false
-        }
-        return false
+        val httpPost = ConnectionManager.httpPost(Config.refundUrl, buildMap {
+            put("orderId", orderId)
+            put("_csrf", ConnectionManager.token) //防止跨域攻击
+        })
+        return httpPost.isSuccess()
     }
 
     enum class PayType(

@@ -8,11 +8,16 @@ import com.lly835.bestpay.enums.OrderStatusEnum;
 import com.lly835.bestpay.model.*;
 import com.lly835.bestpay.service.BestPayService;
 import com.lly835.bestpay.utils.JsonUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 import top.iseason.sakurapurchase.entity.Record;
 import top.iseason.sakurapurchase.service.RecordService;
+import top.iseason.sakurapurchase.utils.Result;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +30,7 @@ import java.util.Date;
 @Slf4j
 @RequestMapping("/api/pay")
 @Transactional
+@Api(tags = "支付API")
 public class PaymentController {
     private final Sequence sequence = new Sequence(null);
     @Resource
@@ -32,10 +38,13 @@ public class PaymentController {
     @Resource
     private RecordService recordService;
 
+    @ApiOperation(value = "测试连接有效性")
     @GetMapping("/test/{version}")
-    public String test(@PathVariable("version") String version, HttpServletRequest request) {
+    public Result<Object> test(
+            @ApiParam(value = "游戏版本", required = true) @PathVariable("version") String version,
+            @ApiIgnore HttpServletRequest request) {
         log.info("服务器: " + getIpAddr(request) + " 已连接,版本: " + version);
-        return "Success";
+        return Result.success();
     }
 
     /**
@@ -70,14 +79,15 @@ public class PaymentController {
      */
     @Transactional
     @PostMapping(value = "/buy")
-    public PayResponse pay(
-            @RequestParam("type") BestPayTypeEnum payType,
-            @RequestParam("name") String orderName,
-            @RequestParam("amount") Double amount,
-            @RequestParam(value = "openid", required = false) String openid,
-            @RequestParam(value = "attach", required = false) String attach) {
+    @ApiOperation(value = "发起支付")
+    public Result<PayResponse> pay(
+            @ApiParam(value = "支付类型", required = true) @RequestParam("type") BestPayTypeEnum payType,
+            @ApiParam(value = "订单名称", required = true) @RequestParam("name") String orderName,
+            @ApiParam(value = "订单金额", required = true) @RequestParam("amount") Double amount,
+//            @RequestParam(value = "订单id", required = false) String openid,
+            @RequestParam(value = "附加信息", required = false) String attach) {
         if (payType != BestPayTypeEnum.ALIPAY_QRCODE && payType != BestPayTypeEnum.WXPAY_NATIVE)
-            return new PayResponse();
+            return Result.failure("不支持的订单类型");
         //支付请求参数
         long orderId = sequence.nextId();
         PayRequest request = new PayRequest();
@@ -85,7 +95,7 @@ public class PaymentController {
         request.setOrderId(String.valueOf(orderId));
         request.setOrderName(orderName);
         request.setOrderAmount(amount);
-        request.setOpenid(openid);
+//        request.setOpenid(openid);
         request.setAttach(attach);
 
         log.debug("[尝试发起支付] request={}", JsonUtil.toJson(request));
@@ -100,11 +110,10 @@ public class PaymentController {
                 .status(OrderStatusEnum.NOTPAY.name())
                 .orderName(orderName)
                 .orderAmount(amount)
-                .outTradeNo(openid)
+//                .outTradeNo(String.valueOf(orderId))
                 .createTime(new Date())
                 .attach(attach).build());
-
-        return payResponse;
+        return Result.success(payResponse);
     }
 
     /**
@@ -115,10 +124,12 @@ public class PaymentController {
      */
     @Transactional
     @GetMapping("/query/{orderId}")
-    public OrderQueryResponse query(@PathVariable("orderId") String orderId) {
+    @ApiOperation(value = "查询订单状态")
+    public Result<OrderQueryResponse> query(
+            @ApiParam(value = "订单ID", required = true) @PathVariable("orderId") String orderId) {
         //没有缓存则在线查询
         Record byId = recordService.getById(orderId);
-        if (byId == null) return null;
+        if (byId == null) return Result.failure("订单不存在");
 
         OrderQueryRequest orderQueryRequest = new OrderQueryRequest();
         orderQueryRequest.setOrderId(orderId);
@@ -130,11 +141,7 @@ public class PaymentController {
             queryResponse = bestPayService.query(orderQueryRequest);
         } catch (Exception e) {
             //发生异常
-            return OrderQueryResponse.builder()
-                    .orderId(orderId)
-                    .orderStatusEnum(OrderStatusEnum.NOTPAY)
-                    .resultMsg(e.getMessage())
-                    .build();
+            return Result.failure(e.getMessage());
         }
         OrderStatusEnum orderStatusEnum = queryResponse.getOrderStatusEnum();
         //状态不一致则更新
@@ -149,7 +156,7 @@ public class PaymentController {
                 recordService.modifyTotalPaidCount(1);
             }
         }
-        return queryResponse;
+        return Result.success(queryResponse);
     }
 
     /**
@@ -160,9 +167,10 @@ public class PaymentController {
      */
     @Transactional
     @PostMapping("/refund")
-    public RefundResponse refund(@RequestParam String orderId) {
+    @ApiOperation(value = "退款")
+    public Result<RefundResponse> refund(@ApiParam(value = "订单ID", required = true) @RequestParam String orderId) {
         Record byId = recordService.getById(orderId);
-        if (byId == null) return null;
+        if (byId == null) return Result.failure("订单不存在");
         RefundRequest request = new RefundRequest();
         request.setOrderId(orderId);
         request.setPayPlatformEnum(byId.getPlatformEnum());
@@ -174,14 +182,14 @@ public class PaymentController {
             response = bestPayService.refund(request);
         } catch (Exception e) {
             log.info("[退款失败] message={}", e.getMessage());
-            return null;
+            return Result.failure(e.getMessage());
         }
         log.info("[退款成功] request={}", JsonUtil.toJson(response));
         byId.setStatus(OrderStatusEnum.REFUND.name());
         recordService.modifyTotalPaidAmount(-byId.getOrderAmount());
         recordService.modifyTotalPaidCount(-1);
         recordService.saveOrUpdate(byId);
-        return response;
+        return Result.success(response);
     }
 
     /**
@@ -192,9 +200,11 @@ public class PaymentController {
      */
     @Transactional
     @PostMapping("/close")
-    public CloseResponse close(@RequestParam String orderId) {
+    @ApiOperation(value = "关闭订单")
+    public Result<CloseResponse> close(
+            @ApiParam(value = "订单ID", required = true) @RequestParam String orderId) {
         Record byId = recordService.getById(orderId);
-        if (byId == null) return null;
+        if (byId == null) return Result.failure("订单不存在");
         CloseRequest closeRequest = new CloseRequest();
         closeRequest.setOrderId(orderId);
         closeRequest.setPayTypeEnum(byId.getPayTypeEnum());
@@ -207,16 +217,17 @@ public class PaymentController {
             response = bestPayService.close(closeRequest);
         } catch (Exception e) {
             log.info("[关闭失败] message={}", e.getMessage());
-            return null;
+            return Result.failure(e.getMessage());
         }
         log.info("[关闭成功] request={}", JsonUtil.toJson(response));
-        return response;
+        return Result.success(response);
     }
 
     /**
      * 异步回调
      */
     @PostMapping(value = "/notify")
+    @ApiOperation(value = "回调")
     public String notify(@RequestBody String notifyData) {
         log.debug("[异步通知] 支付平台的数据request={}", notifyData);
         PayResponse response = null;
@@ -241,30 +252,13 @@ public class PaymentController {
         return result;
     }
 
-    //    /**
-//     * 关闭支付，只对支付宝有效
-//     *
-//     * @param orderId
-//     * @return
-//     */
-//    @GetMapping("/pay/close")
-//    @ResponseBody
-//    public CloseResponse close(@RequestParam String orderId) {
-//        Record byId = recordService.getById(orderId);
-//        if (byId == null) return null;
-//        CloseRequest request = new CloseRequest();
-//        request.setPayTypeEnum(BestPayTypeEnum.ALIPAY_PC);
-//        request.setOrderId(orderId);
-//        byId.setStatus(OrderStatusEnum.CLOSED.name());
-//        recordService.saveOrUpdate(byId);
-//        CloseResponse close = bestPayService.close(request);
-//        return close;
-//    }
-    @PostMapping("remove")
-    public String remove(@RequestParam("orderId") String orderId) {
+    @PostMapping("/remove")
+    @ApiOperation(value = "删除订单")
+    public Result<String> remove(
+            @ApiParam(value = "订单ID", required = true) @RequestParam("orderId") String orderId) {
         if (recordService.removeById(orderId)) {
-            return "删除成功";
+            return Result.success("删除成功");
         }
-        return "删除失败";
+        return Result.failure("删除失败");
     }
 }

@@ -6,17 +6,20 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lly835.bestpay.enums.BestPayPlatformEnum;
 import com.lly835.bestpay.enums.BestPayTypeEnum;
 import com.lly835.bestpay.enums.OrderStatusEnum;
+import io.swagger.annotations.ApiModel;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 import top.iseason.sakurapurchase.utils.DataUtils;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
 @Data
 @Builder
-public class Record {
+@ApiModel("支付记录")
+public class Record implements Serializable {
     /**
      * 订单ID
      */

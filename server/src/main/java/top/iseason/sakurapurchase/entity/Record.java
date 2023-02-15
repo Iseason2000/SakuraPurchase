@@ -7,6 +7,7 @@ import com.lly835.bestpay.enums.BestPayPlatformEnum;
 import com.lly835.bestpay.enums.BestPayTypeEnum;
 import com.lly835.bestpay.enums.OrderStatusEnum;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,36 +25,46 @@ public class Record implements Serializable {
      * 订单ID
      */
     @TableId(type = IdType.ASSIGN_ID)
+    @ApiModelProperty("订单ID")
     private Long orderId;
     /**
      * 平台0为支付宝 1为微信
      */
+    @ApiModelProperty("订单类型,0为支付宝 1为微信")
     private Integer payType;
     /**
      * 订单状态
      */
+    @ApiModelProperty("订单状态")
     private String status;
+
     /**
      * 订单商品名称
      */
+    @ApiModelProperty("订单商品名称")
     private String orderName;
+
     /**
      * 订单金额
      */
+    @ApiModelProperty("订单金额")
     private Double orderAmount;
     /**
      * 订单流水号
      */
+    @ApiModelProperty("订单流水号")
     private String outTradeNo;
     /**
      * 附加信息
      */
+    @ApiModelProperty("附加信息")
     private String attach;
     /**
      * 创建日期
      */
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty("创建日期")
     private Date createTime;
 
     public OrderStatusEnum getOrderStatus() {

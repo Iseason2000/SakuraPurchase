@@ -1,6 +1,7 @@
 package top.iseason.sakurapurchase.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.CacheNamespace;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import top.iseason.sakurapurchase.entity.Record;
@@ -9,6 +10,7 @@ import top.iseason.sakurapurchase.entity.Stat;
 import java.util.List;
 
 @Mapper
+@CacheNamespace
 public interface RecordMapper extends BaseMapper<Record> {
 
     @Select("select sum(order_amount) from record where status = 'SUCCESS'")

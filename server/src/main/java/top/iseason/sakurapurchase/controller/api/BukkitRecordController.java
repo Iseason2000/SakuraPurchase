@@ -37,6 +37,7 @@ public class BukkitRecordController {
      */
     @ApiOperation(value = "查询用户的订单")
     @GetMapping("/user-all/{uuid}")
+    @Transactional(readOnly = true)
     public Result<List<Record>> userAll(
             @ApiParam(value = "玩家uuid", required = true) @PathVariable("uuid") String uuid,
             @ApiParam(value = "偏移") @RequestParam(value = "offset", required = false) Integer offset,
@@ -55,6 +56,7 @@ public class BukkitRecordController {
      */
     @ApiOperation(value = "获取用户上一个订单")
     @GetMapping("/user-last/{uuid}")
+    @Transactional(readOnly = true)
     public Result<Record> userLast(
             @ApiParam(value = "玩家uuid", required = true) @PathVariable("uuid") String uuid) {
         return Result.success(bukkitRecordService.getLastRecord(uuid));
@@ -67,6 +69,7 @@ public class BukkitRecordController {
      */
     @ApiOperation(value = "获取所有bukkit支付记录")
     @GetMapping("/all")
+    @Transactional(readOnly = true)
     public Result<List<Record>> all() {
         return Result.success(bukkitRecordService.getAll());
     }
@@ -76,6 +79,7 @@ public class BukkitRecordController {
      *
      * @return
      */
+    @Transactional(readOnly = true)
     @GetMapping("/all-total")
     @ApiOperation(value = "获取bukkit端总充值金额")
     public Result<Double> allTotal() {
@@ -88,6 +92,7 @@ public class BukkitRecordController {
      * @param uuid
      * @return
      */
+    @Transactional(readOnly = true)
     @GetMapping("/user-total/{uuid}")
     @ApiOperation(value = "获取bukkit端用户总充值金额")
     public Result<Double> userTotal(@ApiParam(value = "玩家uuid", required = true) @PathVariable("uuid") String uuid) {
@@ -113,6 +118,7 @@ public class BukkitRecordController {
         }
     }
 
+    @Transactional
     @ApiOperation(value = "保存用户订单并标记已支付")
     @PostMapping("/save")
     public Result<Object> save(

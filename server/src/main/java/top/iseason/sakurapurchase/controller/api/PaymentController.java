@@ -14,6 +14,7 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import springfox.documentation.annotations.ApiIgnore;
 import top.iseason.sakurapurchase.entity.Record;
 import top.iseason.sakurapurchase.service.RecordService;
@@ -22,6 +23,7 @@ import top.iseason.sakurapurchase.utils.Result;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * 支付相关api
@@ -32,6 +34,7 @@ import java.util.Date;
 @Transactional
 @Api(tags = "支付API")
 public class PaymentController {
+
     private final Sequence sequence = new Sequence(null);
     @Resource
     private BestPayService bestPayService;
@@ -84,10 +87,12 @@ public class PaymentController {
             @ApiParam(value = "支付类型", required = true) @RequestParam("type") BestPayTypeEnum payType,
             @ApiParam(value = "订单名称", required = true) @RequestParam("name") String orderName,
             @ApiParam(value = "订单金额", required = true) @RequestParam("amount") Double amount,
-//            @RequestParam(value = "订单id", required = false) String openid,
-            @RequestParam(value = "附加信息", required = false) String attach) {
-        if (payType != BestPayTypeEnum.ALIPAY_QRCODE && payType != BestPayTypeEnum.WXPAY_NATIVE)
-            return Result.failure("不支持的订单类型");
+            @ApiParam(value = "第三方流水id") @RequestParam(required = false) String openid,
+            @ApiParam(value = "附加信息") @RequestParam(required = false) String attach,
+            @ApiParam(value = "购买者ID long, 仅ALIPAY_H5") @RequestParam(required = false) String buyerLogonId,
+            @ApiParam(value = "购买者ID, 仅ALIPAY_H5") @RequestParam(required = false) String buyerId) {
+//        if (payType != BestPayTypeEnum.ALIPAY_QRCODE && payType != BestPayTypeEnum.WXPAY_NATIVE)
+//            return Result.failure("不支持的订单类型");
         //支付请求参数
         long orderId = sequence.nextId();
         PayRequest request = new PayRequest();
@@ -95,9 +100,12 @@ public class PaymentController {
         request.setOrderId(String.valueOf(orderId));
         request.setOrderName(orderName);
         request.setOrderAmount(amount);
-//        request.setOpenid(openid);
+        request.setOpenid(openid);
         request.setAttach(attach);
-
+        if (payType == BestPayTypeEnum.ALIPAY_H5) {
+            request.setBuyerLogonId(buyerLogonId);
+            request.setBuyerId(buyerId);
+        }
         log.debug("[尝试发起支付] request={}", JsonUtil.toJson(request));
 
         PayResponse payResponse = bestPayService.pay(request);
@@ -110,7 +118,7 @@ public class PaymentController {
                 .status(OrderStatusEnum.NOTPAY.name())
                 .orderName(orderName)
                 .orderAmount(amount)
-//                .outTradeNo(String.valueOf(orderId))
+                .outTradeNo(openid)
                 .createTime(new Date())
                 .attach(attach).build());
         return Result.success(payResponse);
@@ -254,11 +262,30 @@ public class PaymentController {
 
     @PostMapping("/remove")
     @ApiOperation(value = "删除订单")
-    public Result<String> remove(
+    public Result<Object> remove(
             @ApiParam(value = "订单ID", required = true) @RequestParam("orderId") String orderId) {
         if (recordService.removeById(orderId)) {
-            return Result.success("删除成功");
+            return Result.success();
         }
-        return Result.failure("删除失败");
+        return Result.failure();
     }
+
+    /**
+     * 微信h5支付，要求referer是白名单的地址，这里做个重定向
+     *
+     * @param prepayId
+     * @param packAge
+     * @return
+     */
+    @ApiIgnore
+    @GetMapping("/wxpay_mweb_redirect")
+    public ModelAndView wxpayMweb(@RequestParam("prepay_id") String prepayId,
+                                  @RequestParam("package") String packAge,
+                                  Map map) {
+        String url = String.format("https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb?prepay_id=%s&package=%s", prepayId, packAge);
+        map.put("url", url);
+        return new ModelAndView("pay/wxpayMwebRedirect");
+    }
+
+
 }

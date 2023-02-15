@@ -17,11 +17,11 @@ public class SwaggerConfig implements WebMvcConfigurer {
 
     @Bean(value = "dockerBean")
     public Docket dockerBean() {
-        return new Docket(DocumentationType.SPRING_WEB)
+        return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(new ApiInfoBuilder()
                         .title("樱花支付 - 在线API接口文档")
-                        .description("by Iseason")
-                        .version("1.0.0")
+                        .description("樱花支付的接口文档")
+//                        .version("1.0.0")
                         .build())
                 .groupName("all")
                 .select()

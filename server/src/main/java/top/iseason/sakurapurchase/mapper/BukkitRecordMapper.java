@@ -1,6 +1,7 @@
 package top.iseason.sakurapurchase.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.CacheNamespace;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import top.iseason.sakurapurchase.entity.BukkitRecord;
@@ -9,6 +10,7 @@ import top.iseason.sakurapurchase.entity.Record;
 import java.util.List;
 
 @Mapper
+@CacheNamespace
 public interface BukkitRecordMapper extends BaseMapper<BukkitRecord> {
     /**
      * 获取单个玩家的所有订单

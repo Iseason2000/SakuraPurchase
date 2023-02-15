@@ -6,10 +6,8 @@ plugins {
 buildscript {
     repositories {
         mavenCentral()
-        google()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:4.0.2")
         classpath("com.guardsquare:proguard-gradle:7.3.1")
     }
 }
@@ -41,10 +39,6 @@ subprojects {
             name = "CodeMC"
             url = uri("https://repo.codemc.org/repository/maven-public")
         }
-        maven {
-            name = "PlaceHolderAPI"
-            url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
-        }
         mavenLocal()
     }
 
@@ -58,9 +52,6 @@ subprojects {
         compileOnly("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
         compileOnly("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
         compileOnly("com.zaxxer:HikariCP:4.0.3")
-        compileOnly("me.clip:placeholderapi:2.11.2")
-        implementation("io.github.bananapuncher714:nbteditor:7.18.4")
-
     }
 
     tasks {
@@ -83,5 +74,5 @@ repositories {
 }
 dependencies {
     //基础库
-    compileOnly(kotlin("stdlib-jdk8"))
+    compileOnly(kotlin("stdlib"))
 }

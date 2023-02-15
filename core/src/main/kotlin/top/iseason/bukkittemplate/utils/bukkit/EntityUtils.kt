@@ -47,7 +47,7 @@ object EntityUtils {
         for (addItem in addItems) {
             if (addItem == null) continue
             val item = world.spawnEntity(location, EntityType.DROPPED_ITEM) as Item
-            item.itemStack = addItem
+            item.setItemStack(addItem)
         }
     }
 
@@ -57,7 +57,7 @@ object EntityUtils {
      */
     fun PlayerInventory.getHeldItem(): ItemStack? {
         val item = getItem(heldItemSlot)
-        if (item == null || item.type.checkAir()) return null
+        if (item.checkAir()) return null
         return item
     }
 

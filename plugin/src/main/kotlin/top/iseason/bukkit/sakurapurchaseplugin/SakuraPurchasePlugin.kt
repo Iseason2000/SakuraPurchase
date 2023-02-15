@@ -34,8 +34,7 @@ object SakuraPurchasePlugin : KotlinPlugin() {
         OrderCache.load()
         Lang.load(false)
         Config.load(false)
-        ConnectionManager.connectToServer()
-        ConnectionManager.testConnection()
+
         mainCommand()
         CommandHandler.updateCommands()
         PlayerListener.register()
@@ -54,6 +53,11 @@ object SakuraPurchasePlugin : KotlinPlugin() {
         if (!file.exists()) {
             javaPlugin.saveResource("placeholders.txt", true)
         }
+    }
+
+    override fun onAsyncEnable() {
+        ConnectionManager.connectToServer()
+        ConnectionManager.testConnection()
     }
 
     override fun onDisable() {

@@ -18,7 +18,7 @@ object BungeeCordHook {
         private set
 
     private val bcListener: PluginMessageListener =
-        PluginMessageListener { channel: String, _: Player?, _: ByteArray? ->
+        PluginMessageListener { channel: String, player: Player?, message: ByteArray? ->
             if (bungeeCordEnabled) return@PluginMessageListener
             if (channel != BUNGEE_CORD_CHANNEL) {
                 return@PluginMessageListener

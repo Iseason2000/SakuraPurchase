@@ -42,7 +42,7 @@ object DatabaseConfig : SimpleYAMLConfig() {
     @Key
     var database_name = "database_${BukkitTemplate.getPlugin().name}"
 
-    @Comment("", "jdbcUrl 最后面的参数, 紧跟在database-name后面,请注意添加分隔符")
+    @Comment("", "jdbcUrl 最后面的参数, 紧跟在database-name后面,请注意添加分隔符", "")
     @Key
     var params = ""
 
@@ -171,7 +171,7 @@ object DatabaseConfig : SimpleYAMLConfig() {
                 "MySQL" -> HikariConfig(props).apply {
                     dd.downloadDependency("mysql:mysql-connector-java:8.0.32")
                     jdbcUrl = "jdbc:mysql://$address/$database_name$params"
-                    //可能有旧的mysql驱动
+                    //可能兼容旧的mysql驱动
                     driverClassName = "com.mysql.jdbc.Driver"
                 }
 
@@ -186,7 +186,7 @@ object DatabaseConfig : SimpleYAMLConfig() {
                     jdbcUrl = "jdbc:sqlite:$address$params"
                     driverClassName = "org.sqlite.JDBC"
                 }
-// 由于exposed的bug暂时无法使用
+
 //                "H2" -> HikariConfig().apply {
 //                    dd.downloadDependency("com.h2database:h2:2.1.214")
 //                    jdbcUrl = "jdbc:h2:$url/$dbName$params"
@@ -234,6 +234,7 @@ object DatabaseConfig : SimpleYAMLConfig() {
             info("&a数据库链接成功: &6$database_type")
         }.getOrElse {
             isConnected = false
+            it.printStackTrace()
             info("&c数据库链接失败! 请检查数据库状态或数据库配置!")
         }
         isConnecting = false
@@ -258,7 +259,7 @@ object DatabaseConfig : SimpleYAMLConfig() {
         if (!isConnected) return
         this.tables = tables
         runCatching {
-            transaction {
+            dbTransaction {
                 SchemaUtils.createMissingTablesAndColumns(*tables)
 //                SchemaUtils.create(*tables)
             }

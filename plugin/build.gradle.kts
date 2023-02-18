@@ -5,11 +5,12 @@ plugins {
 repositories {
     mavenCentral()
     maven { url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/") }
+
 }
 
 dependencies {
     // 依赖core模块
-    api(project(":core"))
+    api(project(":core")) { isTransitive = false }
 //    反射库
 //    compileOnly(kotlin("reflect"))
 
@@ -18,14 +19,14 @@ dependencies {
 
     // 本地依赖放在libs文件夹内
     compileOnly(fileTree("libs") { include("*.jar") })
+    implementation("com.github.johnnyjayjay:spigot-maps:2.1.1")
     implementation("org.bstats:bstats-bukkit:3.0.0")
     compileOnly("com.squareup.okhttp3:okhttp:4.10.0")
     compileOnly("com.google.zxing:core:3.5.1")
-    implementation("com.github.johnnyjayjay:spigot-maps:2.1.1")
-    implementation("org.bstats:bstats-bukkit:3.0.0")
     compileOnly("org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.11.2")
     compileOnly("fr.xephi:authme:5.6.0-SNAPSHOT")
+
 }
 
 // 插件名称，请在gradle.properties 修改
@@ -61,6 +62,7 @@ tasks {
         }
         relocate("top.iseason.bukkittemplate", "$groupS.libs.core")
         relocate("org.bstats", "$groupS.libs.bstats")
+        relocate("com.github.johnnyjayjay", "$groupS.libs")
         relocate("io.github.bananapuncher714.nbteditor", "$groupS.libs.nbteditor")
     }
     build {

@@ -12,11 +12,10 @@ runtime-libraries:
   libraries-folder: 'libraries'
   repositories:
     - https://maven.aliyun.com/repository/public/
-
     - https://repo.maven.apache.org/maven2/
 
   libraries:
-    - org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}
+    - org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}
     - com.squareup.okhttp3:okhttp:4.10.0
     - com.google.zxing:core:3.5.1
 #    - org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}

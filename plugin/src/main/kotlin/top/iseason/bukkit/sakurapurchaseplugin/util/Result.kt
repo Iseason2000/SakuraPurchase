@@ -3,7 +3,7 @@ package top.iseason.bukkit.sakurapurchaseplugin.util
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import okhttp3.ResponseBody
-import top.iseason.bukkit.sakurapurchaseplugin.manager.ConnectionManager
+import top.iseason.bukkit.sakurapurchaseplugin.manager.Connection
 
 data class Result(
     val state: Int,
@@ -24,7 +24,7 @@ data class Result(
                     asJsonObject["data"]
                 )
             }.getOrElse {
-                ConnectionManager.isConnected = false
+                Connection.isConnected = false
                 it.printStackTrace()
                 Result(998, "序列化请求失败")
             }

@@ -1,7 +1,9 @@
 package top.iseason.bukkit.sakurapurchaseplugin.manager
 
-import okhttp3.*
+import okhttp3.FormBody
 import okhttp3.Headers.Companion.toHeaders
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import org.bukkit.Bukkit
 import top.iseason.bukkit.sakurapurchaseplugin.config.Config
 import top.iseason.bukkit.sakurapurchaseplugin.util.Result
@@ -10,40 +12,14 @@ import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.other.EasyCoolDown
 import java.util.concurrent.TimeUnit
 
-object ConnectionManager {
-    private object MyCookieJar : CookieJar {
-        var lastToken: String = ""
-            private set
-        private val cookieStore: HashMap<String, List<Cookie>> = HashMap()
-        override fun loadForRequest(url: HttpUrl): List<Cookie> {
-            return cookieStore[url.host] ?: ArrayList()
-        }
 
-        override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
+object Connection {
 
-            val computeIfAbsent = cookieStore.computeIfAbsent(url.host) { listOf() }.toMutableList()
-            //保留新cookie
-            for (cookie in cookies) {
-                computeIfAbsent.removeIf { it.name == cookie.name }
-                computeIfAbsent.add(cookie)
-            }
-            val tokenCookie = computeIfAbsent.find {
-                it.name == "XSRF-TOKEN"
-            }
-            if (tokenCookie != null) {
-                lastToken = tokenCookie.value
-            }
-            cookieStore[url.host] = computeIfAbsent
-        }
+    val token get() = LocalCookie.lastToken
 
-        fun clear() = cookieStore.clear()
-    }
-
-    val token get() = MyCookieJar.lastToken
-
-    val httpClient = OkHttpClient
+    private val httpClient = OkHttpClient
         .Builder()
-        .cookieJar(MyCookieJar)
+        .cookieJar(LocalCookie)
         .connectTimeout(3, TimeUnit.SECONDS)
         .build()
 
@@ -63,7 +39,7 @@ object ConnectionManager {
      * 链接登录服务器
      */
     fun connectToServer() {
-        MyCookieJar.clear()
+        LocalCookie.clear()
         val request = Request.Builder()
             .url(Config.loginUrl)
             .get().build()
@@ -76,11 +52,11 @@ object ConnectionManager {
                         warn("服务器链接失败: ${Config.loginUrl} code: ${response.code}")
                         return@use
                     }
-                    if (MyCookieJar.lastToken == "") {
+                    if (LocalCookie.lastToken == "") {
                         warn("获取token失败!")
                         return@use
                     }
-                    info("&a获取token: &6${MyCookieJar.lastToken}")
+                    info("&a获取token: &6${LocalCookie.lastToken}")
                 }
         }.getOrElse {
             warn("服务器链接失败: ${Config.loginUrl} ${it.message}")
@@ -92,7 +68,7 @@ object ConnectionManager {
                 .add("username", Config.username)
                 .add("password", Config.password)
                 .add("remember-me", "true")
-                .add("_csrf", MyCookieJar.lastToken)
+                .add("_csrf", LocalCookie.lastToken)
                 .build()
             val loginRequest = Request.Builder()
                 .url(Config.loginUrl)

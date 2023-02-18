@@ -12,7 +12,7 @@ import top.iseason.bukkit.sakurapurchaseplugin.hook.PAPIExpansion
 import top.iseason.bukkit.sakurapurchaseplugin.hook.PAPIHook
 import top.iseason.bukkit.sakurapurchaseplugin.listener.PlayerListener
 import top.iseason.bukkit.sakurapurchaseplugin.listener.SwapListener
-import top.iseason.bukkit.sakurapurchaseplugin.manager.ConnectionManager
+import top.iseason.bukkit.sakurapurchaseplugin.manager.Connection
 import top.iseason.bukkit.sakurapurchaseplugin.manager.PurchaseManager
 import top.iseason.bukkittemplate.KotlinPlugin
 import top.iseason.bukkittemplate.command.CommandHandler
@@ -53,11 +53,12 @@ object SakuraPurchasePlugin : KotlinPlugin() {
         if (!file.exists()) {
             javaPlugin.saveResource("placeholders.txt", true)
         }
+
     }
 
     override fun onAsyncEnable() {
-        ConnectionManager.connectToServer()
-        ConnectionManager.testConnection()
+        Connection.connectToServer()
+        Connection.testConnection()
     }
 
     override fun onDisable() {

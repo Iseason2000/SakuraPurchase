@@ -6,7 +6,7 @@ import org.bukkit.permissions.PermissionDefault
 import top.iseason.bukkit.sakurapurchaseplugin.config.Config
 import top.iseason.bukkit.sakurapurchaseplugin.config.Lang
 import top.iseason.bukkit.sakurapurchaseplugin.config.OrderCache
-import top.iseason.bukkit.sakurapurchaseplugin.manager.ConnectionManager
+import top.iseason.bukkit.sakurapurchaseplugin.manager.Connection
 import top.iseason.bukkit.sakurapurchaseplugin.manager.PlayerInfoCacheManager
 import top.iseason.bukkit.sakurapurchaseplugin.manager.PurchaseManager
 import top.iseason.bukkittemplate.command.*
@@ -30,7 +30,7 @@ fun mainCommand() {
             param("<group>", suggestRuntime = { Config.commandGroup.keys })
             param("[amount]")
             executor { params, _ ->
-                if (!ConnectionManager.isConnected) throw ParmaException("服务端未连接!")
+                if (!Connection.isConnected) throw ParmaException("服务端未连接!")
                 val player = params.next<Player>()
                 val group = params.next<String>()
                 val commands = Config.commandGroup[group] ?: throw ParmaException("命令组不存在")
@@ -50,7 +50,7 @@ fun mainCommand() {
             async = true
             val weakCoolDown = WeakCoolDown<Player>()
             executor { params, sender ->
-                if (!ConnectionManager.isConnected) throw ParmaException("&e支付服务未启用!")
+                if (!Connection.isConnected) throw ParmaException("&e支付服务未启用!")
                 val type = params.next<PurchaseManager.PayType>()
                 val group = params.next<String>()
                 val player = params.next<Player>()
@@ -69,7 +69,7 @@ fun mainCommand() {
                     throw ParmaException(coolDownMessage)
                 }
                 val commands = Config.commandGroup[group] ?: throw ParmaException("命令组不存在")
-                if (!ConnectionManager.isConnected) {
+                if (!Connection.isConnected) {
                     player.sendColorMessage(Lang.pay__connection_error)
                     return@executor
                 }
@@ -91,7 +91,7 @@ fun mainCommand() {
             param("<orderId>")
             async = true
             executor { params, sender ->
-                if (!ConnectionManager.isConnected) throw ParmaException("服务端未连接!")
+                if (!Connection.isConnected) throw ParmaException("服务端未连接!")
                 val orderId = params.next<String>()
                 if (PurchaseManager.refundOrder(orderId)) {
                     sender.sendColorMessage(Lang.refund_success)
@@ -108,7 +108,7 @@ fun mainCommand() {
                 else emptyList()
             })
             executor { params, sender ->
-                if (!ConnectionManager.isConnected) throw ParmaException("服务端未连接!")
+                if (!Connection.isConnected) throw ParmaException("服务端未连接!")
                 val page = params.nextOrNull<Int>() ?: 1
                 var player = params.nextOrNull<Player>()
                 if (player != null && !sender.isOp) player = null
@@ -127,7 +127,7 @@ fun mainCommand() {
             async = true
             param("<player>", suggestRuntime = ParamSuggestCache.playerParam)
             executor { params, sender ->
-                if (!ConnectionManager.isConnected) throw ParmaException("服务端未连接!")
+                if (!Connection.isConnected) throw ParmaException("服务端未连接!")
                 val player = params.next<Player>()
                 val order = OrderCache.orderCache[player.uniqueId] ?: throw ParmaException("玩家没有未支付的订单")
                 val group = OrderCache.groupCache[player.uniqueId] ?: throw ParmaException("玩家没有未支付的订单")
@@ -156,8 +156,8 @@ fun mainCommand() {
             default = PermissionDefault.OP
             description = "重新链接支付服务器"
             executor { _, _ ->
-                ConnectionManager.connectToServer()
-                ConnectionManager.testConnection()
+                Connection.connectToServer()
+                Connection.testConnection()
             }
         }
         node("debug") {

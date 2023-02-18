@@ -10,7 +10,7 @@ import top.iseason.bukkit.sakurapurchaseplugin.util.setValue
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-object PlayerInfoCacheManager {
+internal object PlayerInfoCacheManager {
 
     private val playerCache = ConcurrentHashMap<UUID, PlayerInfo>()
     private var isCached = false
@@ -42,8 +42,8 @@ object PlayerInfoCacheManager {
      * 获取玩家总消费金额
      */
     fun requestPlayerTotalAmount(uuid: UUID): Double {
-        if (!ConnectionManager.isConnected) return 0.0
-        val httpGet = ConnectionManager.httpGet("${Config.userTotalUrl}/$uuid")
+        if (!Connection.isConnected) return 0.0
+        val httpGet = Connection.httpGet("${Config.userTotalUrl}/$uuid")
         return if (httpGet.isSuccess())
             httpGet.data?.asDouble ?: 0.0
         else 0.0
@@ -53,12 +53,12 @@ object PlayerInfoCacheManager {
      * 获取玩家支付记录
      */
     fun requestPlayerOrders(uuid: UUID, offset: Int = 0, amount: Int = 0): MutableList<Order> {
-        if (!ConnectionManager.isConnected) return mutableListOf()
+        if (!Connection.isConnected) return mutableListOf()
         val url =
             if (amount != 0) {
                 "${Config.userAllUrl}/$uuid?offset=$offset&amount=$amount"
             } else "${Config.userAllUrl}/$uuid"
-        val httpGet = ConnectionManager.httpGet(url)
+        val httpGet = Connection.httpGet(url)
         val mutableListOf = mutableListOf<Order>()
         if (httpGet.isSuccess()) {
             httpGet.data?.asJsonArray?.forEach {
@@ -70,8 +70,8 @@ object PlayerInfoCacheManager {
     }
 
     fun requestTotalAmount(): Double {
-        if (!ConnectionManager.isConnected) return 0.0
-        val httpGet = ConnectionManager.httpGet(Config.totalAmountUrl)
+        if (!Connection.isConnected) return 0.0
+        val httpGet = Connection.httpGet(Config.totalAmountUrl)
         return if (httpGet.isSuccess())
             httpGet.data?.asDouble ?: 0.0
         else 0.0

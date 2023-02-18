@@ -1,6 +1,5 @@
 package top.iseason.bukkittemplate;
 
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import top.iseason.bukkittemplate.dependency.PluginDependency;
 import top.iseason.bukkittemplate.loader.IsolatedClassLoader;
@@ -34,7 +33,7 @@ public class BukkitTemplate extends JavaPlugin {
      */
     public BukkitTemplate() throws ClassNotFoundException {
         plugin = this;
-        offlineLibInstalled = Bukkit.getPluginManager().getPlugin("IseasonOfflineLib") != null;
+//        offlineLibInstalled = Bukkit.getPluginManager().getPlugin("IseasonOfflineLib") != null;
         if (!offlineLibInstalled && !PluginDependency.parsePluginYml()) {
             throw new RuntimeException("Loading dependencies error! please check your network!");
         }

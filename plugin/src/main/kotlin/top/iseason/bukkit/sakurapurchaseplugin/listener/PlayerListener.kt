@@ -56,6 +56,16 @@ object PlayerListener : Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
+    fun onPlayerInteract(event: PlayerInteractEvent) {
+        if (PurchaseManager.purchaseMap.containsKey(event.player)) event.isCancelled = true
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    fun onPlayerInteractEntity(event: PlayerInteractEntityEvent) {
+        if (PurchaseManager.purchaseMap.containsKey(event.player)) event.isCancelled = true
+    }
+
+    @EventHandler(ignoreCancelled = true)
     fun onPlayerInvClick(event: InventoryClickEvent) {
         if (event.clickedInventory !is PlayerInventory) return
         if (PurchaseManager.purchaseMap.containsKey(event.whoClicked)) event.isCancelled = true

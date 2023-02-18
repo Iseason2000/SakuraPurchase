@@ -38,12 +38,12 @@ object PurchaseManager {
          */
         onSuccess: Consumer<Order>
     ) {
-        val httpPost = ConnectionManager.httpPost(Config.purchaseUrl, buildMap {
+        val httpPost = Connection.httpPost(Config.purchaseUrl, buildMap {
             put("type", payType.type)
             put("name", orderName)
             put("amount", amount.toString())
             put("attach", attach)
-            put("_csrf", ConnectionManager.token) //防止跨域攻击
+            put("_csrf", Connection.token) //防止跨域攻击
         })
         if (httpPost.isSuccess()) {
             val json = httpPost.data!!.asJsonObject
@@ -81,8 +81,8 @@ object PurchaseManager {
      */
     fun query(orderId: String): String {
         val status = "UNKNOWN"
-        if (!ConnectionManager.isConnected) return status
-        val httpGet = ConnectionManager.httpGet("${Config.queryUrl}/$orderId")
+        if (!Connection.isConnected) return status
+        val httpGet = Connection.httpGet("${Config.queryUrl}/$orderId")
         if (httpGet.isSuccess()) {
             val asJsonObject = httpGet.data!!.asJsonObject
             return asJsonObject["orderStatusEnum"].asString
@@ -94,29 +94,29 @@ object PurchaseManager {
      * 支付成功时发送保存请求
      */
     fun saveOrder(order: Order): Boolean {
-        if (!ConnectionManager.isConnected) return false
-        val httpPost = ConnectionManager.httpPost(Config.saveUrl, buildMap {
+        if (!Connection.isConnected) return false
+        val httpPost = Connection.httpPost(Config.saveUrl, buildMap {
             put("uuid", order.uuid.toString())
             put("orderId", order.orderId)
-            put("_csrf", ConnectionManager.token) //防止跨域攻击
+            put("_csrf", Connection.token) //防止跨域攻击
         })
         return httpPost.isSuccess()
     }
 
     fun closeOrder(order: Order): Boolean {
-        if (!ConnectionManager.isConnected) return false
-        val httpPost = ConnectionManager.httpPost(Config.closeUrl, buildMap {
+        if (!Connection.isConnected) return false
+        val httpPost = Connection.httpPost(Config.closeUrl, buildMap {
             put("orderId", order.orderId)
-            put("_csrf", ConnectionManager.token) //防止跨域攻击
+            put("_csrf", Connection.token) //防止跨域攻击
         })
         return httpPost.isSuccess()
     }
 
     fun refundOrder(orderId: String): Boolean {
-        if (!ConnectionManager.isConnected) return false
-        val httpPost = ConnectionManager.httpPost(Config.refundUrl, buildMap {
+        if (!Connection.isConnected) return false
+        val httpPost = Connection.httpPost(Config.refundUrl, buildMap {
             put("orderId", orderId)
-            put("_csrf", ConnectionManager.token) //防止跨域攻击
+            put("_csrf", Connection.token) //防止跨域攻击
         })
         return httpPost.isSuccess()
     }

@@ -19,6 +19,7 @@ import top.iseason.bukkittemplate.command.CommandHandler
 import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.utils.bukkit.EventUtils.listen
 import top.iseason.bukkittemplate.utils.bukkit.EventUtils.register
+import top.iseason.bukkittemplate.utils.other.submit
 import java.io.File
 
 
@@ -53,12 +54,10 @@ object SakuraPurchasePlugin : KotlinPlugin() {
         if (!file.exists()) {
             javaPlugin.saveResource("placeholders.txt", true)
         }
-
-    }
-
-    override fun onAsyncEnable() {
-        Connection.connectToServer()
-        Connection.testConnection()
+        submit(async = true) {
+            Connection.connectToServer()
+            Connection.testConnection()
+        }
     }
 
     override fun onDisable() {

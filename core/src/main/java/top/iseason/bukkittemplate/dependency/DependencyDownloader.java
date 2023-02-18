@@ -14,7 +14,6 @@ import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -238,20 +237,20 @@ public class DependencyDownloader {
      * @return
      */
     public boolean setup() {
-//        for (String dependency : dependencies) {
-//            if (!downloadDependency(dependency, true, repositories)) {
-//                return false;
-//            }
-//        }
-//        return true;
-        AtomicBoolean failure = new AtomicBoolean(false);
-        dependencies.parallelStream().forEach(dependency -> {
-                    if (failure.get()) return;
-                    failure.set(!downloadDependency(dependency, true, repositories));
-                }
-        );
-        dependencies.clear();
-        return !failure.get();
+        for (String dependency : dependencies) {
+            if (!downloadDependency(dependency, true, repositories)) {
+                return false;
+            }
+        }
+        return true;
+//        AtomicBoolean failure = new AtomicBoolean(false);
+//        dependencies.parallelStream().forEach(dependency -> {
+//                    if (failure.get()) return;
+//                    failure.set(!downloadDependency(dependency, true, repositories));
+//                }
+//        );
+//        dependencies.clear();
+//        return !failure.get();
     }
 
     public boolean downloadDependency(String dependency) {

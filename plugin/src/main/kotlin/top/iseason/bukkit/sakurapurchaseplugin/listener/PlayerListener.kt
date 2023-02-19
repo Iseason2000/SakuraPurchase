@@ -96,9 +96,10 @@ object PlayerListener : Listener {
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerChat(event: AsyncPlayerChatEvent) {
+        if (!PurchaseManager.purchaseMap.containsKey(event.player)) return
         for (key in Config.cancelWorld) {
             if (event.message.contains(key)) {
-                PurchaseManager.purchaseMap[event.player]!!.cancel()
+                PurchaseManager.purchaseMap[event.player]?.cancel()
                 event.isCancelled = true
                 return
             }

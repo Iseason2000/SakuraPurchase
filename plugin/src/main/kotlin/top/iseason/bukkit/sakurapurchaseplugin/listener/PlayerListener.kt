@@ -11,7 +11,7 @@ import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.player.*
 import org.bukkit.inventory.PlayerInventory
 import top.iseason.bukkit.sakurapurchaseplugin.config.Config
-import top.iseason.bukkit.sakurapurchaseplugin.config.Lang
+import top.iseason.bukkit.sakurapurchaseplugin.config.Language
 import top.iseason.bukkit.sakurapurchaseplugin.config.OrderCache
 import top.iseason.bukkit.sakurapurchaseplugin.manager.PlayerInfoCacheManager
 import top.iseason.bukkit.sakurapurchaseplugin.manager.PurchaseManager
@@ -89,7 +89,7 @@ object PlayerListener : Listener {
     @EventHandler(ignoreCancelled = true)
     fun onPlayerCommand(event: PlayerCommandPreprocessEvent) {
         if (PurchaseManager.purchaseMap.containsKey(event.player)) {
-            event.player.sendColorMessage(Lang.pay__command_block)
+            event.player.sendColorMessage(Language.pay__command_block)
             event.isCancelled = true
         }
     }

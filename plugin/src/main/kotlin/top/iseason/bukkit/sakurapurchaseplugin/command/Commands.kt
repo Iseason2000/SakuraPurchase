@@ -4,8 +4,9 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.permissions.PermissionDefault
 import top.iseason.bukkit.sakurapurchaseplugin.config.Config
-import top.iseason.bukkit.sakurapurchaseplugin.config.Lang
+import top.iseason.bukkit.sakurapurchaseplugin.config.Language
 import top.iseason.bukkit.sakurapurchaseplugin.config.OrderCache
+import top.iseason.bukkit.sakurapurchaseplugin.event.PurchaseSuccessEvent
 import top.iseason.bukkit.sakurapurchaseplugin.manager.Connection
 import top.iseason.bukkit.sakurapurchaseplugin.manager.PlayerInfoCacheManager
 import top.iseason.bukkit.sakurapurchaseplugin.manager.PurchaseManager
@@ -56,21 +57,21 @@ fun mainCommand() {
                 val player = params.next<Player>()
                 if (PurchaseManager.purchaseMap.containsKey(player)) {
 //                    player.sendColorMessage()
-                    if (player != sender) player.sendColorMessage(Lang.pay__exist)
+                    if (player != sender) player.sendColorMessage(Language.pay__exist)
                     throw ParmaException("玩家有尚未支付的订单!")
                 }
                 // 检查冷却
                 val coolDown = (Config.coolDown * 1000).toLong()
                 if (weakCoolDown.check(player, coolDown)) {
-                    val coolDownMessage = Lang.pay__coolDown.formatBy(
+                    val coolDownMessage = Language.pay__coolDown.formatBy(
                         Config.coolDown - weakCoolDown.getCoolDown(player).toInt() / 1000
                     )
                     if (player != sender) player.sendColorMessage(coolDownMessage)
                     throw ParmaException(coolDownMessage)
                 }
-                val commands = Config.commandGroup[group] ?: throw ParmaException("命令组不存在")
+                var commands = Config.commandGroup[group] ?: throw ParmaException("命令组不存在")
                 if (!Connection.isConnected) {
-                    player.sendColorMessage(Lang.pay__connection_error)
+                    player.sendColorMessage(Language.pay__connection_error)
                     return@executor
                 }
                 val amount = params.next<Double>()
@@ -79,7 +80,12 @@ fun mainCommand() {
                 val attach = params.nextOrNull<String>() ?: ""
                 PurchaseManager.purchase(player, amount, type, name, attach, group) {
                     //成功执行命令
-                    Config.performCommands(player, amount, commands)
+                    val event = PurchaseSuccessEvent(player, amount, type, name, attach, group)
+                    Bukkit.getPluginManager().callEvent(event)
+                    if (!event.isCancelled) {
+                        commands = Config.commandGroup[event.commandGroup] ?: commands
+                        Config.performCommands(player, event.amount, commands)
+                    }
                 }
             }
         }
@@ -93,8 +99,8 @@ fun mainCommand() {
                 if (!Connection.isConnected) throw ParmaException("服务端未连接!")
                 val orderId = params.next<String>()
                 if (PurchaseManager.refundOrder(orderId)) {
-                    sender.sendColorMessage(Lang.refund_success)
-                } else sender.sendColorMessage(Lang.refund_failure)
+                    sender.sendColorMessage(Language.refund_success)
+                } else sender.sendColorMessage(Language.refund_failure)
             }
         }
 
@@ -115,7 +121,7 @@ fun mainCommand() {
                 val playerInfo = PlayerInfoCacheManager.getPlayerInfo(rp.uniqueId)
                 val lastOrders = playerInfo.getLastOrders((page - 1) * 5, 5)
                 if (lastOrders.isEmpty())
-                    sender.sendColorMessage(Lang.command__no_record)
+                    sender.sendColorMessage(Language.command__no_record)
                 else
                     sender.sendColorMessages(lastOrders, prefix = "")
             }

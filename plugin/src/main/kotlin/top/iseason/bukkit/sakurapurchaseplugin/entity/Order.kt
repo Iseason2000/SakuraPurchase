@@ -3,7 +3,7 @@ package top.iseason.bukkit.sakurapurchaseplugin.entity
 import com.google.gson.JsonObject
 import org.bukkit.configuration.ConfigurationSection
 import top.iseason.bukkit.sakurapurchaseplugin.config.Config.formatByOrder
-import top.iseason.bukkit.sakurapurchaseplugin.config.Lang
+import top.iseason.bukkit.sakurapurchaseplugin.config.Language
 import top.iseason.bukkit.sakurapurchaseplugin.manager.PurchaseManager
 import top.iseason.bukkittemplate.debug.SimpleLogger
 import java.text.SimpleDateFormat
@@ -64,7 +64,7 @@ data class Order(
     fun getStringTime() = format.format(createTime)
 
     override fun toString(): String {
-        return Lang.command__order_format.formatByOrder(this).toString()
+        return Language.command__order_format.formatByOrder(this).toString()
     }
 
     fun toSection(section: ConfigurationSection) {

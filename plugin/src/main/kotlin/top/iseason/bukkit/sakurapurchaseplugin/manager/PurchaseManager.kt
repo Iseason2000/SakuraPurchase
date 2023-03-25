@@ -6,7 +6,7 @@ import org.bukkit.entity.Player
 import top.iseason.bukkit.sakurapurchaseplugin.SakuraPurchasePlugin
 import top.iseason.bukkit.sakurapurchaseplugin.config.Config
 import top.iseason.bukkit.sakurapurchaseplugin.config.Config.formatByOrder
-import top.iseason.bukkit.sakurapurchaseplugin.config.Lang
+import top.iseason.bukkit.sakurapurchaseplugin.config.Language
 import top.iseason.bukkit.sakurapurchaseplugin.config.OrderCache
 import top.iseason.bukkit.sakurapurchaseplugin.entity.Order
 import top.iseason.bukkit.sakurapurchaseplugin.util.MapUtil
@@ -55,7 +55,7 @@ object PurchaseManager {
             OrderCache.orderCache[player.uniqueId] = order
             OrderCache.groupCache[player.uniqueId] = group
             player.sendColorMessage(
-                Lang.pay__start.formatByOrder(order)
+                Language.pay__start.formatByOrder(order)
             )
             val qrMap = MapUtil.generateQRMap(qrCode) ?: return
             //默认 5秒检查一次

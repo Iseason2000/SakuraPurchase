@@ -8,7 +8,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.guardsquare:proguard-gradle:7.3.1")
+        classpath("com.guardsquare:proguard-gradle:7.3.2")
     }
 }
 subprojects {
@@ -23,9 +23,14 @@ subprojects {
 //    阿里的服务器速度快一点
         maven {
             name = "aliyun"
-            url = uri("https://maven.aliyun.com/repository/public/")
+            url = uri("https://maven.aliyun.com/repository/public")
         }
-        google()
+        maven {
+            name = "aliyun-google"
+            url = uri("https://maven.aliyun.com/repository/google")
+        }
+        maven { url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/") }
+//        google()
         mavenCentral()
         maven {
             name = "spigot"
@@ -43,10 +48,15 @@ subprojects {
     }
 
     dependencies {
+        val kotlinVersion: String by rootProject
+        compileOnly(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
         //基础库
-        compileOnly(kotlin("stdlib-jdk8"))
+        compileOnly(kotlin("stdlib"))
         // 数据库
         val exposedVersion: String by rootProject
+        val nbtEditorVersion: String by rootProject
+        implementation("io.github.bananapuncher714:nbteditor:$nbtEditorVersion")
+        compileOnly("me.clip:placeholderapi:2.11.2")
         compileOnly("org.jetbrains.exposed:exposed-core:$exposedVersion")
         compileOnly("org.jetbrains.exposed:exposed-dao:$exposedVersion")
         compileOnly("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
@@ -61,6 +71,7 @@ subprojects {
             targetCompatibility = "1.8"
         }
     }
+
 }
 
 repositories {

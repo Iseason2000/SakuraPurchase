@@ -39,8 +39,8 @@ class WeakCoolDown<T> {
     }
 
     fun remove(key: T) = coolDownMap.remove(key)
-    fun getCoolDown(key: T) = System.currentTimeMillis() - (coolDownMap[key] ?: System.currentTimeMillis())
 
+    fun getCoolDown(key: T) = System.currentTimeMillis() - (coolDownMap[key] ?: System.currentTimeMillis())
 }
 
 /**

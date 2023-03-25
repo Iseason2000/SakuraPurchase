@@ -4,13 +4,11 @@ plugins {
 
 repositories {
     mavenCentral()
-    maven { url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/") }
-
 }
 
 dependencies {
     // 依赖core模块
-    api(project(":core")) { isTransitive = false }
+    api(project(":core"))
 //    反射库
 //    compileOnly(kotlin("reflect"))
 
@@ -19,14 +17,12 @@ dependencies {
 
     // 本地依赖放在libs文件夹内
     compileOnly(fileTree("libs") { include("*.jar") })
+    implementation("org.bstats:bstats-bukkit:3.0.1")
     implementation("com.github.johnnyjayjay:spigot-maps:2.1.1")
-    implementation("org.bstats:bstats-bukkit:3.0.0")
     compileOnly("com.squareup.okhttp3:okhttp:4.10.0")
     compileOnly("com.google.zxing:core:3.5.1")
-    compileOnly("org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT")
-    compileOnly("me.clip:placeholderapi:2.11.2")
     compileOnly("fr.xephi:authme:5.6.0-SNAPSHOT")
-
+    compileOnly("org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT")
 }
 
 // 插件名称，请在gradle.properties 修改
@@ -57,12 +53,13 @@ val output =
 
 tasks {
     shadowJar {
+
         if (isObfuscated) {
             relocate("top.iseason.bukkittemplate.BukkitTemplate", "a")
         }
         relocate("top.iseason.bukkittemplate", "$groupS.libs.core")
         relocate("org.bstats", "$groupS.libs.bstats")
-        relocate("com.github.johnnyjayjay", "$groupS.libs")
+        relocate("com.github.johnnyjayjay", "$groupS.libs.maps")
         relocate("io.github.bananapuncher714.nbteditor", "$groupS.libs.nbteditor")
     }
     build {
@@ -75,7 +72,7 @@ tasks {
         filesMatching("plugin.yml") {
             // 删除注释,你可以返回null以删除整行，但是IDEA有bug会报错，故而返回了""
             filter {
-                if (it.trim().startsWith("#")) "" else it
+                if (it.trim().startsWith("#")) null else it
             }
             expand(
                 "main" to if (isObfuscated) "a" else "$groupS.libs.core.BukkitTemplate",
@@ -88,13 +85,6 @@ tasks {
         }
     }
 }
-task<com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation>("relocateShadowJar") {
-    target = tasks.shadowJar.get()
-    prefix = "$groupS.libs"
-    shadowJar.minimize()
-}
-tasks.shadowJar.get().dependsOn(tasks.getByName("relocateShadowJar"))
-
 tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     group = "minecraft"
     verbose()
@@ -130,7 +120,7 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     else keep("class $groupS.libs.core.BukkitTemplate {}")
     keep("class kotlin.Metadata {}")
     keep(allowObf, "class $groupS.libs.core.PluginBootStrap {*;}")
-    keep(allowObf, "class * implements $groupS.libs.core.KotlinPlugin {*;}")
+    keep(allowObf, "class * implements $groupS.libs.core.BukkitPlugin {*;}")
     keepclassmembers("class * extends $groupS.libs.core.config.SimpleYAMLConfig {*;}")
     keepclassmembers("class * implements $groupS.libs.core.ui.container.BaseUI {*;}")
     keepclassmembers(allowObf, "class * implements org.bukkit.event.Listener {*;}")

@@ -45,7 +45,7 @@ fun mainCommand() {
             param("<group>", suggestRuntime = { Config.commandGroup.keys })
             param("<player>", suggestRuntime = ParamSuggestCache.playerParam)
             param("<amount>")
-//            param("<name>")
+            param("[name]")
             param("[attach]")
             async = true
             val weakCoolDown = WeakCoolDown<Player>()
@@ -75,10 +75,9 @@ fun mainCommand() {
                 }
                 val amount = params.next<Double>()
                 if (amount < 0.01) throw ParmaException("支持的最小金额为 0.01 元")
-//                val name = params.next<String>()
+                val name = params.nextOrNull<String>() ?: group
                 val attach = params.nextOrNull<String>() ?: ""
-
-                PurchaseManager.purchase(player, amount, type, group, attach, group) {
+                PurchaseManager.purchase(player, amount, type, name, attach, group) {
                     //成功执行命令
                     Config.performCommands(player, amount, commands)
                 }

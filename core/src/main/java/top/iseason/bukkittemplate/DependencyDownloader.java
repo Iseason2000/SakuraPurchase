@@ -1,9 +1,8 @@
-package top.iseason.bukkittemplate.dependency;
+package top.iseason.bukkittemplate;
 
 import org.bukkit.Bukkit;
 import org.xml.sax.SAXException;
-import top.iseason.bukkittemplate.BukkitTemplate;
-import top.iseason.bukkittemplate.ReflectionUtil;
+import top.iseason.bukkittemplate.dependency.XmlParser;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
@@ -233,8 +232,12 @@ public class DependencyDownloader {
         HttpURLConnection connection;
         try {
             connection = (HttpURLConnection) url.openConnection();
-            connection.addRequestProperty("User-Agent", "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_0) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11");
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) return false;
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+            connection.connect();
+            int responseCode = connection.getResponseCode();
+            if (responseCode != 200) return false;
         } catch (Exception e) {
             return false;
         }
@@ -292,6 +295,16 @@ public class DependencyDownloader {
     }
 
     /**
+     * 检查依赖格式是否非法
+     *
+     * @param libraryName
+     * @return
+     */
+    public static boolean checkLibraryIllegal(String libraryName) {
+        return XmlParser.placeHolder.matcher(libraryName).find() || libraryName.contains("[") || libraryName.contains("(");
+    }
+
+    /**
      * 添加仓库地址
      *
      * @param repository 仓库地址，请以 "/" 结尾
@@ -302,16 +315,6 @@ public class DependencyDownloader {
         if (!repository.endsWith("/")) temp = repository + "/";
         repositories.add(temp);
         return this;
-    }
-
-    /**
-     * 检查依赖格式是否非法
-     *
-     * @param libraryName
-     * @return
-     */
-    public static boolean checkLibraryIllegal(String libraryName) {
-        return XmlParser.placeHolder.matcher(libraryName).find() || libraryName.contains("[") || libraryName.contains("(");
     }
 
     /**

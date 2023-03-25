@@ -14,7 +14,7 @@ import top.iseason.bukkit.sakurapurchaseplugin.listener.PlayerListener
 import top.iseason.bukkit.sakurapurchaseplugin.listener.SwapListener
 import top.iseason.bukkit.sakurapurchaseplugin.manager.Connection
 import top.iseason.bukkit.sakurapurchaseplugin.manager.PurchaseManager
-import top.iseason.bukkittemplate.KotlinPlugin
+import top.iseason.bukkittemplate.BukkitPlugin
 import top.iseason.bukkittemplate.command.CommandHandler
 import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.utils.bukkit.EventUtils.listen
@@ -23,7 +23,7 @@ import top.iseason.bukkittemplate.utils.other.submit
 import java.io.File
 
 
-object SakuraPurchasePlugin : KotlinPlugin() {
+object SakuraPurchasePlugin : BukkitPlugin {
 
     override fun onEnable() {
         Metrics(javaPlugin, 17635)

@@ -19,7 +19,7 @@ object Language : Lang() {
 
     @Comment("额外参数 {time} 剩余支付时间")
     var pay__waiting =
-        "&6请使用 &a{2} &6支付，剩余时间: &c {time} &6秒\\n&bShift+F &7或输入 &b'cancel' &7取消支付. \\n&c请勿在订单取消后才完成支付."
+        "&6请使用 &a{2} &6支付，剩余时间: &c {time} &6秒\n&bShift+F &7或输入 &b'cancel' &7取消支付. \n&c请勿在订单取消后才完成支付."
     var pay__command_block = "&6请先完成支付!"
     var pay__connection_error = "&6支付服务异常，请联系管理员!"
 
@@ -36,7 +36,5 @@ object Language : Lang() {
         "参数以{index}声明,index的范围=[0,5]: orderId, orderName, payType, amount, attach, createTIme"
     )
     var command__order_format =
-        "&7订单: &6 {0} &7命令组:&f {1} \\n&7支付方式: &e{2} &7金额: &a{3} &7创建时间:&b {5} \\n&7其他:&f{4}\\n "
-
-
+        "&7订单: &6 {0} &7命令组:&f {1} \n&7支付方式: &e{2} &7金额: &a{3} &7创建时间:&b {5} \n&7其他:&f{4}\n "
 }

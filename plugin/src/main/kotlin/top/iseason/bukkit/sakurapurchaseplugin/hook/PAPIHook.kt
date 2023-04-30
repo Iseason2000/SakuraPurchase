@@ -7,6 +7,7 @@ import org.bukkit.entity.Player
 import top.iseason.bukkit.sakurapurchaseplugin.manager.PlayerInfoCacheManager
 import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.hook.BaseHook
+import kotlin.math.abs
 
 object PAPIHook : BaseHook("PlaceholderAPI") {
 
@@ -67,8 +68,11 @@ object PAPIExpansion : PlaceholderExpansion() {
             if (arg2 == "total") return playerInfo.totalAmount.toString()
             val index = arg2.toIntOrNull() ?: return null
             val arg3 = split.getOrNull(2) ?: return null
-            val order = (if (index <= 0) playerInfo.lastOrder
-            else playerInfo.currentOrder) ?: return ""
+            val order = (
+                    if (index == 0) playerInfo.currentOrder
+                    else if (index < 0) {
+                        playerInfo.orders.reversed().getOrNull(abs(index))
+                    } else playerInfo.orders.getOrNull(index)) ?: return ""
             return when (arg3) {
                 "orderid" -> order.orderId
                 "ordername" -> order.orderName

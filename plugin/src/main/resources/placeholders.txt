@@ -1,6 +1,9 @@
 # 玩家变量
 sakurapurchase_player_total 总充值金额
 #以下的 [index] 如果等于 0 表示正在支付的订单，否则为最近支付的第 index 个订单
+# index 大于0 时表示按创建时间降序，小于0 按升序
+# 如 index 为 1 表示最新创建的第一个订单
+# 如 index 为 -1 表示最早创建的第一个订单
 sakurapurchase_player_[index]_orderid 支付的订单ID
 sakurapurchase_player_[index]_ordername 支付的订单名称
 sakurapurchase_player_[index]_amount 支付的订单金额

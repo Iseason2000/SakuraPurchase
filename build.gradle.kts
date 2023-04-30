@@ -29,7 +29,6 @@ subprojects {
             name = "aliyun-google"
             url = uri("https://maven.aliyun.com/repository/google")
         }
-        maven { url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/") }
 //        google()
         mavenCentral()
         maven {
@@ -44,6 +43,10 @@ subprojects {
             name = "CodeMC"
             url = uri("https://repo.codemc.org/repository/maven-public")
         }
+        maven {
+            name = "PlaceholderAPI"
+            url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+        }
         mavenLocal()
     }
 
@@ -55,7 +58,7 @@ subprojects {
         // 数据库
         val exposedVersion: String by rootProject
         val nbtEditorVersion: String by rootProject
-        implementation("io.github.bananapuncher714:nbteditor:$nbtEditorVersion")
+        compileOnly("io.github.bananapuncher714:nbteditor:$nbtEditorVersion")
         compileOnly("me.clip:placeholderapi:2.11.2")
         compileOnly("org.jetbrains.exposed:exposed-core:$exposedVersion")
         compileOnly("org.jetbrains.exposed:exposed-dao:$exposedVersion")

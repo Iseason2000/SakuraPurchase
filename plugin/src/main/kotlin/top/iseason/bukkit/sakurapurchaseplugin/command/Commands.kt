@@ -56,15 +56,16 @@ fun mainCommand() {
                 val group = params.next<String>()
                 val player = params.next<Player>()
                 if (PurchaseManager.purchaseMap.containsKey(player)) {
-//                    player.sendColorMessage()
                     if (player != sender) player.sendColorMessage(Language.pay__exist)
                     throw ParmaException("玩家有尚未支付的订单!")
                 }
+                val amount = params.next<Double>()
+                if (amount < 0.01) throw ParmaException("支持的最小金额为 0.01 元")
                 // 检查冷却
                 val coolDown = (Config.coolDown * 1000).toLong()
                 if (weakCoolDown.check(player, coolDown)) {
                     val coolDownMessage = Language.pay__coolDown.formatBy(
-                        Config.coolDown - weakCoolDown.getCoolDown(player).toInt() / 1000
+                        weakCoolDown.getCoolDown(player, coolDown).toInt() / 1000
                     )
                     if (player != sender) player.sendColorMessage(coolDownMessage)
                     throw ParmaException(coolDownMessage)
@@ -74,13 +75,11 @@ fun mainCommand() {
                     player.sendColorMessage(Language.pay__connection_error)
                     return@executor
                 }
-                val amount = params.next<Double>()
-                if (amount < 0.01) throw ParmaException("支持的最小金额为 0.01 元")
                 val name = params.nextOrNull<String>() ?: group
                 val attach = params.nextOrNull<String>() ?: ""
                 PurchaseManager.purchase(player, amount, type, name, attach, group) {
                     //成功执行命令
-                    val event = PurchaseSuccessEvent(player, amount, type, name, attach, group)
+                    val event = PurchaseSuccessEvent(player, amount, type.name, name, attach, group)
                     Bukkit.getPluginManager().callEvent(event)
                     if (!event.isCancelled) {
                         commands = Config.commandGroup[event.commandGroup] ?: commands

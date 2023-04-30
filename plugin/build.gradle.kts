@@ -39,28 +39,33 @@ val version: String by rootProject
 // shadowJar 版本 ，请在gradle.properties 修改
 val shadowJar: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar by tasks
 // exposed 数据库框架版本，请在gradle.properties 修改
-
 val exposedVersion: String by rootProject
 val obfuscated: String by rootProject
+val obfuscatedDictionary: String by rootProject
+val obfuscationDictionaryFile: File? = if (obfuscatedDictionary.isEmpty()) null
+else
+    File(obfuscatedDictionary).absoluteFile
+val obfuscatedMainClass =
+    if (obfuscationDictionaryFile?.exists() == true) {
+        obfuscationDictionaryFile.readLines().firstOrNull() ?: "a"
+    } else "a"
 val isObfuscated = obfuscated == "true"
 val shrink: String by rootProject
 val defaultFile = File("../build", "${rootProject.name}-${rootProject.version}.jar")
-val output =
+val output: File =
     if (isObfuscated)
-        File(jarOutputFile, "${rootProject.name}-${rootProject.version}-obfuscated.jar")
+        File(jarOutputFile, "${rootProject.name}-${rootProject.version}-obfuscated.jar").absoluteFile
     else
-        File(jarOutputFile, "${rootProject.name}-${rootProject.version}.jar")
+        File(jarOutputFile, "${rootProject.name}-${rootProject.version}.jar").absoluteFile
 
 tasks {
     shadowJar {
-
         if (isObfuscated) {
-            relocate("top.iseason.bukkittemplate.BukkitTemplate", "a")
+            relocate("top.iseason.bukkittemplate.BukkitTemplate", obfuscatedMainClass)
         }
         relocate("top.iseason.bukkittemplate", "$groupS.libs.core")
         relocate("org.bstats", "$groupS.libs.bstats")
-        relocate("com.github.johnnyjayjay", "$groupS.libs.maps")
-        relocate("io.github.bananapuncher714.nbteditor", "$groupS.libs.nbteditor")
+//        relocate("io.github.bananapuncher714.nbteditor", "$groupS.libs.nbteditor")
     }
     build {
         dependsOn("buildPlugin")
@@ -74,13 +79,15 @@ tasks {
             filter {
                 if (it.trim().startsWith("#")) null else it
             }
+            println(obfuscatedMainClass)
             expand(
-                "main" to if (isObfuscated) "a" else "$groupS.libs.core.BukkitTemplate",
+                "main" to if (isObfuscated) obfuscatedMainClass else "$groupS.libs.core.BukkitTemplate",
                 "name" to pluginName,
                 "version" to project.version,
                 "author" to author,
                 "kotlinVersion" to getProperties("kotlinVersion"),
-                "exposedVersion" to exposedVersion
+                "exposedVersion" to getProperties("exposedVersion"),
+                "nbtEditorVersion" to getProperties("nbtEditorVersion")
             )
         }
     }
@@ -91,6 +98,10 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     injars(tasks.named("shadowJar"))
     if (!isObfuscated) {
         dontobfuscate()
+    } else if (obfuscationDictionaryFile?.exists() == true) {
+        //混淆词典
+        classobfuscationdictionary(obfuscationDictionaryFile)
+        obfuscationdictionary(obfuscationDictionaryFile)
     }
     if (shrink != "true") {
         dontshrink()
@@ -116,7 +127,7 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     //启用混淆的选项
     val allowObf = mapOf("allowobfuscation" to true)
     //class规则
-    if (isObfuscated) keep(allowObf, "class a {}")
+    if (isObfuscated) keep(allowObf, "class $obfuscatedMainClass {}")
     else keep("class $groupS.libs.core.BukkitTemplate {}")
     keep("class kotlin.Metadata {}")
     keep(allowObf, "class $groupS.libs.core.PluginBootStrap {*;}")

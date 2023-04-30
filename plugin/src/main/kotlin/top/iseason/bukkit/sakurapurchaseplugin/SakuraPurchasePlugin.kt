@@ -18,7 +18,7 @@ import top.iseason.bukkittemplate.BukkitPlugin
 import top.iseason.bukkittemplate.command.CommandHandler
 import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.utils.bukkit.EventUtils.listen
-import top.iseason.bukkittemplate.utils.bukkit.EventUtils.register
+import top.iseason.bukkittemplate.utils.bukkit.EventUtils.registerListener
 import top.iseason.bukkittemplate.utils.other.submit
 import java.io.File
 
@@ -38,8 +38,8 @@ object SakuraPurchasePlugin : BukkitPlugin {
 
         mainCommand()
         CommandHandler.updateCommands()
-        PlayerListener.register()
-        SwapListener.register()
+        PlayerListener.registerListener()
+        SwapListener.registerListener()
         if (AuthMeHook.hasHooked) {
             listen<LoginEvent> {
                 PlayerListener.doOnLogin(this.player)

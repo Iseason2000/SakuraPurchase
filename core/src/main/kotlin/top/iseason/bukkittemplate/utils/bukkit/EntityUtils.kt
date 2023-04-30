@@ -3,7 +3,6 @@
 package top.iseason.bukkittemplate.utils.bukkit
 
 import io.github.bananapuncher714.nbteditor.NBTEditor
-import org.bukkit.Material
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Item
@@ -72,70 +71,4 @@ object EntityUtils {
      * 序列化为json
      */
     fun Entity.toJson(): String = NBTEditor.getNBTCompound(this).toJson()
-
-    /**
-     * 扣除某种物品数量
-     * @return true 数量足够
-     */
-    fun InventoryHolder.takeItem(itemStack: ItemStack, amount: Int): Boolean {
-        if (countItem(itemStack) < amount) return false
-        var count = amount
-        val contents = inventory.contents
-        for (index in contents.indices) {
-            val item = contents[index]
-            if (!itemStack.isSimilar(item)) continue
-            val am = item.amount
-            if (count >= am) {
-                count -= am
-                inventory.clear(index)
-            } else {
-                item.amount -= am
-                break
-            }
-        }
-        return true
-    }
-
-    /**
-     * 扣除某种材质的物品数量
-     * @return true 数量足够
-     */
-    fun InventoryHolder.takeItem(material: Material, amount: Int): Boolean {
-        if (countItem(material) < amount) return false
-        var count = amount
-        val contents = inventory.contents
-        for (index in contents.indices) {
-            val item = contents[index] ?: continue
-            if (material != item.type) continue
-            val am = item.amount
-            if (count >= am) {
-                count -= am
-                inventory.clear(index)
-            } else {
-                item.amount -= count
-                break
-            }
-        }
-        return true
-    }
-
-    /**
-     * 统计某种物品的数量
-     */
-    fun InventoryHolder.countItem(itemStack: ItemStack): Int {
-        return this.inventory.contents.sumOf {
-            if (it != null && it.isSimilar(itemStack)) it.amount
-            else 0
-        }
-    }
-
-    /**
-     * 统计某种材质的物品的数量
-     */
-    fun InventoryHolder.countItem(material: Material): Int {
-        return this.inventory.contents.sumOf {
-            if (it != null && it.type == material) it.amount
-            else 0
-        }
-    }
 }

@@ -21,6 +21,7 @@ import top.iseason.bukkittemplate.utils.other.submit
 import java.awt.image.BufferedImage
 import java.io.File
 import java.util.*
+import java.util.concurrent.atomic.AtomicReference
 import javax.imageio.ImageIO
 
 
@@ -113,13 +114,21 @@ object MapUtil {
             .renderOnce(true)
             .image(ImageTools.resizeToMapSize(image)) // set the image to render
             .build() // build the instance
-        val renderedMap = MapBuilder.create()
+        val atomicReference = AtomicReference<RenderedMap>(null)
+        submit {
+            val renderedMap = MapBuilder.create()
 //                .store(fakeStore)
-            .addRenderers(renderer)
-            .build()
+                .addRenderers(renderer)
+                .build()
+            atomicReference.set(renderedMap)
+        }
+        var map: RenderedMap? = null
+        while (map == null) {
+            map = atomicReference.get()
+        }
         val world = Bukkit.getWorlds().first()
-        maps.computeIfAbsent(world) { LinkedList() }.add(renderedMap)
-        return renderedMap.createItemStack()
+        maps.computeIfAbsent(world) { LinkedList() }.add(map)
+        return map.createItemStack()
     }
 
 }

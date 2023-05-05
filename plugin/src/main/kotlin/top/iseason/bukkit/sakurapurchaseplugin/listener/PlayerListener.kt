@@ -26,7 +26,7 @@ object PlayerListener : Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     fun onPlayerQuit(event: PlayerQuitEvent) {
-        PurchaseManager.purchaseMap[event.player]?.cancel()
+        PurchaseManager.closeOrder(event.player)
         PlayerInfoCacheManager.remove(event.player.uniqueId)
     }
 
@@ -37,59 +37,58 @@ object PlayerListener : Listener {
             event.drops.removeIf { it == purchaseChecker.map }
             event.drops.add(purchaseChecker.oldItemStack)
         }
-        PurchaseManager.purchaseMap[event.entity]?.cancel()
+        PurchaseManager.closeOrder(event.entity)
     }
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerMove(event: PlayerMoveEvent) {
-        if (!PurchaseManager.purchaseMap.containsKey(event.player)) return
+        if (!PurchaseManager.hasOrder(event.player)) return
         if (Config.cancelAction == "SHIFT_F") event.isCancelled = true
         else if (event.player.eyeLocation.pitch < 0) {
-            PurchaseManager.purchaseMap[event.player]!!.cancel()
+            PurchaseManager.closeOrder(event.player)
         }
     }
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerDamage(event: EntityDamageEvent) {
         val player = event.entity as? Player ?: return
-        if (PurchaseManager.purchaseMap.containsKey(player) && Config.cancelAction == "SHIFT_F") event.isCancelled =
-            true
+        if (PurchaseManager.hasOrder(player) && Config.cancelAction == "SHIFT_F") event.isCancelled = true
     }
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerInteract(event: PlayerInteractEvent) {
-        if (PurchaseManager.purchaseMap.containsKey(event.player)) event.isCancelled = true
+        if (PurchaseManager.hasOrder(event.player)) event.isCancelled = true
     }
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerInteractEntity(event: PlayerInteractEntityEvent) {
-        if (PurchaseManager.purchaseMap.containsKey(event.player)) event.isCancelled = true
+        if (PurchaseManager.hasOrder(event.player)) event.isCancelled = true
     }
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerInvClick(event: InventoryClickEvent) {
         if (event.clickedInventory !is PlayerInventory) return
-        if (PurchaseManager.purchaseMap.containsKey(event.whoClicked)) event.isCancelled = true
+        if (PurchaseManager.hasOrder(event.whoClicked as Player)) event.isCancelled = true
     }
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerInvOpen(event: InventoryOpenEvent) {
-        if (PurchaseManager.purchaseMap.containsKey(event.player)) event.isCancelled = true
+        if (PurchaseManager.hasOrder(event.player as Player)) event.isCancelled = true
     }
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerDrop(event: PlayerDropItemEvent) {
-        if (PurchaseManager.purchaseMap.containsKey(event.player)) event.isCancelled = true
+        if (PurchaseManager.hasOrder(event.player)) event.isCancelled = true
     }
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerDrop(event: PlayerItemHeldEvent) {
-        if (PurchaseManager.purchaseMap.containsKey(event.player)) event.isCancelled = true
+        if (PurchaseManager.hasOrder(event.player)) event.isCancelled = true
     }
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerCommand(event: PlayerCommandPreprocessEvent) {
-        if (PurchaseManager.purchaseMap.containsKey(event.player)) {
+        if (PurchaseManager.hasOrder(event.player)) {
             event.player.sendColorMessage(Language.pay__command_block)
             event.isCancelled = true
         }
@@ -97,10 +96,10 @@ object PlayerListener : Listener {
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerChat(event: AsyncPlayerChatEvent) {
-        if (!PurchaseManager.purchaseMap.containsKey(event.player)) return
+        if (!PurchaseManager.hasOrder(event.player)) return
         for (key in Config.cancelWorld) {
             if (event.message.contains(key)) {
-                PurchaseManager.purchaseMap[event.player]?.cancel()
+                PurchaseManager.closeOrder(event.player)
                 event.isCancelled = true
                 return
             }

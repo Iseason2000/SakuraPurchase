@@ -23,9 +23,10 @@ object PurchaseManager {
      */
     val purchaseMap = ConcurrentHashMap<Player, PurchaseChecker>()
 
-    /**
-     * 为玩家发起支付支付,并启动查询
-     */
+    @JvmStatic
+            /**
+             * 为玩家发起支付支付,并启动查询
+             */
     fun purchase(
         player: Player,
         amount: Double,
@@ -76,9 +77,10 @@ object PurchaseManager {
         }
     }
 
-    /**
-     * 查询订单状态
-     */
+    @JvmStatic
+            /**
+             * 查询订单状态
+             */
     fun query(orderId: String): String {
         val status = "UNKNOWN"
         if (!Connection.isConnected) return status
@@ -90,9 +92,10 @@ object PurchaseManager {
         return status
     }
 
-    /**
-     * 支付成功时发送保存请求
-     */
+    @JvmStatic
+            /**
+             * 支付成功时发送保存请求
+             */
     fun saveOrder(order: Order): Boolean {
         if (!Connection.isConnected) return false
         val httpPost = Connection.httpPost(Config.saveUrl, buildMap {
@@ -103,6 +106,27 @@ object PurchaseManager {
         return httpPost.isSuccess()
     }
 
+    /**
+     * 玩家是否具有未完成的订单
+     */
+    @JvmStatic
+    fun hasOrder(player: Player) = purchaseMap.contains(player)
+
+    /**
+     * 关闭玩家正在进行的订单
+     * @return true 关闭成功 false 玩家没有订单
+     */
+    @JvmStatic
+    fun closeOrder(player: Player): Boolean {
+        val purchaseChecker = purchaseMap[player] ?: return false
+        purchaseChecker.cancel()
+        return true
+    }
+
+    /**
+     * 关闭某个订单
+     */
+    @JvmStatic
     fun closeOrder(order: Order): Boolean {
         if (!Connection.isConnected) return false
         val httpPost = Connection.httpPost(Config.closeUrl, buildMap {
@@ -112,6 +136,10 @@ object PurchaseManager {
         return httpPost.isSuccess()
     }
 
+    /**
+     * 给某个订单退款
+     */
+    @JvmStatic
     fun refundOrder(orderId: String): Boolean {
         if (!Connection.isConnected) return false
         val httpPost = Connection.httpPost(Config.refundUrl, buildMap {
@@ -120,6 +148,7 @@ object PurchaseManager {
         })
         return httpPost.isSuccess()
     }
+
 
     enum class PayType(
         val type: String,

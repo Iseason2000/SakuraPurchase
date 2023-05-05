@@ -61,7 +61,7 @@ data class Order(
         }
     }
 
-    fun getStringTime() = format.format(createTime)
+    fun getStringTime(): String = format.format(createTime)
 
     override fun toString(): String {
         return Language.command__order_format.formatByOrder(this).toString()

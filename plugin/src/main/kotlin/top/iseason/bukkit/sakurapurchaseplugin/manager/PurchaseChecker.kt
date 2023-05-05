@@ -1,6 +1,7 @@
 package top.iseason.bukkit.sakurapurchaseplugin.manager
 
 
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -9,6 +10,9 @@ import top.iseason.bukkit.sakurapurchaseplugin.config.Config
 import top.iseason.bukkit.sakurapurchaseplugin.config.Config.formatByOrder
 import top.iseason.bukkit.sakurapurchaseplugin.config.Language
 import top.iseason.bukkit.sakurapurchaseplugin.entity.Order
+import top.iseason.bukkit.sakurapurchaseplugin.event.OrderCancelEvent
+import top.iseason.bukkit.sakurapurchaseplugin.event.OrderFinishEvent
+import top.iseason.bukkit.sakurapurchaseplugin.event.OrderTimeoutEvent
 import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
@@ -17,7 +21,6 @@ import top.iseason.bukkittemplate.utils.other.submit
 import java.util.function.Consumer
 
 class PurchaseChecker(
-
     private val player: Player,
     private val order: Order,
     val map: ItemStack,
@@ -45,12 +48,16 @@ class PurchaseChecker(
             player.sendColorMessage(
                 Language.pay__timeout.formatByOrder(order)
             )
+            val event = OrderTimeoutEvent(order, player)
+            Bukkit.getPluginManager().callEvent(event)
             info("&7用户 &6${player.name} &7订单 &6${order.orderId} &7已超时")
             cancelSilently()
             return
         }
         val query = PurchaseManager.query(order.orderId)
         if (query == "SUCCESS") {
+            val event = OrderFinishEvent(order, player)
+            Bukkit.getPluginManager().callEvent(event)
             player.sendColorMessage(
                 Language.pay__success.formatByOrder(order)
             )
@@ -78,6 +85,8 @@ class PurchaseChecker(
         player.sendColorMessage(
             Language.pay__cancel.formatByOrder(order)
         )
+        val event = OrderCancelEvent(order, player)
+        Bukkit.getPluginManager().callEvent(event)
         info("&7用户 &6${player.name} &7订单 &6${order.orderId} &7已取消")
     }
 
@@ -90,7 +99,6 @@ class PurchaseChecker(
             player.inventory.setItem(player.inventory.heldItemSlot, oldItemStack)
         PlayerInfoCacheManager.getPlayerInfo(player.uniqueId).currentOrder = null
         PurchaseManager.purchaseMap.remove(this.player)
-        if (setClose)
-            PurchaseManager.closeOrder(order);
+        if (setClose) PurchaseManager.closeOrder(order);
     }
 }

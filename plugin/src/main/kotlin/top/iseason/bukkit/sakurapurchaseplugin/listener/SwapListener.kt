@@ -17,7 +17,7 @@ object SwapListener : Listener {
         if (!PurchaseManager.purchaseMap.containsKey(event.player)) return
         // shift+F 取消支付
         if (event.player.isSneaking && Config.cancelAction == "SHIFT_F") {
-            PurchaseManager.purchaseMap[event.player]!!.cancel()
+            PurchaseManager.closeOrder(event.player)
             return
         }
         event.isCancelled = true

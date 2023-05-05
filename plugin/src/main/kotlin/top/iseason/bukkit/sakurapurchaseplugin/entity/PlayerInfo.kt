@@ -44,7 +44,6 @@ data class PlayerInfo(
      */
     fun getLastOrders(offset: Int, amount: Int): List<Order> {
         val mutableListOf = mutableListOf<Order>()
-//        println("order size :${orders.size}")
         val reversed = orders.sortedByDescending { it.createTime.time }
         for (index in offset..offset + amount) {
             val orNull = reversed.getOrNull(index) ?: continue

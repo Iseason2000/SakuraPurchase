@@ -140,6 +140,8 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     keepclassmembers(allowObf, "class * extends org.jetbrains.exposed.dao.Entity {*;}")
     keepattributes("Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*")
     keepclassmembers("enum * {public static **[] values();public static ** valueOf(java.lang.String);}")
+    keepclassmembers("class top.iseason.bukkit.sakurapurchaseplugin.entity.Order {*;}")
+    keepclassmembers("class top.iseason.bukkit.sakurapurchaseplugin.manager.PurchaseManager {*;}")
     repackageclasses()
     outjars(output)
 }

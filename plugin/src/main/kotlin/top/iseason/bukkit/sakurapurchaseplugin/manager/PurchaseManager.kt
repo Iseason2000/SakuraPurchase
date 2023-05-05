@@ -77,10 +77,10 @@ object PurchaseManager {
         }
     }
 
+    /**
+     * 查询订单状态
+     */
     @JvmStatic
-            /**
-             * 查询订单状态
-             */
     fun query(orderId: String): String {
         val status = "UNKNOWN"
         if (!Connection.isConnected) return status

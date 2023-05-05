@@ -1,5 +1,6 @@
 package top.iseason.bukkit.sakurapurchaseplugin.listener
 
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -32,7 +33,7 @@ object PlayerListener : Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     fun onPlayerDeath(event: PlayerDeathEvent) {
         val purchaseChecker = PurchaseManager.purchaseMap[event.entity] ?: return
-        if (!event.keepInventory) {
+        if (!event.keepInventory && purchaseChecker.map.type != Material.AIR) {
             event.drops.removeIf { it == purchaseChecker.map }
             event.drops.add(purchaseChecker.oldItemStack)
         }

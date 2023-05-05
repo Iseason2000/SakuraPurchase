@@ -6,14 +6,16 @@ import com.github.johnnyjayjay.spigotmaps.rendering.ImageRenderer
 import com.github.johnnyjayjay.spigotmaps.util.Compatibility
 import com.github.johnnyjayjay.spigotmaps.util.ImageTools
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.world.WorldSaveEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.map.MapCanvas
-import org.bukkit.map.MapRenderer
-import org.bukkit.map.MapView
 import top.iseason.bukkit.sakurapurchaseplugin.config.Config
+import top.iseason.bukkit.sakurapurchaseplugin.entity.Order
+import top.iseason.bukkit.sakurapurchaseplugin.event.QRCodePreGenerateEvent
+import top.iseason.bukkit.sakurapurchaseplugin.event.QRMapGenerateEvent
+import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.DisableHook
 import top.iseason.bukkittemplate.debug.debug
 import top.iseason.bukkittemplate.utils.bukkit.EventUtils.listen
@@ -21,39 +23,12 @@ import top.iseason.bukkittemplate.utils.other.submit
 import java.awt.image.BufferedImage
 import java.io.File
 import java.util.*
-import java.util.concurrent.atomic.AtomicReference
 import javax.imageio.ImageIO
 
 
 object MapUtil {
     private val maps = mutableMapOf<World, MutableList<RenderedMap>>()
-    private val emptyRender = object : MapRenderer() {
-        override fun render(map: MapView, canvas: MapCanvas, player: Player) {
-        }
-    }
 
-    //    private val fakeStore = object : MapStorage {
-//        private val renders = hashMapOf<Int, MutableList<MapRenderer>>()
-//        override fun remove(mapId: Int, renderer: MapRenderer?) {
-//            if (renderer == null) return
-//            renders[mapId]?.remove(renderer)
-//        }
-//
-//        override fun store(mapId: Int, renderer: MapRenderer?) {
-//            if (renderer == null) return
-//            println(mapId)
-//
-//            renders.computeIfAbsent(mapId) { LinkedList() }.add(renderer)
-//        }
-//
-//        override fun provide(mapId: Int): MutableList<MapRenderer> {
-//            return renders[mapId] ?: mutableListOf()
-//        }
-//    }
-//
-//    init {
-//        InitializationListener.register(fakeStore, BukkitTemplate.getPlugin())
-//    }
     init {
         listen<WorldSaveEvent> {
             submit(100, 0, true) {
@@ -99,36 +74,36 @@ object MapUtil {
     /**
      * 由内容生成地图
      */
-    fun generateQRMap(str: String): ItemStack? {
+    fun generateQRMap(str: String, player: Player, order: Order): ItemStack? {
         val icon = if (str.startsWith("weixin")) wechatIcon else alipayIcon
-        val image = runCatching {
+        val qrEvent = QRCodePreGenerateEvent(str, 512, 512, 128, 128, icon, Config.qrColor, player, order)
+        Bukkit.getPluginManager().callEvent(qrEvent)
+        var image = runCatching {
             QRCodeUtil.generateQRcode(
-                str, 512, 512, 128, 128,
-                icon, Config.qrColor
+                qrEvent.content, qrEvent.qrWidth, qrEvent.qrHeight, qrEvent.logoWidth, qrEvent.logoHeight,
+                qrEvent.logo, qrEvent.qrColor
             )
         }.getOrElse {
             it.printStackTrace()
             return null
         }
+        if (qrEvent.isResize) image = ImageTools.resizeToMapSize(image)
+        val qrMapEvent = QRMapGenerateEvent(str, image, player, order)
+        Bukkit.getPluginManager().callEvent(qrMapEvent)
+        if (qrMapEvent.isCancelled) return ItemStack(Material.AIR)
         val renderer = ImageRenderer.builder()
             .renderOnce(true)
-            .image(ImageTools.resizeToMapSize(image)) // set the image to render
+            .image(image) // set the image to render
             .build() // build the instance
-        val atomicReference = AtomicReference<RenderedMap>(null)
-        submit {
-            val renderedMap = MapBuilder.create()
+        val renderedMap = Bukkit.getScheduler().callSyncMethod(BukkitTemplate.getPlugin()) {
+            MapBuilder.create()
 //                .store(fakeStore)
                 .addRenderers(renderer)
                 .build()
-            atomicReference.set(renderedMap)
-        }
-        var map: RenderedMap? = null
-        while (map == null) {
-            map = atomicReference.get()
-        }
+        }.get()
         val world = Bukkit.getWorlds().first()
-        maps.computeIfAbsent(world) { LinkedList() }.add(map)
-        return map.createItemStack()
+        maps.computeIfAbsent(world) { LinkedList() }.add(renderedMap)
+        return renderedMap.createItemStack()
     }
 
 }

@@ -57,7 +57,7 @@ object PurchaseManager {
             player.sendColorMessage(
                 Language.pay__start.formatByOrder(order)
             )
-            val qrMap = MapUtil.generateQRMap(qrCode) ?: return
+            val qrMap = MapUtil.generateQRMap(qrCode, player, order) ?: return
             //默认 5秒检查一次
             val purchaseChecker = PurchaseChecker(
                 player,

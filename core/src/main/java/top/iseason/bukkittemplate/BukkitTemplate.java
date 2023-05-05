@@ -29,21 +29,11 @@ public class BukkitTemplate extends JavaPlugin {
     public BukkitTemplate() throws ClassNotFoundException, NoSuchFieldException, RuntimeException {
         plugin = this;
         runtimeManager = PluginYmlRuntime.parsePluginYml();
-        Bukkit.getLogger().info("[" + BukkitTemplate.getPlugin().getName() + "] Loading libraries successfully");
         bukkitPlugin = loadInstance();
     }
 
     public static RuntimeManager getRuntimeManager() {
         return runtimeManager;
-    }
-
-    /**
-     * 获取Bukkit插件主类
-     *
-     * @return Bukkit插件主类
-     */
-    public static JavaPlugin getPlugin() {
-        return plugin;
     }
 
     /**
@@ -69,6 +59,15 @@ public class BukkitTemplate extends JavaPlugin {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * 获取Bukkit插件主类
+     *
+     * @return Bukkit插件主类
+     */
+    public static JavaPlugin getPlugin() {
+        return plugin;
     }
 
     /**

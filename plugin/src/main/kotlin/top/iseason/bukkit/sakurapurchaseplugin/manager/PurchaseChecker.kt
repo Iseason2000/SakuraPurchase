@@ -1,6 +1,7 @@
 package top.iseason.bukkit.sakurapurchaseplugin.manager
 
 
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
@@ -26,9 +27,11 @@ class PurchaseChecker(
     val oldItemStack: ItemStack? = player.getHeldItem()
 
     init {
-        player.inventory.setItem(player.inventory.heldItemSlot, map)
-        submit {
-            player.teleport(player.location.apply { pitch = 90F })
+        if (map.type != Material.AIR) {
+            player.inventory.setItem(player.inventory.heldItemSlot, map)
+            submit {
+                player.teleport(player.location.apply { pitch = 90F })
+            }
         }
     }
 
@@ -83,7 +86,8 @@ class PurchaseChecker(
      */
     private fun cancelSilently(setClose: Boolean = true) {
         super.cancel()
-        player.inventory.setItem(player.inventory.heldItemSlot, oldItemStack)
+        if (map.type != Material.AIR)
+            player.inventory.setItem(player.inventory.heldItemSlot, oldItemStack)
         PlayerInfoCacheManager.getPlayerInfo(player.uniqueId).currentOrder = null
         PurchaseManager.purchaseMap.remove(this.player)
         if (setClose)

@@ -110,7 +110,7 @@ object PurchaseManager {
      * 玩家是否具有未完成的订单
      */
     @JvmStatic
-    fun hasOrder(player: Player) = purchaseMap.contains(player)
+    fun hasOrder(player: Player) = purchaseMap.containsKey(player)
 
     /**
      * 关闭玩家正在进行的订单

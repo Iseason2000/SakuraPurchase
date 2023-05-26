@@ -23,7 +23,6 @@ import top.iseason.bukkittemplate.utils.other.runAsync
 
 object PlayerListener : Listener {
 
-
     @EventHandler(priority = EventPriority.LOWEST)
     fun onPlayerQuit(event: PlayerQuitEvent) {
         PurchaseManager.closeOrder(event.player)

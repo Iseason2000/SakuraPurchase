@@ -12,7 +12,7 @@ import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.debug.SimpleLogger
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessages
-import top.iseason.bukkittemplate.utils.other.submit
+import top.iseason.bukkittemplate.utils.bukkit.SchedulerUtils.submit
 import java.util.*
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")

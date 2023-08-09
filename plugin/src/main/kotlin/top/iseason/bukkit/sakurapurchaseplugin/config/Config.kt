@@ -1,6 +1,5 @@
 package top.iseason.bukkit.sakurapurchaseplugin.config
 
-import okhttp3.*
 import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.configuration.ConfigurationSection
@@ -14,7 +13,7 @@ import top.iseason.bukkittemplate.config.annotations.Key
 import top.iseason.bukkittemplate.debug.SimpleLogger
 import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.formatBy
-import top.iseason.bukkittemplate.utils.other.submit
+import top.iseason.bukkittemplate.utils.bukkit.SchedulerUtils.submit
 import java.util.regex.Pattern
 
 

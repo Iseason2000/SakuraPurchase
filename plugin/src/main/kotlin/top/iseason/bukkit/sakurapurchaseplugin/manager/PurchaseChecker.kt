@@ -17,7 +17,7 @@ import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
-import top.iseason.bukkittemplate.utils.other.submit
+import top.iseason.bukkittemplate.utils.bukkit.SchedulerUtils.submit
 import java.util.function.Consumer
 
 class PurchaseChecker(

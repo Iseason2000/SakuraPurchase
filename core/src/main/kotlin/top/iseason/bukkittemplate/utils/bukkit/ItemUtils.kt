@@ -26,6 +26,7 @@ import org.bukkit.material.SpawnEgg
 import org.bukkit.potion.*
 import org.bukkit.util.io.BukkitObjectInputStream
 import org.bukkit.util.io.BukkitObjectOutputStream
+import top.iseason.bukkittemplate.hook.PlaceHolderHook
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -39,12 +40,27 @@ import kotlin.math.abs
  * bukkit的物品相关工具
  */
 object ItemUtils {
+    val itemProviders = mutableListOf<ItemProvider>()
+
+    fun interface ItemProvider {
+        fun provide(mat: String): ItemStack?
+    }
 
     /**
      * 修改ItemMeta
      */
-    inline fun <T : ItemStack> T.applyMeta(block: ItemMeta.() -> Unit): T {
+    fun ItemStack.applyMeta(block: ItemMeta.() -> Unit): ItemStack {
         val itemMeta = itemMeta ?: return this
+        block(itemMeta)
+        this.itemMeta = itemMeta
+        return this
+    }
+
+    /**
+     * 修改特定类型的ItemMeta
+     */
+    inline fun <reified M : ItemMeta> ItemStack.applyTypedMeta(block: M.() -> Unit): ItemStack {
+        val itemMeta = itemMeta as? M ?: return this
         block(itemMeta)
         this.itemMeta = itemMeta
         return this
@@ -53,7 +69,7 @@ object ItemUtils {
     /**
      * 减少物品数量，如果小于0则物品变为空气
      */
-    fun ItemStack.subtract(count: Int) {
+    fun ItemStack.decrease(count: Int = 1) {
         val i = amount - count
         if (i <= 0) type = Material.AIR
         else amount = i
@@ -62,7 +78,7 @@ object ItemUtils {
     /**
      * 增加物品数量，返回溢出的数量
      */
-    fun ItemStack.add(count: Int): Int {
+    fun ItemStack.increase(count: Int): Int {
         val i = amount + count
         return if (i >= maxStackSize) {
             amount = maxStackSize
@@ -176,9 +192,15 @@ object ItemUtils {
         if (!hasItemMeta()) return yaml
         // 额外的NBt
         val toJson = NBTEditor.getNBTCompound(this, "tag").toJson()
-//        println(toJson)
         val json = Gson().fromJson(toJson, Map::class.java).toMutableMap()
-        this.durability
+
+        val data = this.data
+        if (data != null && data.data != 0.toByte()) {
+            var toInt = data.data.toInt()
+            if (toInt < 0) toInt += 256
+            yaml["data"] = toInt
+        }
+
         with(itemMeta!!) {
             // 名字
             if (hasDisplayName()) yaml["name"] = displayName
@@ -445,13 +467,18 @@ object ItemUtils {
      * @param allowNested 是否允许嵌套解析(比如潜影盒)，只对容器有效，为false时将容器内容转为base64储存
      */
     fun fromSection(section: ConfigurationSection, allowNested: Boolean = true): ItemStack? {
-        val material = Material.getMaterial(section.getString("material")!!.uppercase()) ?: return null
-        var item = ItemStack(material)
+        val mat = section.getString("material")!!
+        val material = Material.matchMaterial(mat)
+        var item = material?.item ?: itemProviders.firstNotNullOfOrNull { it.provide(mat) } ?: return null
         //处理头颅
         val url = section.getString("skull")
         if (url != null) item = NBTEditor.getHead(url)
         item.amount = section.getInt("amount", 1)
         item.durability = section.getInt("damage", 0).toShort()
+        val subId = section.getInt("data", 0)
+        if (subId != 0) {
+            item.data?.data = if (subId > 128) (subId - 256).toByte() else subId.toByte()
+        }
         item.applyMeta {
             section.getString("name")?.also { setDisplayName(it.toColor()) }
             section.getStringList("lore").also { if (it.isNotEmpty()) lore = it.toColor() }
@@ -917,4 +944,23 @@ object ItemUtils {
         if (!hasItemMeta() || !itemMeta!!.hasDisplayName()) return null
         return itemMeta!!.displayName
     }
+
+    /**
+     * 将一个物品的名字和lore里的颜色代码转为支持的格式
+     */
+    fun ItemStack.toColor() = this.clone().applyMeta {
+        if (hasDisplayName()) setDisplayName(displayName.toColor())
+        if (hasLore()) lore = lore!!.toColor()
+    }
+
+    /**
+     * 解析一个物品的名字和lore里的papi并且解析颜色
+     */
+    fun ItemStack.toColorPapi(player: OfflinePlayer? = null) = this.clone().applyMeta {
+        if (hasDisplayName()) setDisplayName(PlaceHolderHook.setPlaceHolder(displayName, player))
+        if (hasLore()) lore = PlaceHolderHook.setPlaceHolder(lore!!, player)
+    }
+
+    val Material.item
+        get() = ItemStack(this)
 }

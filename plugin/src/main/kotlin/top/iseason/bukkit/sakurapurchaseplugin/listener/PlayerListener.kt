@@ -19,7 +19,8 @@ import top.iseason.bukkit.sakurapurchaseplugin.manager.PurchaseManager
 import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
-import top.iseason.bukkittemplate.utils.other.runAsync
+import top.iseason.bukkittemplate.utils.bukkit.SchedulerUtils.castAsync
+
 
 object PlayerListener : Listener {
 
@@ -112,12 +113,12 @@ object PlayerListener : Listener {
         val uuid = player.uniqueId
         val order = OrderCache.orderCache[uuid] ?: return
         val group = OrderCache.groupCache[uuid] ?: return
-        runAsync {
+        castAsync {
             val status = PurchaseManager.query(order.orderId)
             if (status != "SUCCESS") {
                 OrderCache.orderCache.remove(uuid)
                 OrderCache.groupCache.remove(uuid)
-                return@runAsync
+                return@castAsync
             }
             val commands = Config.commandGroup[group]
             if (commands != null) {
@@ -125,7 +126,7 @@ object PlayerListener : Listener {
             } else {
                 info("&7玩家 &6${player.name} &7具有已支付但未完成的订单,但命令组: &6$group &7不存在")
                 info(order.toString())
-                return@runAsync
+                return@castAsync
             }
             info(order.toString())
             Config.performCommands(player, order.amount, commands)

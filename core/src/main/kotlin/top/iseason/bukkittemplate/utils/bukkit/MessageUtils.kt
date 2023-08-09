@@ -19,7 +19,7 @@ import top.iseason.bukkittemplate.DisableHook
 import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.hook.BungeeCordHook
 import top.iseason.bukkittemplate.hook.PlaceHolderHook
-import top.iseason.bukkittemplate.utils.other.submit
+import top.iseason.bukkittemplate.utils.bukkit.SchedulerUtils.submit
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -64,18 +64,10 @@ object MessageUtils {
             }
             true
         }
-        //大标题
         messageHandlers.add { msg, sender, prefix ->
-            if (sender is Player && msg.startsWith("[main-title]", true)) {
-                sender.sendMainTitle(msg.drop(12), prefix)
-                return@add false
-            }
-            true
-        }
-        //小标题
-        messageHandlers.add { msg, sender, prefix ->
-            if (sender is Player && msg.startsWith("[sub-title]", true)) {
-                sender.sendSubTitle(msg.drop(11), prefix)
+            if (sender is Player && msg.startsWith("[title]", true)) {
+                val drop = msg.drop(7).split("\\n")
+                sender.sendCustomTitle(drop.getOrNull(0), drop.getOrNull(1), prefix)
                 return@add false
             }
             true
@@ -333,30 +325,20 @@ object MessageUtils {
     }
 
     /**
-     * 发送 title 消息
+     * 发送标题消息
      */
-    fun Player.sendMainTitle(message: String?, prefix: String = defaultPrefix) {
-        if (message == null || message.toString().isEmpty()) return
-        val finalMessage = PlaceHolderHook.setPlaceHolder("$prefix$message", this)
+    fun Player.sendCustomTitle(main: String?, sub: String?, prefix: String = defaultPrefix) {
+        if (main.isNullOrEmpty() && sub.isNullOrEmpty()) return
+        val mainColor = if (main.isNullOrEmpty()) null else PlaceHolderHook.setPlaceHolder("$prefix$main", this)
+        val subColor = if (sub.isNullOrEmpty()) null else PlaceHolderHook.setPlaceHolder("$prefix$sub", this)
         if (miniMessageSupport) {
-            val component = MiniMessage.miniMessage().deserialize(finalMessage)
-            audiences.player(this).showTitle(Title.title(component, Component.empty()))
+            val mainComponent =
+                if (mainColor != null) MiniMessage.miniMessage().deserialize(mainColor) else Component.empty()
+            val subComponent =
+                if (subColor != null) MiniMessage.miniMessage().deserialize(subColor) else Component.empty()
+            audiences.player(this).showTitle(Title.title(mainComponent, subComponent))
         } else {
-            this.sendTitle(finalMessage, "")
-        }
-    }
-
-    /**
-     * 发送 subtitle 消息
-     */
-    fun Player.sendSubTitle(message: String?, prefix: String = defaultPrefix) {
-        if (message == null || message.toString().isEmpty()) return
-        val finalMessage = PlaceHolderHook.setPlaceHolder("$prefix$message", this)
-        if (miniMessageSupport) {
-            val component = MiniMessage.miniMessage().deserialize(finalMessage)
-            audiences.player(this).showTitle(Title.title(Component.empty(), component))
-        } else {
-            this.sendTitle("", finalMessage)
+            this.sendTitle(mainColor, subColor)
         }
     }
 

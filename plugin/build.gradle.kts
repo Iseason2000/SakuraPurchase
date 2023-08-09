@@ -23,6 +23,7 @@ dependencies {
     compileOnly("com.google.zxing:core:3.5.1")
     compileOnly("fr.xephi:authme:5.6.0-SNAPSHOT")
     compileOnly("org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT")
+    compileOnly("me.clip:placeholderapi:2.11.3")
 }
 
 // 插件名称，请在gradle.properties 修改
@@ -79,7 +80,6 @@ tasks {
             filter {
                 if (it.trim().startsWith("#")) null else it
             }
-            println(obfuscatedMainClass)
             expand(
                 "main" to if (isObfuscated) obfuscatedMainClass else "$groupS.libs.core.BukkitTemplate",
                 "name" to pluginName,
@@ -130,7 +130,6 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     if (isObfuscated) keep(allowObf, "class $obfuscatedMainClass {}")
     else keep("class $groupS.libs.core.BukkitTemplate {}")
     keep("class kotlin.Metadata {}")
-    keep(allowObf, "class $groupS.libs.core.PluginBootStrap {*;}")
     keep(allowObf, "class * implements $groupS.libs.core.BukkitPlugin {*;}")
     keepclassmembers("class * extends $groupS.libs.core.config.SimpleYAMLConfig {*;}")
     keepclassmembers("class * implements $groupS.libs.core.ui.container.BaseUI {*;}")
@@ -140,8 +139,6 @@ tasks.register<proguard.gradle.ProGuardTask>("buildPlugin") {
     keepclassmembers(allowObf, "class * extends org.jetbrains.exposed.dao.Entity {*;}")
     keepattributes("Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*")
     keepclassmembers("enum * {public static **[] values();public static ** valueOf(java.lang.String);}")
-    keepclassmembers("class top.iseason.bukkit.sakurapurchaseplugin.entity.Order {*;}")
-    keepclassmembers("class top.iseason.bukkit.sakurapurchaseplugin.manager.PurchaseManager {*;}")
     repackageclasses()
     outjars(output)
 }

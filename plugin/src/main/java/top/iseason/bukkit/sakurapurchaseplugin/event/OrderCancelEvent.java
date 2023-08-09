@@ -1,5 +1,6 @@
 package top.iseason.bukkit.sakurapurchaseplugin.event;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -14,6 +15,7 @@ public class OrderCancelEvent extends Event {
     private final Player player;
 
     public OrderCancelEvent(Order order, Player player) {
+        super(!Bukkit.isPrimaryThread());
         this.order = order;
         this.player = player;
     }
@@ -29,4 +31,10 @@ public class OrderCancelEvent extends Event {
     public Order getOrder() {
         return order;
     }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+
 }

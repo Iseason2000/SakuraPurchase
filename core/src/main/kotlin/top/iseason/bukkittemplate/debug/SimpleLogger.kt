@@ -15,8 +15,14 @@ fun info(message: Any?) {
  * 输出debug日志,只有当 SimpleLogger.isDebug 为true 时输出
  */
 fun debug(message: Any?) {
-    if (SimpleLogger.isDebug)
-        info(message)
+    if (SimpleLogger.isDebug) info(message)
+}
+
+/**
+ * debug模式才运行代码
+ */
+fun debug(runnable: Runnable) {
+    if (SimpleLogger.isDebug) runnable.run()
 }
 
 /**

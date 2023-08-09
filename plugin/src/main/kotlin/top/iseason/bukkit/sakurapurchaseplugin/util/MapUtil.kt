@@ -19,7 +19,7 @@ import top.iseason.bukkittemplate.BukkitTemplate
 import top.iseason.bukkittemplate.DisableHook
 import top.iseason.bukkittemplate.debug.debug
 import top.iseason.bukkittemplate.utils.bukkit.EventUtils.listen
-import top.iseason.bukkittemplate.utils.other.submit
+import top.iseason.bukkittemplate.utils.bukkit.SchedulerUtils.submit
 import java.awt.image.BufferedImage
 import java.io.File
 import java.util.*

@@ -16,4 +16,9 @@ object PlaceHolderHook : BaseHook("PlaceholderAPI") {
             PlaceholderAPI.setPlaceholders(player, str).toColor()
         else str.toColor()
     }
+
+    fun setPlaceHolder(str: List<String>, player: OfflinePlayer?): List<String> {
+        return if (hasHooked) str.map { PlaceholderAPI.setPlaceholders(player, it).toColor() }
+        else str.toColor()
+    }
 }

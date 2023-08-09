@@ -19,7 +19,7 @@ import top.iseason.bukkittemplate.command.CommandHandler
 import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.utils.bukkit.EventUtils.listen
 import top.iseason.bukkittemplate.utils.bukkit.EventUtils.registerListener
-import top.iseason.bukkittemplate.utils.other.submit
+import top.iseason.bukkittemplate.utils.bukkit.SchedulerUtils.submit
 import java.io.File
 
 

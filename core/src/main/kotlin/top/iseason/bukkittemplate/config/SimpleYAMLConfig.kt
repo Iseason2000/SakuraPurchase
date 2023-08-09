@@ -11,7 +11,7 @@ import top.iseason.bukkittemplate.config.type.DefaultConfigType
 import top.iseason.bukkittemplate.debug.debug
 import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.debug.warn
-import top.iseason.bukkittemplate.utils.other.submit
+import top.iseason.bukkittemplate.utils.bukkit.SchedulerUtils.submit
 import java.io.File
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier

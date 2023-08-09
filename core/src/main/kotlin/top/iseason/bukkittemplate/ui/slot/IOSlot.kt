@@ -4,7 +4,7 @@ import org.bukkit.entity.HumanEntity
 import org.bukkit.inventory.ItemStack
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.giveItems
 import top.iseason.bukkittemplate.utils.bukkit.ItemUtils.checkAir
-import top.iseason.bukkittemplate.utils.other.submit
+import top.iseason.bukkittemplate.utils.bukkit.SchedulerUtils.submit
 
 /**
  * 物品槽，可以输入和输出物品

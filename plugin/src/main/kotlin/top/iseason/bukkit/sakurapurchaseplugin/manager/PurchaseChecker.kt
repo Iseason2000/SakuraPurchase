@@ -29,6 +29,9 @@ class PurchaseChecker(
     private val timeStamp = System.currentTimeMillis()
     val oldItemStack: ItemStack? = player.getHeldItem()
 
+    @Volatile
+    private var isInnerCancelled = false
+
     init {
         if (map.type != Material.AIR) {
             player.inventory.setItem(player.inventory.heldItemSlot, map)
@@ -42,6 +45,7 @@ class PurchaseChecker(
      * 监听订单zhuangtai
      */
     override fun run() {
+        if (isInnerCancelled) return
         val timePast = System.currentTimeMillis() - timeStamp
         val maxWait = Config.maxTimeout * 1000
         if (timePast >= maxWait) {
@@ -81,6 +85,7 @@ class PurchaseChecker(
      * 取消监听订单状态
      */
     override fun cancel() {
+        if (isInnerCancelled) return
         cancelSilently()
         player.sendColorMessage(
             Language.pay__cancel.formatByOrder(order)
@@ -94,9 +99,12 @@ class PurchaseChecker(
      * 取消，但是不提示
      */
     private fun cancelSilently(setClose: Boolean = true) {
+        if (isInnerCancelled) return
+        isInnerCancelled = true
         super.cancel()
-        if (map.type != Material.AIR)
+        if (map.type != Material.AIR) {
             player.inventory.setItem(player.inventory.heldItemSlot, oldItemStack)
+        }
         PlayerInfoCacheManager.getPlayerInfo(player.uniqueId).currentOrder = null
         PurchaseManager.purchaseMap.remove(this.player)
         if (setClose) PurchaseManager.closeOrder(order);

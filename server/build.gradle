@@ -67,9 +67,9 @@ thinJar {
     exclude 'static/**'
     archiveFileName = "${project.name}-${project.version}-thin.jar"
 }
-tasks.named('test') {
-    useJUnitPlatform()
-}
+//tasks.named('test') {
+//    useJUnitPlatform()
+//}
 publishing {
     publications {
         maven(MavenPublication) {

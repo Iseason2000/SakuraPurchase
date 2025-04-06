@@ -1,6 +1,9 @@
 package top.iseason.bukkit.sakurapurchaseplugin.manager
 
 
+import net.md_5.bungee.api.chat.ClickEvent
+import net.md_5.bungee.api.chat.ClickEvent.Action
+import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -13,6 +16,7 @@ import top.iseason.bukkit.sakurapurchaseplugin.entity.Order
 import top.iseason.bukkit.sakurapurchaseplugin.event.OrderCancelEvent
 import top.iseason.bukkit.sakurapurchaseplugin.event.OrderFinishEvent
 import top.iseason.bukkit.sakurapurchaseplugin.event.OrderTimeoutEvent
+import top.iseason.bukkit.sakurapurchaseplugin.manager.PurchaseManager.PayType
 import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.bukkit.EntityUtils.getHeldItem
@@ -24,6 +28,7 @@ class PurchaseChecker(
     private val player: Player,
     private val order: Order,
     val map: ItemStack,
+    val url: String,
     private val onSuccess: Consumer<Order>
 ) : BukkitRunnable() {
     private val timeStamp = System.currentTimeMillis()
@@ -33,6 +38,7 @@ class PurchaseChecker(
     private var isInnerCancelled = false
 
     init {
+        require(!PurchaseManager.hasOrder(player))
         if (map.type != Material.AIR) {
             player.inventory.setItem(player.inventory.heldItemSlot, map)
             submit {
@@ -78,7 +84,11 @@ class PurchaseChecker(
         player.sendColorMessage(
             Language.pay__waiting.formatByOrder(order).replace("{time}", ((maxWait - timePast) / 1000).toString())
         )
-
+        if (order.payType == PayType.ALIPAY) {
+            val link = TextComponent(Language.pay__click)
+            link.clickEvent = ClickEvent(Action.OPEN_URL, url)
+            player.spigot().sendMessage(link)
+        }
     }
 
     /**

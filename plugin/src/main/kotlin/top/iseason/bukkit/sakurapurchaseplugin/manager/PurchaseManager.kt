@@ -1,6 +1,9 @@
 package top.iseason.bukkit.sakurapurchaseplugin.manager
 
 import com.google.gson.Gson
+import net.md_5.bungee.api.chat.ClickEvent
+import net.md_5.bungee.api.chat.ClickEvent.Action
+import net.md_5.bungee.api.chat.TextComponent
 import okhttp3.Response
 import org.bukkit.entity.Player
 import top.iseason.bukkit.sakurapurchaseplugin.SakuraPurchasePlugin
@@ -13,6 +16,7 @@ import top.iseason.bukkit.sakurapurchaseplugin.util.MapUtil
 import top.iseason.bukkittemplate.debug.info
 import top.iseason.bukkittemplate.debug.warn
 import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.sendColorMessage
+import top.iseason.bukkittemplate.utils.bukkit.MessageUtils.toColor
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Consumer
@@ -46,26 +50,38 @@ object PurchaseManager {
             put("attach", attach)
             put("_csrf", Connection.token) //防止跨域攻击
         })
+
         if (httpPost.isSuccess()) {
             val json = httpPost.data!!.asJsonObject
-            val qrCode = json["codeUrl"].asString
+            val url = json["codeUrl"].asString
             val orderID = json["orderId"].asString
             val order = Order(player.uniqueId, orderID, orderName, amount, payType, attach, Date())
             info("&7用户 &6${player.name} &7发起 &a${payType.translation} &7支付,金额: &6$amount &7订单号: &6$orderID")
             PlayerInfoCacheManager.getPlayerInfo(player.uniqueId).currentOrder = order
             OrderCache.orderCache[player.uniqueId] = order
             OrderCache.groupCache[player.uniqueId] = group
-            player.sendColorMessage(
-                Language.pay__start.formatByOrder(order)
-            )
-            val qrMap = MapUtil.generateQRMap(qrCode, player, order) ?: return
-            //默认 5秒检查一次
-            val purchaseChecker = PurchaseChecker(
-                player,
-                order,
-                qrMap,
-                onSuccess
-            )
+            player.sendColorMessage(Language.pay__start.formatByOrder(order))
+            if (payType == PayType.ALIPAY) {
+                val link = TextComponent(Language.pay__click.toColor())
+                link.clickEvent = ClickEvent(Action.OPEN_URL, url)
+                player.spigot().sendMessage(link)
+            }
+            val qrMap = MapUtil.generateQRMap(url, player, order) ?: return
+            // 默认 5秒检查一次
+            val purchaseChecker = try {
+                PurchaseChecker(
+                    player,
+                    order,
+                    qrMap,
+                    url,
+                    onSuccess
+                )
+            } catch (_: IllegalArgumentException) {
+                warn("玩家 ${player.name} 具有重复支付任务，已跳过")
+                return
+            } catch (e: Exception) {
+                throw e
+            }
             purchaseMap[player] = purchaseChecker
             purchaseChecker.runTaskTimerAsynchronously(
                 SakuraPurchasePlugin.javaPlugin,

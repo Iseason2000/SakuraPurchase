@@ -23,7 +23,7 @@ dependencies {
     compileOnly("com.google.zxing:core:3.5.1")
     compileOnly("fr.xephi:authme:5.6.0-SNAPSHOT")
     compileOnly("org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT")
-    compileOnly("me.clip:placeholderapi:2.11.3")
+    compileOnly("me.clip:placeholderapi:2.11.6")
 }
 
 // 插件名称，请在gradle.properties 修改
@@ -52,12 +52,12 @@ val obfuscatedMainClass =
     } else "a"
 val isObfuscated = obfuscated == "true"
 val shrink: String by rootProject
-val defaultFile = File("../build", "${rootProject.name}-${rootProject.version}.jar")
+val formatJarOutput = jarOutputFile.replace("\${root}", rootProject.projectDir.absolutePath)
 val output: File =
     if (isObfuscated)
-        File(jarOutputFile, "${rootProject.name}-${rootProject.version}-obfuscated.jar").absoluteFile
+        File(formatJarOutput, "${rootProject.name}-${rootProject.version}-obfuscated.jar").absoluteFile
     else
-        File(jarOutputFile, "${rootProject.name}-${rootProject.version}.jar").absoluteFile
+        File(formatJarOutput, "${rootProject.name}-${rootProject.version}.jar").absoluteFile
 
 tasks {
     shadowJar {

@@ -52,7 +52,8 @@ object Config : SimpleYAMLConfig() {
     @Comment(
         "",
         "sakurapurchase pay 完成之后运行的命令(分组),以控制台的身份",
-        "原生变量为%player%:玩家名, %amount%:充值的金额%, %10_amount%:表示充值的金额X10"
+        "原生变量为%player%:玩家名, %amount%:充值的金额, %10_amount%:表示充值的金额X10",
+        "%amount_int%:充值的金额取整  %10_amount_int%:表示充值的金额X10取整"
     )
     var commandGroup = mutableMapOf("default" to listOf("say helloWorld!"))
 
@@ -61,6 +62,10 @@ object Config : SimpleYAMLConfig() {
     var qrColorStr: String = "0,0,0"
     var qrColor: Int = -0XFFFFFFF
 
+    @Key
+    @Comment("", "缩放二维码(倍率)")
+    var qrScale: Double = 1.0
+
     @Comment(
         "", "支付时的取消动作,默认 HEAD_UP",
         "SHIFT_F: 蹲下+F 取消,仅1.9+",
@@ -68,7 +73,8 @@ object Config : SimpleYAMLConfig() {
     )
     @Key
     var cancelAction = "HEAD_UP"
-    private val pattern = Pattern.compile("(%[0-9|.]*?_?amount%)")
+    private val amountPattern = Pattern.compile("(%[0-9|.]*?_?amount%)")
+    private val amountIntPattern = Pattern.compile("(%[0-9|.]*?_?amount_int%)")
 
     val loginUrl get() = "$serverHost/login"
     val apiUrl get() = "$serverHost/api"
@@ -110,7 +116,7 @@ object Config : SimpleYAMLConfig() {
         submit {
             for (s in commands) {
                 var command = s.replace("%player%", player.name)
-                val matcher = pattern.matcher(command)
+                val matcher = amountPattern.matcher(command)
                 while (matcher.find()) {
                     val group = matcher.group(1)
                     val split = group.substring(1, group.length - 1).split('_')
@@ -120,6 +126,18 @@ object Config : SimpleYAMLConfig() {
                     }
                     command = command.replace(group, (amount * multiply).toString())
                 }
+
+                val intMatcher = amountIntPattern.matcher(command)
+                while (intMatcher.find()) {
+                    val group = intMatcher.group(1)
+                    val split = group.substring(1, group.length - 1).split('_')
+                    var multiply = 1.0
+                    if (split.size == 2) {
+                        multiply = runCatching { split[0].toDouble() }.getOrElse { 1.0 }
+                    }
+                    command = command.replace(group, (amount * multiply).toInt().toString())
+                }
+
                 command = PAPIHook.setPlaceholder(command, player)
                 runCatching {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)

@@ -16,6 +16,8 @@ public class SecurityConfig {
                 .antMatchers("/api/pay/notify")
                 .permitAll()
                 //基础访问权限配置
+                .antMatchers("/api/pay/refund")
+                .hasRole("ADMIN")
                 .antMatchers("/api/**")
                 .hasRole("API")
                 .antMatchers("/static/**")
